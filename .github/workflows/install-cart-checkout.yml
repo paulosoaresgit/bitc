@@ -1,0 +1,36 @@
+name: Install cart and checkout
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  install:
+    if: contains(github.event.head_commit.message, '[cart-source]')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: Inject cart assets
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          files=[Path("index.html")]
+          files += list(Path("collections").glob("*/index.html")) if Path("collections").exists() else []
+          files += list(Path("products").glob("*/index.html")) if Path("products").exists() else []
+          for p in files:
+              s=p.read_text(errors="ignore")
+              if "/assets/bm-cart.css" not in s and "</head>" in s:
+                  s=s.replace("</head>",'<link rel="stylesheet" href="/assets/bm-cart.css"></head>',1)
+              if "/assets/bm-cart.js" not in s and "</body>" in s:
+                  s=s.replace("</body>",'<script src="/assets/bm-cart.js"></script></body>',1)
+              p.write_text(s)
+          PY
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "[cart-result] Add functional cart and checkout UI" || exit 0
+          git push
