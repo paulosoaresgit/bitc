@@ -1,0 +1,66 @@
+name: Capture licensed storefront pages
+
+on:
+  push:
+    branches: [licensed-static]
+
+permissions:
+  contents: write
+
+jobs:
+  capture:
+    if: contains(github.event.head_commit.message, '[capture-source]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: licensed-static
+          fetch-depth: 0
+
+      - name: Capture current public HTML
+        shell: bash
+        run: |
+          set -euxo pipefail
+          rm -rf licensed-site
+          mkdir -p licensed-site
+
+          get_page() {
+            url="$1"
+            dest="$2"
+            mkdir -p "$(dirname "$dest")"
+            curl --fail --location --retry 3 --compressed \
+              --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/154 Safari/537.36" \
+              "$url" -o "$dest"
+          }
+
+          get_page "https://bitcoinmerch.com/" "licensed-site/index.html"
+          get_page "https://bitcoinmerch.com/collections/beginner-miners" "licensed-site/collections/beginner-miners/index.html"
+          get_page "https://bitcoinmerch.com/collections/bitaxe-miners" "licensed-site/collections/bitaxe-miners/index.html"
+          get_page "https://bitcoinmerch.com/collections/premium-asic-miners" "licensed-site/collections/premium-asic-miners/index.html"
+          get_page "https://bitcoinmerch.com/collections/industrial-asic-miners" "licensed-site/collections/industrial-asic-miners/index.html"
+          get_page "https://bitcoinmerch.com/collections/best-selling-merch" "licensed-site/collections/best-selling-merch/index.html"
+          get_page "https://bitcoinmerch.com/collections/all" "licensed-site/collections/all/index.html"
+          get_page "https://bitcoinmerch.com/blogs/guides" "licensed-site/blogs/guides/index.html"
+          get_page "https://bitcoinmerch.com/pages/bitcoin-merch-reviews" "licensed-site/pages/bitcoin-merch-reviews/index.html"
+          get_page "https://bitcoinmerch.com/pages/contact-us" "licensed-site/pages/contact-us/index.html"
+          get_page "https://bitcoinmerch.com/products/bitcoin-merch-bitaxe-601-gamma-power-supply-bitcoin-miner-1-5th-s" "licensed-site/products/bitcoin-merch-bitaxe-601-gamma-power-supply-bitcoin-miner-1-5th-s/index.html"
+          get_page "https://bitcoinmerch.com/products/bitcoin-merch-x-node-mini-bitcoin-full-node" "licensed-site/products/bitcoin-merch-x-node-mini-bitcoin-full-node/index.html"
+
+          cat > licensed-site/README.md <<'EOF'
+          # Licensed storefront capture
+          This directory contains a point-in-time capture of public pages from bitcoinmerch.com,
+          created after the repository owner confirmed authorization to reproduce the storefront.
+          External Shopify/CDN assets intentionally remain referenced by their original public URLs.
+          Dynamic Shopify cart, customer account, checkout, apps and backend APIs are not copied by
+          this static capture and must be connected to the destination store separately.
+          EOF
+
+      - name: Commit capture
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add licensed-site
+          git commit -m "[capture-result] Capture licensed storefront pages" || exit 0
+          git push origin licensed-static
