@@ -1,0 +1,62 @@
+name: Licensed site mirror
+
+on:
+  push:
+    branches: [licensed-mirror]
+
+permissions:
+  contents: write
+
+jobs:
+  mirror:
+    if: contains(github.event.head_commit.message, '[mirror-source]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: licensed-mirror
+          fetch-depth: 0
+
+      - name: Mirror public BitcoinMerch storefront
+        shell: bash
+        run: |
+          set -euxo pipefail
+          rm -rf mirror-site .mirror-tmp
+          mkdir -p mirror-site .mirror-tmp
+
+          wget \
+            --recursive \
+            --level=4 \
+            --html-extension \
+            --convert-links \
+            --backup-converted \
+            --no-parent \
+            --domains=bitcoinmerch.com \
+            --execute robots=off \
+            --user-agent="Mozilla/5.0 (compatible; licensed-mirror/1.0)" \
+            --reject-regex='/(cart|checkout|account|challenge|password)(/|\\?|$)|[?&](q|page|sort_by)=' \
+            --directory-prefix=.mirror-tmp \
+            https://bitcoinmerch.com/
+
+          cp -a .mirror-tmp/bitcoinmerch.com/. mirror-site/
+          rm -rf .mirror-tmp
+
+          # Preserve a direct entry point at repository root for static hosting.
+          cat > index.mirror.html <<'EOF'
+          <!doctype html>
+          <html><head><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=mirror-site/index.html"><title>Bitcoin Merch Mirror</title></head><body><a href="mirror-site/index.html">Open mirror</a></body></html>
+          EOF
+
+      - name: Commit mirror
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add mirror-site index.mirror.html
+          if git diff --cached --quiet; then
+            echo "No mirror changes"
+            exit 0
+          fi
+          git commit -m "[mirror-result] Refresh licensed BitcoinMerch mirror"
+          git push origin licensed-mirror
