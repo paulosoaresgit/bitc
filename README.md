@@ -1,27 +1,17 @@
-# BITC Mining
+# BitcoinMerch licensed storefront capture
 
-Original ecommerce storefront inspired by modern crypto-mining shops.
+This repository contains the authorized public storefront capture of bitcoinmerch.com.
 
-## Run locally
+## Included
+- Current homepage HTML
+- Main mining collections
+- Guides
+- Reviews and support pages
+- Representative product pages
+- Original public Shopify/CDN assets referenced by the captured HTML
 
-```bash
-npm install
-npm run dev
-```
-
-## Build
-
-```bash
-npm run build
-```
-
-The current catalog and checkout interactions are front-end demo data. Connect product data and the payment provider before accepting real orders.
-
-### Notes
-
-- Responsive homepage
-- Product sections
-- Add-to-cart drawer
-- Mobile navigation
-- Original BITC Mining branding and UI assets
-- No copied BitcoinMerch proprietary images, logos, or text
+## Important
+This is the public storefront layer. Shopify customer accounts, cart APIs, checkout,
+payment processing, inventory, app backends, and private/admin data are not duplicated
+by a static website capture. Those need to be connected to the destination commerce
+backend separately.
