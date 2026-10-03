@@ -1,0 +1,73 @@
+name: Promote licensed capture to site root
+
+on:
+  push:
+    branches: [licensed-static]
+
+permissions:
+  contents: write
+
+jobs:
+  promote:
+    if: contains(github.event.head_commit.message, '[promote-source]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: licensed-static
+          fetch-depth: 0
+
+      - name: Promote captured storefront
+        shell: bash
+        run: |
+          set -euxo pipefail
+
+          # Remove the earlier hand-built prototype so the licensed capture is the site root.
+          rm -rf src
+          rm -f package.json package-lock.json
+
+          cp licensed-site/index.html ./index.html
+          rm -rf collections blogs pages products
+          cp -a licensed-site/collections ./collections
+          cp -a licensed-site/blogs ./blogs
+          cp -a licensed-site/pages ./pages
+          cp -a licensed-site/products ./products
+
+          touch .nojekyll
+
+          cat > vercel.json <<'EOF'
+          {
+            "cleanUrls": false,
+            "trailingSlash": true
+          }
+          EOF
+
+          cat > README.md <<'EOF'
+          # BitcoinMerch licensed storefront capture
+
+          This repository contains the authorized public storefront capture of bitcoinmerch.com.
+
+          ## Included
+          - Current homepage HTML
+          - Main mining collections
+          - Guides
+          - Reviews and support pages
+          - Representative product pages
+          - Original public Shopify/CDN assets referenced by the captured HTML
+
+          ## Important
+          This is the public storefront layer. Shopify customer accounts, cart APIs, checkout,
+          payment processing, inventory, app backends, and private/admin data are not duplicated
+          by a static website capture. Those need to be connected to the destination commerce
+          backend separately.
+          EOF
+
+      - name: Commit promoted storefront
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "[promote-result] Make licensed capture the site root" || exit 0
+          git push origin licensed-static
