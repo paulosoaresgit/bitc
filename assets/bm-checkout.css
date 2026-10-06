@@ -78,3 +78,56 @@
     height:26px!important;
   }
 }
+
+/* Binance visual refinement */
+.co-crypto-icon.co-binance-icon{
+  width:46px!important;
+  height:46px!important;
+  min-width:46px!important;
+  min-height:46px!important;
+  border-radius:50%!important;
+  background:#F3BA2F!important;
+  display:grid!important;
+  place-items:center!important;
+  overflow:hidden!important;
+  padding:0!important;
+  border:1px solid rgba(17,24,39,.06)!important;
+  box-shadow:0 4px 12px rgba(243,186,47,.18)!important;
+}
+.co-crypto-icon.co-binance-icon img{
+  width:46px!important;
+  height:46px!important;
+  object-fit:contain!important;
+  display:block!important;
+}
+.co-binance-logo{
+  width:34px!important;
+  height:34px!important;
+  min-width:34px!important;
+  min-height:34px!important;
+  border-radius:50%!important;
+  background:#F3BA2F!important;
+  display:grid!important;
+  place-items:center!important;
+  overflow:hidden!important;
+  padding:0!important;
+  border:1px solid rgba(17,24,39,.06)!important;
+}
+.co-binance-logo img{
+  width:34px!important;
+  height:34px!important;
+  object-fit:contain!important;
+  display:block!important;
+}
+@media(max-width:760px){
+  .co-crypto-icon.co-binance-icon{
+    width:42px!important;
+    height:42px!important;
+    min-width:42px!important;
+    min-height:42px!important;
+  }
+  .co-crypto-icon.co-binance-icon img{
+    width:42px!important;
+    height:42px!important;
+  }
+}
