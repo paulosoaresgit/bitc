@@ -6,7 +6,42 @@
 
 <div class="co-section"><div class="co-title-row"><div class="co-title">Contact</div><a class="co-signin" href="#">Sign in</a></div><div class="co-field-wrap"><input class="co-field" type="email" placeholder="Email"><span class="co-help">?</span></div><label class="co-check"><input type="checkbox" checked> Email me with news and offers</label></div>
 <div class="co-section"><div class="co-title-row"><div class="co-title">Delivery</div></div><div class="co-stack"><div><div class="co-mini-label">Country/Region</div><select class="co-field co-select"><option>Brazil</option><option>United States</option><option>Canada</option><option>United Kingdom</option></select></div><div class="co-grid2"><input class="co-field co-address-input" placeholder="First name"><input class="co-field co-address-input" placeholder="Last name"></div><input class="co-field" placeholder="Company (optional)"><div class="co-field-wrap"><input class="co-field co-address-input" placeholder="Postal code"><span class="suffix">⌕</span></div><div class="co-grid-street"><input class="co-field co-address-input" placeholder="Street"><input class="co-field co-address-input" placeholder="Building number"></div><div class="co-grid-apt"><input class="co-field" placeholder="Apartment, suite, etc. (optional)"><input class="co-field co-address-input" placeholder="Neighborhood"></div><div class="co-grid2"><input class="co-field co-address-input" placeholder="City"><div><div class="co-mini-label">State</div><select class="co-field co-select"><option>São Paulo</option><option>Rio de Janeiro</option><option>Minas Gerais</option><option>Paraná</option></select></div></div><div class="co-field-wrap"><input class="co-field" placeholder="Phone"><span class="co-help">?</span></div></div><label class="co-check"><input type="checkbox"> Save this information for next time</label><label class="co-check"><input type="checkbox"> Text me with news and offers</label></div>
-<div class="co-section"><div class="co-title-row"><div class="co-title">Shipping method</div></div><div class="co-empty-method" id="shipMethod">Enter your shipping address to view available shipping methods.</div></div>
+<div class="co-section">
+  <div class="co-title-row">
+    <div>
+      <div class="co-title">Shipping method</div>
+      <div class="co-shipping-sub">International delivery options</div>
+    </div>
+    <span class="co-free-shipping-badge">FREE SHIPPING</span>
+  </div>
+  <div class="co-shipping-methods" id="shipMethod">
+    <button type="button" class="co-shipping-option selected" data-shipping="international">
+      <span class="co-ship-radio"></span>
+      <span class="co-ship-icon">🌎</span>
+      <span class="co-ship-copy"><b>Free International Shipping</b><small>Tracked delivery · 7–15 business days</small></span>
+      <span class="co-ship-price">FREE</span>
+    </button>
+    <button type="button" class="co-shipping-option" data-shipping="dhl">
+      <span class="co-ship-radio"></span>
+      <span class="co-ship-brand dhl">DHL</span>
+      <span class="co-ship-copy"><b>DHL Express Worldwide</b><small>Express international · 3–7 business days</small></span>
+      <span class="co-ship-price">FREE</span>
+    </button>
+    <button type="button" class="co-shipping-option" data-shipping="fedex">
+      <span class="co-ship-radio"></span>
+      <span class="co-ship-brand fedex">FedEx</span>
+      <span class="co-ship-copy"><b>FedEx International Priority</b><small>Priority delivery · 3–6 business days</small></span>
+      <span class="co-ship-price">FREE</span>
+    </button>
+    <button type="button" class="co-shipping-option" data-shipping="ups">
+      <span class="co-ship-radio"></span>
+      <span class="co-ship-brand ups">UPS</span>
+      <span class="co-ship-copy"><b>UPS Worldwide Saver</b><small>Worldwide express · 3–6 business days</small></span>
+      <span class="co-ship-price">FREE</span>
+    </button>
+  </div>
+  <div class="co-shipping-note">✓ Tracking included on all international orders</div>
+</div>
 <div class="co-recos"><h3>Current Best Sellers ↘</h3><div class="co-reco"><div class="co-reco-thumb cards">CRYPTO<br>CARDS</div><div><div class="co-reco-name">Bitcoin Merch® - Cardsmiths Crypto Currency Collectible Trading Cards - Win Real Crypto! <span class="co-sale">(10% OFF)</span></div><div class="co-reco-price">$18.00 <span class="co-old">$19.99</span></div></div><div class="co-reco-action"><select><option>1 Pack</option></select><button class="co-add" id="addCards">Add</button></div></div><div class="co-reco"><div class="co-reco-thumb">₿</div><div><div class="co-reco-name">Bitcoin Merch® - Gold Nugget Lottery Miner <span class="co-sale">(10% OFF)</span></div><div class="co-reco-price">$36.00 <span class="co-old">$39.99</span></div></div><div class="co-reco-action"><input id="goldQty" type="number" min="1" value="1" placeholder="Quantity"><button class="co-add" id="addGold">Add</button></div></div></div>
 <div class="co-section co-payment-section" style="margin-top:28px">
   <div class="co-payment-headline">
