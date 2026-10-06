@@ -4,8 +4,47 @@
 <section class="co-left">
 <div class="co-badges"><div class="co-badge"><svg viewBox="0 0 24 24" fill="none"><rect x="6" y="10" width="12" height="10" rx="2" stroke="#111" stroke-width="1.6"/><path d="M9 10V7a3 3 0 0 1 6 0v3" stroke="#111" stroke-width="1.6"/></svg><b>Secure Payments</b></div><div class="co-badge"><svg viewBox="0 0 24 24" fill="none"><path d="M6 8h12v11H6zM8 8V5h8v3M9 12h6" stroke="#111" stroke-width="1.5"/></svg><b>120-Day Warranty</b></div><div class="co-badge"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="#111" stroke-width="1.5"/><path d="m9 12 2 2 4-4" stroke="#111" stroke-width="1.7"/></svg><b>Top-Rated Customer<br>Support</b></div></div>
 
-<div class="co-section"><div class="co-title-row"><div class="co-title">Contact</div><a class="co-signin" href="#">Sign in</a></div><div class="co-field-wrap"><input class="co-field" type="email" placeholder="Email"><span class="co-help">?</span></div><label class="co-check"><input type="checkbox" checked> Email me with news and offers</label></div>
-<div class="co-section"><div class="co-title-row"><div class="co-title">Delivery</div></div><div class="co-stack"><div><div class="co-mini-label">Country/Region</div><select class="co-field co-select"><option>Brazil</option><option>United States</option><option>Canada</option><option>United Kingdom</option></select></div><div class="co-grid2"><input class="co-field co-address-input" placeholder="First name"><input class="co-field co-address-input" placeholder="Last name"></div><input class="co-field" placeholder="Company (optional)"><div class="co-field-wrap"><input class="co-field co-address-input" placeholder="Postal code"><span class="suffix">⌕</span></div><div class="co-grid-street"><input class="co-field co-address-input" placeholder="Street"><input class="co-field co-address-input" placeholder="Building number"></div><div class="co-grid-apt"><input class="co-field" placeholder="Apartment, suite, etc. (optional)"><input class="co-field co-address-input" placeholder="Neighborhood"></div><div class="co-grid2"><input class="co-field co-address-input" placeholder="City"><div><div class="co-mini-label">State</div><select class="co-field co-select"><option>São Paulo</option><option>Rio de Janeiro</option><option>Minas Gerais</option><option>Paraná</option></select></div></div><div class="co-field-wrap"><input class="co-field" placeholder="Phone"><span class="co-help">?</span></div></div><label class="co-check"><input type="checkbox"> Save this information for next time</label><label class="co-check"><input type="checkbox"> Text me with news and offers</label></div>
+<div class="co-section co-contact-section"><div class="co-title-row"><div><div class="co-title">Contact</div><div class="co-form-hint">Receipt and order updates</div></div><a class="co-signin" href="#">Sign in</a></div><div class="co-field-wrap"><input class="co-field" type="email" name="email" autocomplete="email" inputmode="email" placeholder="Email address"><span class="co-help">?</span></div><label class="co-check co-marketing-check"><input type="checkbox"> Email me with news and offers</label></div>
+<div class="co-section co-delivery-section">
+  <div class="co-title-row"><div><div class="co-title">Delivery</div><div class="co-form-hint">Where should we send your order?</div></div></div>
+  <div class="co-stack co-delivery-fields">
+    <div>
+      <div class="co-mini-label">Country/Region</div>
+      <select class="co-field co-select" name="country" autocomplete="country-name">
+        <option>Brazil</option><option>United States</option><option>Canada</option><option>United Kingdom</option>
+      </select>
+    </div>
+    <div class="co-grid2 co-name-grid">
+      <input class="co-field co-address-input" name="firstName" autocomplete="given-name" placeholder="First name">
+      <input class="co-field co-address-input" name="lastName" autocomplete="family-name" placeholder="Last name">
+    </div>
+    <div class="co-field-wrap">
+      <input class="co-field co-address-input" name="postalCode" autocomplete="postal-code" inputmode="text" placeholder="Postal / ZIP code">
+      <span class="suffix">⌕</span>
+    </div>
+    <div class="co-grid-street co-street-grid">
+      <input class="co-field co-address-input" name="street" autocomplete="address-line1" placeholder="Street address">
+      <input class="co-field co-address-input" name="buildingNumber" placeholder="No.">
+    </div>
+    <div class="co-grid2 co-city-grid">
+      <input class="co-field co-address-input" name="city" autocomplete="address-level2" placeholder="City">
+      <div><div class="co-mini-label">State / Region</div><select class="co-field co-select" name="state" autocomplete="address-level1"><option>São Paulo</option><option>Rio de Janeiro</option><option>Minas Gerais</option><option>Paraná</option></select></div>
+    </div>
+    <div class="co-field-wrap">
+      <input class="co-field" name="phone" autocomplete="tel" inputmode="tel" placeholder="Phone number">
+      <span class="co-help">?</span>
+    </div>
+
+    <button type="button" class="co-optional-toggle" id="optionalFieldsToggle"><span>+ Add optional address details</span><span class="co-optional-chevron">⌄</span></button>
+    <div class="co-optional-fields" id="optionalFields">
+      <input class="co-field" name="company" autocomplete="organization" placeholder="Company (optional)">
+      <input class="co-field" name="address2" autocomplete="address-line2" placeholder="Apartment, suite, unit (optional)">
+      <input class="co-field" name="neighborhood" placeholder="Neighborhood (optional)">
+    </div>
+  </div>
+  <label class="co-check co-save-info"><input type="checkbox"> Save this information for next time</label>
+  <label class="co-check co-marketing-check"><input type="checkbox"> Text me with news and offers</label>
+</div>
 <div class="co-section">
   <div class="co-title-row">
     <div>
@@ -36,7 +75,7 @@
   </div>
   <div class="co-shipping-note">✓ Tracking included on all international orders</div>
 </div>
-<div class="co-recos"><h3>Current Best Sellers ↘</h3><div class="co-reco"><div class="co-reco-thumb cards">CRYPTO<br>CARDS</div><div><div class="co-reco-name">Bitcoin Merch® - Cardsmiths Crypto Currency Collectible Trading Cards - Win Real Crypto! <span class="co-sale">(10% OFF)</span></div><div class="co-reco-price">$18.00 <span class="co-old">$19.99</span></div></div><div class="co-reco-action"><select><option>1 Pack</option></select><button class="co-add" id="addCards">Add</button></div></div><div class="co-reco"><div class="co-reco-thumb">₿</div><div><div class="co-reco-name">Bitcoin Merch® - Gold Nugget Lottery Miner <span class="co-sale">(10% OFF)</span></div><div class="co-reco-price">$36.00 <span class="co-old">$39.99</span></div></div><div class="co-reco-action"><input id="goldQty" type="number" min="1" value="1" placeholder="Quantity"><button class="co-add" id="addGold">Add</button></div></div></div>
+<button type="button" class="co-recos-toggle" id="recosToggle"><span>+ Add extras to your order</span><small>Optional</small><span class="co-recos-chevron">⌄</span></button><div class="co-recos" id="recosPanel"><h3>Current Best Sellers ↘</h3><div class="co-reco"><div class="co-reco-thumb cards">CRYPTO<br>CARDS</div><div><div class="co-reco-name">Bitcoin Merch® - Cardsmiths Crypto Currency Collectible Trading Cards - Win Real Crypto! <span class="co-sale">(10% OFF)</span></div><div class="co-reco-price">$18.00 <span class="co-old">$19.99</span></div></div><div class="co-reco-action"><select><option>1 Pack</option></select><button class="co-add" id="addCards">Add</button></div></div><div class="co-reco"><div class="co-reco-thumb">₿</div><div><div class="co-reco-name">Bitcoin Merch® - Gold Nugget Lottery Miner <span class="co-sale">(10% OFF)</span></div><div class="co-reco-price">$36.00 <span class="co-old">$39.99</span></div></div><div class="co-reco-action"><input id="goldQty" type="number" min="1" value="1" placeholder="Quantity"><button class="co-add" id="addGold">Add</button></div></div></div>
 <div class="co-section co-payment-section" style="margin-top:28px">
   <div class="co-payment-headline">
     <div>
@@ -136,5 +175,5 @@
   <button class="co-pay-now co-pay-crypto" id="payNow"><span class="co-cta-btc">₿</span><span id="payNowLabel">Pay with Bitcoin — Save 20%</span><span class="co-cta-arrow">→</span></button>
 </div><div class="co-footer-links"><a href="#">Refund policy</a><a href="#">Privacy policy</a><a href="#">Terms of service</a><a href="#">Cancellations</a></div>
 </section>
-<aside class="co-right"><div class="co-right-products" id="coItems"></div><div class="co-coupon"><input class="co-field" placeholder="Discount code or gift card"><button id="applyCoupon">Apply</button></div><div class="co-totals"><div class="co-total-row"><span id="coSubtotalLabel">Subtotal</span><span id="coSubtotal">$0.00</span></div><div class="co-total-row"><span>Shipping</span><span id="coShipping" class="co-shipping-summary">FREE</span></div><div class="co-total-row co-crypto-discount-row" id="coCryptoDiscountRow"><span>Crypto discount <b>-20%</b></span><span id="coCryptoDiscount">-$0.00</span></div><div class="co-total-row co-total-final"><span>Total</span><span><span class="co-original-total" id="coOriginalTotal"></span><span class="usd">USD</span><span id="coTotal">$0.00</span></span></div></div><div class="co-trust"><div class="co-trust-title">Rated Excellent</div><div class="co-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div><div class="co-trust-reviews">1K+ reviews</div><div class="co-trust-brand">Trustpilot</div></div></aside>
+<aside class="co-right"><button type="button" class="co-summary-toggle" id="summaryToggle"><span>Order summary</span><span class="co-summary-toggle-total" id="summaryToggleTotal">$0.00</span><span class="co-summary-toggle-chevron">⌄</span></button><div class="co-summary-inner" id="summaryInner"><div class="co-right-products" id="coItems"></div><div class="co-coupon"><input class="co-field" placeholder="Discount code or gift card"><button id="applyCoupon">Apply</button></div><div class="co-totals"><div class="co-total-row"><span id="coSubtotalLabel">Subtotal</span><span id="coSubtotal">$0.00</span></div><div class="co-total-row"><span>Shipping</span><span id="coShipping" class="co-shipping-summary">FREE</span></div><div class="co-total-row co-crypto-discount-row" id="coCryptoDiscountRow"><span>Crypto discount <b>-20%</b></span><span id="coCryptoDiscount">-$0.00</span></div><div class="co-total-row co-total-final"><span>Total</span><span><span class="co-original-total" id="coOriginalTotal"></span><span class="usd">USD</span><span id="coTotal">$0.00</span></span></div></div><div class="co-trust"><div class="co-trust-title">Rated Excellent</div><div class="co-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div><div class="co-trust-reviews">1K+ reviews</div><div class="co-trust-brand">Trustpilot</div></div></div></aside>
 </main><div class="co-toast" id="coToast"></div><script src="/assets/bm-checkout.js"></script></body></html>
