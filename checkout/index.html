@@ -134,12 +134,15 @@
   </div>
 
   <div class="co-binance-guide" id="binanceGuide">
-    <div class="co-binance-head"><span class="co-binance-logo"><img src="/assets/binance-bnb.svg" alt="Binance"></span><div><b>Pay using Binance</b><small>Use a normal BTC withdrawal — not the Binance Pay QR scanner.</small></div></div>
-    <div class="co-binance-step"><b>1</b><span>Open Binance → <strong>Assets</strong> → <strong>Withdraw</strong> → choose <strong>BTC</strong>.</span></div>
-    <div class="co-binance-step"><b>2</b><span>Select <strong>Send via crypto network</strong> and choose <strong>Bitcoin (BTC)</strong>.</span></div>
-    <div class="co-binance-step"><b>3</b><span>Use the exact address and BTC amount from your secure invoice.</span></div>
+    <div class="co-binance-head"><span class="co-binance-logo"><img src="/assets/binance-bnb.svg" alt="Binance"></span><div><b>How to pay with Binance</b><small>About 1 minute · use a normal BTC withdrawal</small></div></div>
+    <div class="co-binance-alert">Do not use the Binance Pay QR scanner for this payment.</div>
+    <div class="co-binance-steps">
+      <div class="co-binance-step"><b>1</b><span>Open <strong>Binance</strong> → Assets → Withdraw → <strong>BTC</strong></span></div>
+      <div class="co-binance-step"><b>2</b><span>Select the <strong>Bitcoin (BTC)</strong> network</span></div>
+      <div class="co-binance-step"><b>3</b><span>Copy the <strong>address + exact BTC amount</strong> from the invoice below</span></div>
+    </div>
     <div class="co-binance-invoice" id="binanceInvoiceBox">
-      <div class="co-binance-wait"><span class="co-spinner"></span><div><strong>Secure Bitcoin invoice</strong><small>Click Pay with Crypto to generate your order invoice.</small></div></div>
+      <div class="co-binance-wait"><span class="co-spinner"></span><div><strong>Secure Bitcoin invoice</strong><small>Tap “Pay with Binance” below to generate the address and exact amount.</small></div></div>
       <div class="co-binance-ready" id="binanceReady">
         <label>Bitcoin address</label><div class="co-copy-row"><code id="binanceAddress">—</code><button type="button" data-copy-target="binanceAddress">Copy</button></div>
         <label>Exact amount</label><div class="co-copy-row"><code id="binanceAmount">—</code><button type="button" data-copy-target="binanceAmount">Copy</button></div>
