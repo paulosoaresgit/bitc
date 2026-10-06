@@ -137,3 +137,30 @@
 @media(max-width:760px){.co-shipping-option{grid-template-columns:16px 36px minmax(0,1fr) auto;padding:9px 8px;gap:8px}.co-ship-brand{width:34px}.co-ship-copy b{font-size:9.5px}.co-ship-copy small{font-size:8px}.co-ship-price{font-size:8.5px;padding:4px 6px}}
 
 .co-ship-price.paid{color:#344054;background:#f2f4f7}.co-shipping-summary{color:#16a34a;font-weight:800}
+
+/* Delivery field label spacing fix */
+.co-mini-label{
+  display:block!important;
+  margin:0 0 6px 2px!important;
+  padding:0!important;
+  font-size:9px!important;
+  line-height:1.2!important;
+  color:#475467!important;
+  position:relative!important;
+  z-index:2!important;
+}
+.co-stack>div>.co-mini-label,
+.co-grid2>div>.co-mini-label{
+  margin-top:1px!important;
+}
+.co-select{
+  margin-top:0!important;
+  position:relative!important;
+  z-index:1!important;
+}
+@media(max-width:760px){
+  .co-mini-label{
+    margin-bottom:5px!important;
+    font-size:8.5px!important;
+  }
+}
