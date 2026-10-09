@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Checkout | Bitcoin Merch</title><link rel="stylesheet" href="/assets/bm-checkout.css"></head><body>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Checkout | Bitcoin Merch</title><meta name="bitc-payment-api" content=""><link rel="stylesheet" href="/assets/bm-checkout.css"></head><body>
 <header class="co-header"><div class="co-header-in"><a class="co-logo" href="/"><span class="btc">₿</span><span class="words"><span class="bitcoin">itcoin</span><span class="merch">merch</span></span></a><div class="co-bag"><svg viewBox="0 0 24 24" fill="none"><path d="M7.5 8V6a4.5 4.5 0 0 1 9 0v2M5 8h14l-1 12H6L5 8Z" stroke="currentColor" stroke-width="1.7"/></svg><span class="co-bag-count" id="coBagCount">0</span></div></div></header>
 <main class="co-shell">
 <section class="co-left">
@@ -142,38 +142,17 @@
       <div class="co-binance-step"><b>3</b><span>Copy the <strong>address</strong> and <strong>exact BTC amount</strong> below</span></div>
     </div>
     <div class="co-binance-invoice" id="binanceInvoiceBox">
-      <div class="co-binance-wait"><span class="co-spinner"></span><div><strong>Secure Bitcoin invoice</strong><small>Tap “Pay with Binance” below to generate the address and exact amount.</small></div></div>
+      <div class="co-binance-wait"><span class="co-spinner"></span><div><strong>Secure Bitcoin invoice</strong><small>Click “Pay with Binance” to open BTCPay, where your secure BTC address and exact amount will appear.</small></div></div>
       <div class="co-binance-ready" id="binanceReady">
         <label>Bitcoin address</label><div class="co-copy-row"><code id="binanceAddress">—</code><button type="button" data-copy-target="binanceAddress">Copy</button></div>
         <label>Exact amount</label><div class="co-copy-row"><code id="binanceAmount">—</code><button type="button" data-copy-target="binanceAmount">Copy</button></div>
         <a id="binanceInvoiceLink" class="co-open-invoice" href="#" target="_blank" rel="noopener">Open secure BTCPay invoice</a>
       </div>
     </div>
-    <div class="co-binance-note">Your order is confirmed only after BTCPay verifies the Bitcoin payment.</div>
+    <div class="co-binance-note">Pay only using the BTC address on your unique BTCPay invoice. Your order is confirmed after payment settlement.</div>
   </div>
 
-  <div class="co-alt-divider"><span>OR</span></div>
-  <button type="button" class="co-other-toggle" id="otherMethodsToggle">
-    <span>Other payment methods</span><span class="co-other-chevron">⌄</span>
-  </button>
-
-  <div class="co-other-methods" id="otherMethods">
-    <button type="button" class="co-alt-method" data-method="card">
-      <span class="co-radio"></span><span class="co-alt-icon">▰</span>
-      <span class="co-alt-copy"><b>Credit card</b><small>Visa, Mastercard, Discover and more</small></span>
-      <span class="co-card-icons"><span class="visa">VISA</span><span class="mc">●●</span><span class="disc">DISC</span><span class="plus">+3</span></span>
-    </button>
-    <div class="co-card-form" id="cardForm" style="display:none">
-      <div class="co-no-discount">Crypto discount is not available for card payments.</div>
-      <div class="co-field-wrap"><input class="co-field" placeholder="Card number"><span class="suffix">♧</span></div>
-      <div class="co-card-grid"><input class="co-field" placeholder="Expiration date (MM / YY)"><div class="co-field-wrap"><input class="co-field" placeholder="Security code"><span class="co-help">?</span></div></div>
-      <input class="co-field" placeholder="Name on card">
-      <label class="co-billing"><input type="checkbox" checked> Use shipping address as billing address</label>
-    </div>
-    <button type="button" class="co-alt-method" data-method="paypal"><span class="co-radio"></span><span class="co-alt-icon co-paypal-icon">P</span><span class="co-alt-copy"><b>PayPal</b><small>Pay with your PayPal account</small></span><span class="co-chevron">›</span></button>
-    <button type="button" class="co-alt-method" data-method="afterpay"><span class="co-radio"></span><span class="co-alt-icon co-afterpay-icon">↔</span><span class="co-alt-copy"><b>Afterpay</b><small>Buy now, pay later</small></span><span class="co-chevron">›</span></button>
-    <button type="button" class="co-alt-method" data-method="cash"><span class="co-radio"></span><span class="co-alt-icon co-cash-icon">$</span><span class="co-alt-copy"><b>Cash App Pay</b><small>Pay with Cash App</small></span><span class="co-chevron">›</span></button>
-  </div>
+  <p class="co-payment-sub" style="margin:18px 0">Bitcoin payment is currently the only enabled method. Other payment methods are not available yet.</p>
 
   <button class="co-pay-now co-pay-crypto" id="payNow"><span class="co-cta-btc">₿</span><span id="payNowLabel">Pay with Bitcoin — Save 20%</span><span class="co-cta-arrow">→</span></button>
 </div><div class="co-footer-links"><a href="#">Refund policy</a><a href="#">Privacy policy</a><a href="#">Terms of service</a><a href="#">Cancellations</a></div>
