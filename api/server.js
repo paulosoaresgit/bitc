@@ -61,6 +61,7 @@ function validatedOrder(data) {
   const catalog = getCatalog();
   let subtotal = 0;
   const items = [];
+  const quantities = new Map();
   for (const row of data.items) {
     if (!row || typeof row !== 'object' || Object.keys(row).some(k => !['id', 'qty'].includes(k))) {
       throw new Error('client_prices_not_allowed');
@@ -69,6 +70,8 @@ function validatedOrder(data) {
     const qty = row.qty;
     if (!catalog[id]) throw new Error('catalog_item_unavailable');
     if (!Number.isSafeInteger(qty) || qty < 1 || qty > 10) throw new Error('invalid_quantity');
+    quantities.set(id, (quantities.get(id) || 0) + qty);
+    if (quantities.get(id) > 10) throw new Error('invalid_quantity');
     const cents = catalog[id].cents * qty;
     subtotal += cents;
     items.push({ id, qty, title: catalog[id].title, unitCents: catalog[id].cents });
@@ -207,4 +210,5 @@ const server = http.createServer(async (req, res) => {
       { error: clientErrors.has(errorCode) ? errorCode : 'checkout_unavailable' }, origin);
   }
 });
-server.listen(PORT, () => console.log('BITC payment API listening on ' + PORT));
+if (process.env.NODE_ENV !== 'test') server.listen(PORT, () => console.log('BITC payment API listening on ' + PORT));
+export { validatedOrder, validatedCustomer, getCatalog, signatureValid };
