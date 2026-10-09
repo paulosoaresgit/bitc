@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 
+process.env.NODE_ENV = 'test';
 process.env.BTCPAY_WEBHOOK_SECRET = 'local-test-secret';
 const { validatedOrder, validatedCustomer, signatureValid } = await import('./server.js');
 
