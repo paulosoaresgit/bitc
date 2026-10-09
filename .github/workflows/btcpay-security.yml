@@ -1,0 +1,30 @@
+name: BTCPay checkout security
+on:
+  pull_request:
+    paths:
+      - 'api/**'
+      - 'assets/bm-checkout.js'
+      - '.github/workflows/btcpay-security.yml'
+  push:
+    branches:
+      - 'fix/btcpay-server-pricing-checkout'
+    paths:
+      - 'api/**'
+      - 'assets/bm-checkout.js'
+      - '.github/workflows/btcpay-security.yml'
+permissions:
+  contents: read
+jobs:
+  security-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax-check API and checkout
+        run: |
+          node --check api/server.js
+          node --check assets/bm-checkout.js
+      - name: Verify pricing and webhook security
+        run: cd api && npm test
