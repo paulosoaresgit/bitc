@@ -18,7 +18,7 @@ for path in docs:
   card=a
   for ancestor in [a,*list(a.parents)[:9]]:
    classes=ancestor.get('class',[]) if hasattr(ancestor,'get') else []
-   if any('product-item' in c for c in classes) and not any('grid' in c for c in classes):
+   if 'product-item' in classes:
     card=ancestor
     break
   raw=clean(card.get_text(" ",strip=True))
@@ -30,7 +30,7 @@ for path in docs:
   variant=card.select_one('input[name="id"], select[name="id"]')
   vid=variant.get("value") if variant else None
   entry={"href":href,"title":title,"priceText":price,"variantId":vid,"image":(img.get("src") or img.get("data-src") or "")[:250] if img else "","rawText":raw[:170],"source":str(path.relative_to(root))}
-  if href not in rows or (len(title)>len(rows[href]['title']) and price):rows[href]=entry
+  if href not in rows or (bool(price) and not rows[href]['priceText']) or (len(title)>len(rows[href]['title']) and bool(price)):rows[href]=entry
   if len(samples)<8 and price and title:samples.append(entry)
 stats={"totalProducts":len(rows),"hasTitle":sum(bool(x['title']) for x in rows.values()),"hasPrice":sum(bool(re.search(r'\$\s*\d',x['priceText'])) for x in rows.values()),"hasVariantId":sum(bool(re.fullmatch(r'\d{8,17}',str(x['variantId']))) for x in rows.values()),"hasImage":sum(bool(x['image']) for x in rows.values())}
 print("PRODUCT_CARD_STATS="+json.dumps(stats,ensure_ascii=False))
