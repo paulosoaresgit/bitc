@@ -21,12 +21,12 @@ BTCPAY_URL=https://pay.bitcmining.tech
 BTCPAY_API_KEY=PRIVATE_API_KEY_WITH_CREATE_AND_VIEW_INVOICES
 BTCPAY_STORE_ID=YOUR_STORE_ID
 BITC_ORDER_ENCRYPTION_KEY=64_HEX_CHARACTERS_FROM_OPENSSL_RAND_HEX_32
-BITC_CATALOG_JSON={"VERIFIED_VARIANT_ID":{"title":"Approved product and variant","cents":11999}}
+# Catalog is bundled into the API image in api/catalog.json, not an environment variable
 ```
 
 Generate a private **new 32-byte encryption key** securely on the VPS using `openssl rand -hex 32` and paste it only into the root-owned environment file. Do not publish, print, commit, transmit or photograph it. **Make a secure offline backup** of this key: losing it makes shipping data for existing invoices unrecoverable. Do not replace/rotate the key while you still need to read old orders without implementing key versioning first.
 
-`BITC_CATALOG_JSON` above is an example, **not approved pricing**. Collect and approve exact SKU/variant IDs and independent official prices. Unknown SKUs are blocked. The only preconfigured example add-ons are `reco-cards` (USD 18) and `reco-gold-nugget` (USD 36); the main product catalog is not configured, so launch must wait.
+`BITC_CATALOG_JSON` above is an example, **not approved pricing**. Only two direct product pages contain enough canonical SKU/price data. Audit the remaining product listing SKUs before enabling them. Unknown SKUs are blocked. `api/catalog.json` now contains 33 fixed variant-price entries from the captured product-detail pages: 28 available Bitaxe Gamma variants (USD 119.99–194.99), 3 X Node Mini variants (USD 799.99 and above), and two checkout add-ons (USD 18 and USD 36). The source's global cached JSON sometimes disagrees with the real detail page (e.g. USD 124.99 vs USD 119.99); canonical product-detail prices take priority. Products that only appear as collection cards are NOT yet configured, and remain blocked. Launch still requires verifying other SKUs and the actual customer checkout.
 
 Existing pricing assumptions requiring merchant approval: discount 20% on products and USD 16.50 optional protection, DHL USD 0, FedEx USD 24.99, UPS USD 29.99. These are **not validated shipping costs or promises**.
 
@@ -50,4 +50,4 @@ Dashboard for invoices: `https://pay.bitcmining.tech` → BITC Mining → Invoic
 
 The GitHub Actions pipeline also checks JavaScript, private CLI, VPS scripts and Compose syntax. Tests **do not** make real payments or prove wallet sync. Read `deploy/hostinger/README.md` and perform a live invoice/QR/wallet/settlement test before running ads. Verify BTCPay backup strategy and retain a private encryption-key backup.
 
-The previously drafted Supabase migration and `BTCPAY_WEBHOOK_SECRET` are no longer required for this manual, database-free flow.
+To reproduce the data-file audit: `node api/generate-catalog.mjs --check` (fails if the committed catalog drifts from the captured canonical product pages).\n\nThe previously drafted Supabase migration and `BTCPAY_WEBHOOK_SECRET` are no longer required for this manual, database-free flow.
