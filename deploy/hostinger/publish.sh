@@ -12,7 +12,7 @@ source_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
 env_file=/etc/bitc/bitc.env
 [[ -f "$env_file" ]] || { echo "Missing $env_file." >&2; exit 2; }
 [[ "$(stat -c '%a' "$env_file")" == "600" ]] || { echo "$env_file must have chmod 600." >&2; exit 2; }
-for key in BTCPAY_URL BTCPAY_API_KEY BTCPAY_STORE_ID BITC_ORDER_ENCRYPTION_KEY BITC_CATALOG_JSON; do
+for key in BTCPAY_URL BTCPAY_API_KEY BTCPAY_STORE_ID BITC_ORDER_ENCRYPTION_KEY; do
   grep -qE "^${key}=.+" "$env_file" || { echo "Missing value: $key" >&2; exit 2; }
 done
 grep -qE '^BITC_ORDER_ENCRYPTION_KEY=[a-fA-F0-9]{64}$' "$env_file" || {
