@@ -87,7 +87,7 @@ errors={}
 remaining=[p for p in product_paths if p not in entries]
 rate_limited=False
 for i,path in enumerate(remaining):
- if i>=45:
+ if i>=200:
   errors.update({p:"awaiting_next_authorized_import" for p in remaining[i:]})
   break
  key,p,err=grab(path)
