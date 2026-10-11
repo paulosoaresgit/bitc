@@ -21,7 +21,7 @@ const patterns=[
  ['product-metadata',/product:price:amount|itemprop=["']price|data-price/gi]
 ];
 function short(value) {
- return value.replace(/\s+/g,' ').replace(/data:image\/[^"']+/g,'[image]').slice(0,210);
+ return value.replace(/\s+/g,' ').replace(/data:image\/[^"']+/g,'[image]').slice(0,2000);
 }
 for(const file of paths) {
  const html=fs.readFileSync(path.join(root,file),'utf8');
@@ -29,5 +29,13 @@ for(const file of paths) {
  for(const [label,pattern] of patterns){
   pattern.lastIndex=0;const a=[...html.matchAll(pattern)];
   console.log(' '+label+' count='+a.length+' samples='+JSON.stringify(a.slice(0,2).map(m=>short(html.slice(Math.max(0,m.index-75),m.index+130)))));
+ }
+}
+
+for(const file of ['collections/all/index.html','products/bitcoin-merch-bitaxe-601-gamma-power-supply-bitcoin-miner-1-5th-s/index.html']) {
+ const html=fs.readFileSync(path.join(root,file),'utf8');
+ for (const [label,needle,back,forward] of [['variants-data','"product_variants":',500,1250],['product-json','"variants":[{"id":',800,1800],['catalog-id','"variant_price":',250,400]]) {
+ const i=html.indexOf(needle);
+ console.log('CONTEXT '+file+' '+label+' '+short(i<0?'NOT FOUND':html.slice(Math.max(0,i-back),i+forward)));
  }
 }
