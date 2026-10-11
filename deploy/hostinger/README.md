@@ -18,6 +18,13 @@ The BTCPay Docker proxy normally owns ports **80/443**. **Do not** install a sec
 
 Both `bitcmining.tech` and `www.bitcmining.tech` need DNS configured for the VPS and an HTTPS certificate issued by the running ACME/Let's Encrypt proxy. DNS/certificates and existing BTCPay nginx network must be inspected before launch.
 
+**Verified public network state on October 11, 2026** (read-only GitHub Actions run [38161984997](https://github.com/paulosoaresgit/bitc/actions/runs/38161984997)):
+- `bitcmining.tech` resolved to Hostinger parking IP `2.57.91.91`, returning the title `Parked Domain name on Hostinger DNS system` on both homepage and checkout (HTTP 200 parking, **NOT** a functioning store).
+- `pay.bitcmining.tech` resolved to VPS IP `2.25.192.109` and successfully served the BTCPay login screen over verified HTTPS.
+- In Hostinger's DNS zone, **replace the root `@` A record** targeting `2.57.91.91` with the confirmed currently assigned VPS IP (`2.25.192.109` at the time of audit). Set `www` CNAME to `@` or A to that same VPS IP. Check for conflicting `AAAA` records. **Preserve** the existing `pay` record. Avoid duplicate conflicting A records. Apply domain changes only after storefront container is attached to the BTCPay proxy network; HTTPS may take time to issue.
+- Don't edit DNS if the VPS IP differs on Hostinger hPanel at the time of change.
+
+
 ## 2. Private environment and order database
 
 Set up a **dedicated** BITC Supabase project, execute `api/migrations/001_bitc_orders.sql`, and verify the `bitc_orders` table has RLS on with no anon/authenticated access.
