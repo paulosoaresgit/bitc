@@ -5,7 +5,7 @@ create table if not exists public.bitc_orders (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   status text not null default 'pending'
-    check (status in ('pending','invoice_created','processing','settled','expired','invalid')),
+    check (status in ('pending','invoice_created','processing','settled','expired','invalid','review')),
   currency text not null default 'USD' check (currency = 'USD'),
   amount_cents bigint not null check (amount_cents > 0),
   items jsonb not null,
