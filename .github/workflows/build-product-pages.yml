@@ -1,0 +1,52 @@
+name: Build missing BITC product pages
+on:
+  push:
+    branches:
+      - fix/btcpay-server-pricing-checkout
+    paths:
+      - api/build-product-pages.py
+      - .github/workflows/build-product-pages.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: bitc-product-build
+  cancel-in-progress: false
+jobs:
+  build:
+    if: github.ref == 'refs/heads/fix/btcpay-server-pricing-checkout'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install HTML parser
+        run: pip install -q beautifulsoup4
+      - name: Generate real product links as review-safe local pages
+        run: python api/build-product-pages.py
+      - name: Verify no broken product URLs after generation
+        run: |
+          node api/audit-site-links.mjs | tee /tmp/bitc-link-audit.txt
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          line=next(x for x in Path('/tmp/bitc-link-audit.txt').read_text().splitlines() if x.startswith('SITE_LINK_AUDIT='))
+          audit=json.loads(line.partition('=')[2])
+          assert audit['brokenProductLinks']==0, audit
+          print('LINK_CHECK=OK')
+          PY
+      - name: Commit generated pages to the feature branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add products assets/bitc-product.css api/product-page-report.json
+          if git diff --cached --quiet; then
+            echo "Generated pages are already current"
+          else
+            git commit -m "feat(store): add reviewed draft pages for missing catalog products"
+            git push origin HEAD:fix/btcpay-server-pricing-checkout
+          fi
