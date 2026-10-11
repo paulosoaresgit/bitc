@@ -1,71 +1,71 @@
-# BITC Mining — Hostinger VPS deployment (not Render)
+# BITC Mining — existing Hostinger VPS + BTCPay (no extra database)
 
-Status: **prepared only**. No SSH access or live deployment has been verified from the GitHub branch. Do not merge/release just because automated tests pass. The historical VPS was `srv2033748.hstgr.cloud` on Ubuntu 24.04; verify it still belongs to this project. The earlier BTCPay Docker setup might not have finished.
+**Status:** code prepared in PR #2 / `fix/btcpay-server-pricing-checkout`. Public site and payments have **not** been deployed from this branch. These instructions do not claim actual operation.
 
-## 1. Verify server, domain, BTCPay and network first
+## Verified infrastructure and DNS
 
-In Hostinger hPanel > VPS > browser terminal (or your existing authorized SSH connection):
+The owner's Hostinger VPS is `srv2033748.hstgr.cloud`, IP `2.25.192.109` observed on October 11, 2026. Docker Compose 2.40.3, `generated_default` shared BTCPay nginx-proxy network, and running BTCPay/Bitcoin Core/NBXplorer containers were confirmed with VPS terminal screenshots. Repo was cloned at `/opt/bitc/repo`; approximately 14 MB of site files are staged in `/opt/bitc/public`.
+
+A read-only GitHub Actions public check on 2026-10-11 showed:
+- `https://bitcmining.tech` and `/checkout/` return Hostinger **parked domain** HTML at `2.57.91.91`.
+- `https://pay.bitcmining.tech` reaches the BTCPay login at `2.25.192.109` via HTTPS.
+- `https://bitcmining.tech/api/health` is **not** a working API; it currently returns parking HTML.
+
+**Never** change the `pay` DNS A record, remove BTCPay containers or configure another nginx to bind host ports 80/443. The existing BTCPay `nginx` owns those ports. Our storefront must join its verified network `generated_default` using the existing nginx-proxy and Let's Encrypt companion.
+
+## Prerequisites
+
+1. Back up existing BTCPay configuration and wallet recovery material securely. Do not share or paste seeds or API keys in chat.
+2. Confirm the exact merchant-approved catalog SKU variants, USD price and shipping terms. Add exact entries to `BITC_CATALOG_JSON` in the private env file. Unknown SKUs are deliberately blocked.
+3. BTCPay private scoped API key must have **Create an invoice** and **View invoices** on BITC Mining only (already tested for viewing in the current user's VPS terminal).
+4. Configure `/etc/bitc/bitc.env` as root (permissions 600) with: `BTCPAY_URL`, `BTCPAY_API_KEY`, `BTCPAY_STORE_ID`, `BITC_ORDER_ENCRYPTION_KEY`, and `BITC_CATALOG_JSON`. No Supabase and **no webhook** needed. See `api/README.md`.
+5. Generate encryption key privately using `openssl rand -hex 32` and make a **secure, separate offline backup**. Never post the key or include it in screenshots.
+6. Check DNS A records for `@` and `www` and any AAAA conflicts. Change `@` from parking IP to the current verified VPS IP **after** the storefront container is running and the proxy configured. `www` can CNAME to `@`, if appropriate for your Hostinger zone; don't modify `pay`.
+
+## Read-only preflight
+
+On the VPS as root:
 
 ```bash
-sudo -i
-cd /opt/bitc/repo  # use the actual checkout path; do not guess if different
+cd /opt/bitc/repo
 bash deploy/hostinger/preflight.sh
 ```
 
-The preflight is **read-only**. It lists running containers, published ports, DNS, and the Docker networks attached to the existing BTCPay nginx proxy. If `jq` is missing from the old BTCPay installation, resolve that issue in the BTCPay installation *before* publishing. Check mainnet wallet/Bitcoin Core/NBXplorer sync. The IP used earlier was `2.25.192.109` but is **historical, not verified current**.
+Confirm nginx-proxy and the correct network before proceeding.
 
-The BTCPay Docker proxy normally owns ports **80/443**. **Do not** install a second public nginx, bind those ports again, change BTCPay Docker generated compose files, or repoint the `pay.bitcmining.tech` domain blindly. This integration registers the storefront with the *existing* nginx-proxy through its verified shared Docker network (VIRTUAL_HOST and LETSENCRYPT_HOST). See https://docs.btcpayserver.org/Docker/networking/ for current details.
-
-Both `bitcmining.tech` and `www.bitcmining.tech` need DNS configured for the VPS and an HTTPS certificate issued by the running ACME/Let's Encrypt proxy. DNS/certificates and existing BTCPay nginx network must be inspected before launch.
-
-**Verified public network state on October 11, 2026** (read-only GitHub Actions run [38161984997](https://github.com/paulosoaresgit/bitc/actions/runs/38161984997)):
-- `bitcmining.tech` resolved to Hostinger parking IP `2.57.91.91`, returning the title `Parked Domain name on Hostinger DNS system` on both homepage and checkout (HTTP 200 parking, **NOT** a functioning store).
-- `pay.bitcmining.tech` resolved to VPS IP `2.25.192.109` and successfully served the BTCPay login screen over verified HTTPS.
-- In Hostinger's DNS zone, **replace the root `@` A record** targeting `2.57.91.91` with the confirmed currently assigned VPS IP (`2.25.192.109` at the time of audit). Set `www` CNAME to `@` or A to that same VPS IP. Check for conflicting `AAAA` records. **Preserve** the existing `pay` record. Avoid duplicate conflicting A records. Apply domain changes only after storefront container is attached to the BTCPay proxy network; HTTPS may take time to issue.
-- Don't edit DNS if the VPS IP differs on Hostinger hPanel at the time of change.
-
-
-## 2. Private environment and order database
-
-Set up a **dedicated** BITC Supabase project, execute `api/migrations/001_bitc_orders.sql`, and verify the `bitc_orders` table has RLS on with no anon/authenticated access.
-
-Create `/etc/bitc/bitc.env` on the VPS (owned by root, `chmod 600`). Never commit or paste secrets into GitHub or client HTML:
-
-```dotenv
-BTCPAY_URL=https://pay.bitcmining.tech
-BTCPAY_API_KEY=REPLACE_IN_PRIVATE_VPS_FILE
-BTCPAY_STORE_ID=REPLACE_IN_PRIVATE_VPS_FILE
-BTCPAY_WEBHOOK_SECRET=REPLACE_IN_PRIVATE_VPS_FILE
-BITC_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
-BITC_SUPABASE_SERVICE_KEY=REPLACE_IN_PRIVATE_VPS_FILE
-BITC_CATALOG_JSON={"CONFIRMED_VARIANT_ID":{"title":"Exact product and variant","cents":11999}}
-```
-
-`BITC_CATALOG_JSON` values are examples only. You must confirm all **actual authorized store prices**, variant IDs and inventory before setting a production catalog. Missing SKUs are deliberately blocked by the backend. Initial add-on SKUs are `reco-cards` USD 18 and `reco-gold-nugget` USD 36. Do not accept prices sent by the browser.
-
-## 3. Deploy in the current VPS
-
-Clone/fetch your repo into `/opt/bitc/repo` (or use its existing checked-out path), and select the reviewed code. Identify the *actual* existing nginx-proxy Docker network from the preflight output. Deploy only **after** you've confirmed all prerequisites above:
+## Publish (after prerequisites only)
 
 ```bash
-sudo -i
 cd /opt/bitc/repo
-export BTCPAY_PROXY_NETWORK="PASTE_VERIFIED_EXISTING_PROXY_NETWORK"
-export LETSENCRYPT_EMAIL="you@example.com"
+git pull --ff-only origin fix/btcpay-server-pricing-checkout
+export BTCPAY_PROXY_NETWORK=generated_default
+export LETSENCRYPT_EMAIL=YOUR_REAL_OPERATIONAL_EMAIL
 bash deploy/hostinger/publish.sh --publish
 ```
 
-The script refuses to publish if the proxy network, required environment keys or private database setup file are missing. It copies only storefront assets to `/opt/bitc/public`, builds a private Node API container on port 10000 and connects the storefront container to the existing BTCPay nginx-proxy network. **Neither container publishes host ports 80/443**. No BTCPay container is restarted by this script. It does not install or alter Docker or BTCPay.
+**Important:** This is a privileged production deployment. Do not run it until the DNS, approved catalog and BTCPay invoice information have been checked. The script refuses missing values/placeholder secrets and ensures the existing nginx-proxy is attached to the shared network. It creates *only* the new BITC Compose project (private Node API, static Nginx), without binding 80/443 on the host and without restarting existing BTCPay services.
 
-The on-site checkout calls same-origin `POST /api/quote` and `POST /api/create-btcpay-invoice`. BTCPay signed webhook endpoint: `https://bitcmining.tech/api/btcpay-webhook`. Configure those webhook events in BTCPay: processing, settled, invalid and expired. Its secret must match the private file. `GET https://bitcmining.tech/api/health` checks presence of settings, **not** wallet readiness or actual processing.
+After deployment, `GET /api/health` should report `btcpayConfigured: true` and `orderEncryptionConfigured: true`. This is **configuration presence only**, not proof of successful wallet payments. The payment endpoint is `POST /api/create-btcpay-invoice` after a server quote at `POST /api/quote`.
 
-## 4. Mandatory acceptance tests before ads and real customers
+## Merchant fulfillment without a database
 
-- Confirm TLS and storefront on `bitcmining.tech`, BTCPay remains healthy at `pay.bitcmining.tech`, and no original store/third-party checkout captures orders.
-- Verify checkout rejects changed client prices, unknown SKUs, invalid quantities, invalid shipping and stale quote.
-- Verify genuine invoice amount/URL, BTC wallet QR/address and Bitcoin network confirmations with an authorized minimal test payment or BTCPay test network.
-- Verify webhook signature, invoice reconciliation, settled order stored securely, expired/unpaid not marked paid, repeated events are idempotent.
-- Verify successful order does not grant fulfillment before `Settled`; preserve invoice link and record.
-- Test refund, error, recovery, email and fulfillment operations separately. No real payment was conducted when preparing these files.
+Invoice records, payment state and encrypted address/cart metadata remain in BTCPay. From `/opt/bitc/repo/deploy/hostinger`:
 
-If the previous Hostinger installation is incomplete or the domain is parked, complete it first. **Do not treat this README as a claim of production deployment.**
+```bash
+docker compose exec -T api node order-read.js ACTUAL_INVOICE_ID
+```
+
+This uses the private environment inside the API container to inspect and decrypt the order and marks `PAID` **only** for settled invoices without exceptional flags. No webhook required, but **shipments are manual**. Do not screenshot the result: it contains buyer information. For daily operations, inspect BTCPay invoice statuses and run the lookup for each paid invoice; automate later only if a secure order management system is added.
+
+## Launch acceptance criteria
+
+- Public website, catalogue, cart, checkout HTTPS working (not parked domain).
+- BTCPay login remains accessible on its separate `pay` hostname.
+- Merchant-approved prices and shipping terms match server catalog and checkout. Unknown/mismatched SKUs cannot charge.
+- Each order creates a unique invoice with correct USD and BTC values; QR and destination are generated by BTCPay.
+- Invoice metadata really stores encrypted buyer/address/item data, and merchant CLI can decrypt it after payment.
+- Test settled, expired, partial, overpaid and late invoice cases. Never ship unpaid or exceptional invoices.
+- Order handling, shipping notifications, refund policies and backup/restore procedures are merchant-approved before accepting real customers.
+- No live payment has been performed by this code change.
+
+No additional Supabase project, PostgreSQL order DB or webhook required for this manual checkout model.
