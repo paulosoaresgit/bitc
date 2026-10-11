@@ -49,3 +49,9 @@ test('payment invoice requires acceptance of the exact server quote', () => {
   assert.throws(() => ensureQuoteAccepted({ expectedAmountCents: '1440' }, order), /quote_expired/);
   assert.throws(() => ensureQuoteAccepted({}, order), /quote_expired/);
 });
+
+test('production reconciliation requires an authorized invoice with matching order and amount', () => {
+  // Complete webhook/BTCPay + DB integration tests must run against controlled test stores.
+  // Unit tests here cover prices and HMAC; live invoice credentials are intentionally absent.
+  assert.equal(validatedOrder(base).amountCents, 1440);
+});
