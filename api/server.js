@@ -5,9 +5,8 @@ const PORT = Number(process.env.PORT || 10000);
 const BTCPAY_URL = (process.env.BTCPAY_URL || 'https://pay.bitcmining.tech').replace(/\/+$/, '');
 const API_KEY = process.env.BTCPAY_API_KEY || '';
 const STORE_ID = process.env.BTCPAY_STORE_ID || '';
-const WEBHOOK_SECRET = process.env.BTCPAY_WEBHOOK_SECRET || '';
-const SUPABASE_URL = (process.env.BITC_SUPABASE_URL || '').replace(/\/+$/, '');
-const SUPABASE_KEY = process.env.BITC_SUPABASE_SERVICE_KEY || '';
+const ORDER_ENCRYPTION_KEY = process.env.BITC_ORDER_ENCRYPTION_KEY || '';
+
 const ALLOWED = new Set([
   'https://bitc-mining-preview.onrender.com',
   'https://bitcmining.tech',
@@ -105,20 +104,36 @@ function validatedCustomer(data) {
   }
   return customer;
 }
-async function db(path, method, body, prefer = '') {
-  if (!SUPABASE_URL || !SUPABASE_KEY) throw new Error('order_database_not_configured');
-  const headers = { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json' };
-  if (prefer) headers.Prefer = prefer;
-  const response = await fetch(SUPABASE_URL + '/rest/v1/' + path, {
-    method, headers, ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
-    signal: AbortSignal.timeout(12000)
-  });
-  const result = await response.text();
-  if (!response.ok) {
-    console.error('order_database_error', response.status, result.slice(0, 300));
-    throw new Error('order_database_error');
-  }
-  return result ? JSON.parse(result) : null;
+// No external order database: the invoice stores private order details in encrypted metadata.
+// Keep the 32-byte AES key ONLY in /etc/bitc/bitc.env, never in the browser or GitHub.
+function keyBytes(hexKey = ORDER_ENCRYPTION_KEY) {
+  if (!/^[a-fA-F0-9]{64}$/.test(hexKey)) throw new Error('order_encryption_not_configured');
+  return Buffer.from(hexKey, 'hex');
+}
+function encryptOrder(orderId, orderData, hexKey = ORDER_ENCRYPTION_KEY) {
+  const iv = crypto.randomBytes(12);
+  const cipher = crypto.createCipheriv('aes-256-gcm', keyBytes(hexKey), iv);
+  cipher.setAAD(Buffer.from(orderId, 'utf8'));
+  const ciphertext = Buffer.concat([cipher.update(JSON.stringify(orderData), 'utf8'), cipher.final()]);
+  return ['v1', iv.toString('base64url'), cipher.getAuthTag().toString('base64url'),
+    ciphertext.toString('base64url')].join('.');
+}
+function decryptOrder(orderId, data, hexKey = ORDER_ENCRYPTION_KEY) {
+  const p = String(data || '').split('.');
+  if (p.length !== 4 || p[0] !== 'v1') throw new Error('invalid_order_record');
+  const iv = Buffer.from(p[1], 'base64url'), tag = Buffer.from(p[2], 'base64url');
+  if (iv.length !== 12 || tag.length !== 16) throw new Error('invalid_order_record');
+  const decipher = crypto.createDecipheriv('aes-256-gcm', keyBytes(hexKey), iv);
+  decipher.setAAD(Buffer.from(orderId, 'utf8'));
+  decipher.setAuthTag(tag);
+  return JSON.parse(Buffer.concat([decipher.update(Buffer.from(p[3], 'base64url')),
+    decipher.final()]).toString('utf8'));
+}
+function paymentState(invoice) {
+  // Do not ship until BTCPay itself reports a fully settled invoice.
+  if (invoice.status === 'Expired' || invoice.status === 'Invalid') return 'NOT_PAID';
+  if (invoice.status !== 'Settled') return 'AWAITING_PAYMENT';
+  return (!invoice.additionalStatus || invoice.additionalStatus === 'None') ? 'PAID' : 'REVIEW';
 }
 async function btcpay(path, method = 'GET', payload) {
   const response = await fetch(BTCPAY_URL + '/api/v1/stores/' + encodeURIComponent(STORE_ID) + path, {
@@ -134,52 +149,6 @@ async function btcpay(path, method = 'GET', payload) {
   }
   return JSON.parse(result);
 }
-function signatureValid(raw, received) {
-  if (!WEBHOOK_SECRET || !/^sha256=[a-f0-9]{64}$/.test(received)) return false;
-  const expected = 'sha256=' + crypto.createHmac('sha256', WEBHOOK_SECRET).update(raw).digest('hex');
-  return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(received));
-}
-function verifiedInvoiceStatus(invoice, saved, invoiceId) {
-  const invoiceCents = Math.round(Number(invoice.amount) * 100);
-  if (invoice.id !== invoiceId || invoice.metadata?.orderId !== saved.id ||
-      invoice.currency !== saved.currency || !Number.isSafeInteger(invoiceCents) ||
-      invoiceCents !== saved.amount_cents) {
-    throw new Error('invoice_order_mismatch');
-  }
-  const mapped = { New: 'invoice_created', Processing: 'processing', Settled: 'settled',
-    Expired: 'expired', Invalid: 'invalid' }[invoice.status];
-  if (!mapped) throw new Error('unknown_invoice_status');
-  const extra = invoice.additionalStatus || 'None';
-  // Exceptional payments must not trigger automatic fulfillment.
-  return !['None', 'PaidOver'].includes(extra) ? 'review' : mapped;
-}
-async function webhook(req, res) {
-  const raw = await rawBody(req);
-  if (!signatureValid(raw, req.headers['btcpay-sig'] || '')) return respond(res, 401, { error: 'invalid_signature' });
-  const event = JSON.parse(raw.toString('utf8'));
-  const invoiceId = typeof event.invoiceId === 'string' ? event.invoiceId : '';
-  if (!invoiceId || !/^[a-zA-Z0-9_-]{1,150}$/.test(invoiceId)) return respond(res, 400, { error: 'invalid_invoice_id' });
-  const invoice = await btcpay('/invoices/' + encodeURIComponent(invoiceId));
-  const status = invoice.status;
-  if (!['New','Processing','Settled','Expired','Invalid'].includes(status)) return respond(res, 200, { ok: true });
-  const rows = await db('bitc_orders?invoice_id=eq.' + encodeURIComponent(invoiceId) +
-    '&select=id,amount_cents,currency,status', 'GET');
-  // The invoice can settle before our write of invoice_id has completed. Returning 503
-  // makes BTCPay retry instead of permanently losing the settlement notification.
-  if (!Array.isArray(rows) || rows.length !== 1) return respond(res, 503, { error: 'order_not_ready' });
-  const saved = rows[0];
-  let next;
-  try {
-    next = verifiedInvoiceStatus(invoice, saved, invoiceId);
-  } catch {
-    console.error('invoice_order_mismatch', invoiceId);
-    return respond(res, 409, { error: 'invoice_order_mismatch' });
-  }
-  if (['settled', 'review'].includes(saved.status)) return respond(res, 200, { ok: true });
-  await db('bitc_orders?invoice_id=eq.' + encodeURIComponent(invoiceId) + '&status=not.in.(settled,review)',
-    'PATCH', { status: next, updated_at: new Date().toISOString() });
-  return respond(res, 200, { ok: true });
-}
 const server = http.createServer(async (req, res) => {
   const origin = req.headers.origin || '';
   const pathname = new URL(req.url, 'http://localhost').pathname;
@@ -192,16 +161,7 @@ const server = http.createServer(async (req, res) => {
   }
   if ((pathname === '/health' || pathname === '/api/health') && req.method === 'GET') {
     return respond(res, 200, { ok: true, btcpayConfigured: Boolean(API_KEY && STORE_ID),
-      orderStorageConfigured: Boolean(SUPABASE_URL && SUPABASE_KEY), webhookConfigured: Boolean(WEBHOOK_SECRET) }, origin);
-  }
-  if (pathname === '/api/btcpay-webhook' && req.method === 'POST') {
-    try {
-      if (!API_KEY || !STORE_ID || !SUPABASE_URL || !SUPABASE_KEY) return respond(res, 503, { error: 'webhook_not_configured' });
-      return await webhook(req, res);
-    } catch (error) {
-      console.error('webhook_failed', error);
-      return respond(res, 500, { error: 'webhook_failed' });
-    }
+      orderStorage: 'encrypted_btcpay_invoice_metadata', orderEncryptionConfigured: /^[a-fA-F0-9]{64}$/.test(ORDER_ENCRYPTION_KEY) }, origin);
   }
   if (pathname === '/api/quote' && req.method === 'POST') {
     if (!ALLOWED.has(origin)) return respond(res, 403, { error: 'origin_not_allowed' }, origin);
@@ -222,7 +182,7 @@ const server = http.createServer(async (req, res) => {
   }
   if (pathname !== '/api/create-btcpay-invoice' || req.method !== 'POST') return respond(res, 404, { error: 'not_found' }, origin);
   if (!ALLOWED.has(origin)) return respond(res, 403, { error: 'origin_not_allowed' }, origin);
-  if (!API_KEY || !STORE_ID || !WEBHOOK_SECRET || !SUPABASE_URL || !SUPABASE_KEY) {
+  if (!API_KEY || !STORE_ID || !/^[a-fA-F0-9]{64}$/.test(ORDER_ENCRYPTION_KEY)) {
     return respond(res, 503, { error: 'checkout_not_configured' }, origin);
   }
   let id;
@@ -232,23 +192,30 @@ const server = http.createServer(async (req, res) => {
     ensureQuoteAccepted(body, order);
     const customer = validatedCustomer(body);
     id = crypto.randomUUID();
-    await db('bitc_orders', 'POST', {
-      id, status: 'pending', currency: 'USD', amount_cents: order.amountCents,
-      items: order.items, shipping_method: order.shipping, shipping_protection: order.shippingProtection,
-      customer
-    });
+    // BTCPay invoices are the sole payment/order record. No extra database required.
+    // Keep shipping PII encrypted even if invoice metadata is returned in a public receipt.
+    const privateOrder = {
+      version: 1, orderId: id, createdAt: new Date().toISOString(),
+      customer, items: order.items, shipping: order.shipping,
+      shippingProtection: order.shippingProtection,
+      amountCents: order.amountCents, currency: 'USD',
+      subtotalCents: order.subtotalCents, discountCents: order.discountCents,
+      protectionCents: order.protectionCents, shippingCents: order.shippingCents
+    };
     const invoice = await btcpay('/invoices', 'POST', {
       amount: (order.amountCents / 100).toFixed(2),
       currency: 'USD',
-      metadata: { orderId: id },
+      metadata: {
+        orderId: id,
+        itemDesc: order.items.map(x => x.title + ' x' + x.qty).join(' | ').slice(0, 250),
+        physical: true,
+        bitcOrderEncrypted: encryptOrder(id, privateOrder)
+      },
       checkout: { redirectURL: 'https://bitcmining.tech/checkout/success/', redirectAutomatically: false }
     });
     if (!invoice.id || !invoice.checkoutLink || new URL(invoice.checkoutLink).origin !== new URL(BTCPAY_URL).origin) {
       throw new Error('invalid_btcpay_invoice');
     }
-    await db('bitc_orders?id=eq.' + encodeURIComponent(id), 'PATCH', {
-      invoice_id: invoice.id, status: 'invoice_created', updated_at: new Date().toISOString()
-    });
     return respond(res, 200, { orderId: id, id: invoice.id, checkoutLink: invoice.checkoutLink,
       amountUSD: (order.amountCents / 100).toFixed(2), status: invoice.status }, origin);
   } catch (error) {
@@ -261,4 +228,4 @@ const server = http.createServer(async (req, res) => {
   }
 });
 if (process.env.NODE_ENV !== 'test') server.listen(PORT, () => console.log('BITC payment API listening on ' + PORT));
-export { validatedOrder, validatedCustomer, getCatalog, signatureValid, ensureQuoteAccepted, verifiedInvoiceStatus };
+export { validatedOrder, validatedCustomer, getCatalog, ensureQuoteAccepted, encryptOrder, decryptOrder, paymentState, keyBytes };
