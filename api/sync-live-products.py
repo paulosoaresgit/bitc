@@ -78,16 +78,29 @@ def page(path,p,approved,reason):
 <a class="back" href="/collections/all/">Browse all products →</a></section></main>
 <footer>© BITC Mining · <a href="/">Home</a> · <a href="/pages/contact-us/">Contact</a></footer>
 </body></html>"""
-entries={}
+# Keep previously verified products across incremental runs. Respect HTTP 429;
+# never bombard the upstream feed and never erase existing verified prices.
+cached=ROOT/"api/live-products.json"
+entries=json.loads(cached.read_text(encoding="utf-8")) if cached.exists() else {}
 errors={}
-with ThreadPoolExecutor(max_workers=5) as pool:
- tasks={pool.submit(grab,p):p for p in product_paths}
- for future in as_completed(tasks):
-  path,p,err=future.result()
-  if p:entries[path]=p
-  else:errors[path]=err
+remaining=[p for p in product_paths if p not in entries]
+rate_limited=False
+for i,path in enumerate(remaining):
+ if i>=45:
+  errors.update({p:"awaiting_next_authorized_import" for p in remaining[i:]})
+  break
+ key,p,err=grab(path)
+ if p:entries[key]=p
+ else:
+  errors[key]=err
+  if "429" in (err or ""):
+   rate_limited=True
+   errors.update({rest:"source_rate_limited" for rest in remaining[i+1:]})
+   break
+ time.sleep(1.2)
+
 print("LIVE_SYNC_FETCH="+json.dumps({"requested":len(product_paths),"fetched":len(entries),"failed":len(errors),"sampleErrors":list(errors.items())[:12]}))
-catalog=dict(BASE)
+catalog=dict(previous)
 collisions=[]
 mismatches=[]
 enabled=0
@@ -103,7 +116,9 @@ for path in product_paths:
  listed=old.get("priceCents")
  # If the captured page says a different minimum amount, do not silently charge more.
  mismatch=bool(listed is not None and minprice is not None and listed!=minprice)
- if mismatch:mismatches.append({"path":path,"capturedMin":listed,"feedMin":minprice})
+ if mismatch:
+  mismatches.append({"path":path,"capturedMin":listed,"feedMin":minprice})
+  for v in p["variants"]:catalog.pop(v["id"],None)
  # Do not charge with a newer price before both visible UI and catalog agree.
  approved=bool(available and not mismatch)
  conflict=False
