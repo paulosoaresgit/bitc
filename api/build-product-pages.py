@@ -42,7 +42,7 @@ for file in DOCS:
  source=file.read_text(encoding="utf-8")
  # The captured homepage also embeds some legitimate product links inside script HTML strings.
  # Include both DOM anchors and the original static href inventory used by the link audit.
- for match in re.finditer(r"""\\bhref\\s*=\\s*["']([^"']+)["']""",source,flags=re.IGNORECASE):
+ for match in re.finditer(r"""\bhref\s*=\s*["']([^"']+)["']""",source,flags=re.IGNORECASE):
   p=slug_url(match.group(1))
   if p:ALL_LINKS.add(p)
  soup=BeautifulSoup(source,"html.parser")
