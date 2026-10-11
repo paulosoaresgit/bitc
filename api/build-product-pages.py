@@ -39,7 +39,13 @@ def safe_image(s):
 def description(slug):
  return "Product information based on the existing storefront listing. Please confirm the exact configuration, availability and shipping details before ordering."
 for file in DOCS:
- soup=BeautifulSoup(file.read_text(encoding="utf-8"),"html.parser")
+ source=file.read_text(encoding="utf-8")
+ # The captured homepage also embeds some legitimate product links inside script HTML strings.
+ # Include both DOM anchors and the original static href inventory used by the link audit.
+ for match in re.finditer(r"""\\bhref\\s*=\\s*["']([^"']+)["']""",source,flags=re.IGNORECASE):
+  p=slug_url(match.group(1))
+  if p:ALL_LINKS.add(p)
+ soup=BeautifulSoup(source,"html.parser")
  for a in soup.select("a[href]"):
   p=slug_url(a.get("href"))
   if p: ALL_LINKS.add(p)
