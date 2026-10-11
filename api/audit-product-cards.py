@@ -36,3 +36,9 @@ stats={"totalProducts":len(rows),"hasTitle":sum(bool(x['title']) for x in rows.v
 print("PRODUCT_CARD_STATS="+json.dumps(stats,ensure_ascii=False))
 print("PRODUCT_CARD_EXAMPLES="+json.dumps(samples[:5],ensure_ascii=False))
 print("PRODUCT_CARD_GAPS="+json.dumps([x for x in rows.values() if not x['priceText'] or not x['variantId']][:12],ensure_ascii=False))
+
+for path in [root/'collections/all/index.html']:
+ soup=BeautifulSoup(path.read_text(encoding='utf-8'),'html.parser')
+ for a in soup.select('a[href*="/products/"]')[:4]:
+  chain=[{"tag":x.name,"classes":x.get("class",[]),"text":clean(x.get_text(" ",strip=True))[:90]} for x in [a,*list(a.parents)[:8]] if hasattr(x,'get')]
+  print('CARD_ANCESTORS='+json.dumps({"href":a.get("href"),"ancestors":chain},ensure_ascii=False))
