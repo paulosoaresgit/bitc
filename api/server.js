@@ -23,7 +23,7 @@ const DISCOUNT_PERCENT = 20;
 const BASE_CATALOG = JSON.parse(readFileSync(new URL('./catalog.json', import.meta.url), 'utf8'));
 function getCatalog() {
   for (const [id, item] of Object.entries(BASE_CATALOG)) {
-    if (!/^(\\d{8,17}|reco-cards|reco-gold-nugget)$/.test(id) || !item ||
+    if (!/^(\d{8,17}|reco-cards|reco-gold-nugget)$/.test(id) || !item ||
         !Number.isSafeInteger(item.cents) || item.cents < 50 || item.cents > 10000000 ||
         typeof item.title !== 'string' || !item.title.trim()) {
       throw new Error('invalid_server_catalog');
