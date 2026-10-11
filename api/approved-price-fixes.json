@@ -1,0 +1,37 @@
+{
+  "approvedAt": "2026-10-11",
+  "scope": "price_update_only_no_publication",
+  "currency": "USD",
+  "prices": [
+    {
+      "path": "/products/bitcoin-merch-goldshell-xt-box-580gh-s-xtm-miner",
+      "oldCents": 299999,
+      "newCents": 249999,
+      "variantId": "46689766244582"
+    },
+    {
+      "path": "/products/bitcoin-merch®-bitforge-nano-2-6th-s-w-power-supply",
+      "oldCents": 29999,
+      "newCents": 26999,
+      "variantId": "47658543448294"
+    },
+    {
+      "path": "/products/bitcoin-merch®-bitmain-antminer-z15-pro-860k-zcash-miner",
+      "oldCents": 1169999,
+      "newCents": 1099999,
+      "variantId": "47962542866662"
+    },
+    {
+      "path": "/products/bitcoin-merch®-braiins-axe-forge-4-8th-s-expandable-bitcoin-miner",
+      "oldCents": 44999,
+      "newCents": 39999,
+      "variantId": "48168332132582"
+    },
+    {
+      "path": "/products/bitcoin-merch®-the-sovereign-suite-100th-s-complete-home-mining-setup",
+      "oldCents": 599999,
+      "newCents": 399999,
+      "variantId": "47362108326118"
+    }
+  ]
+}
