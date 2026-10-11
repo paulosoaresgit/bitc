@@ -40,5 +40,7 @@ jobs:
           printf 'BTCPAY_URL=https://pay.bitcmining.tech\nBTCPAY_API_KEY=CI_PLACEHOLDER\nBTCPAY_STORE_ID=CI_PLACEHOLDER\nBTCPAY_WEBHOOK_SECRET=CI_PLACEHOLDER\nBITC_SUPABASE_URL=https://example.supabase.co\nBITC_SUPABASE_SERVICE_KEY=CI_PLACEHOLDER\nBITC_CATALOG_JSON={}\n' | sudo tee /etc/bitc/bitc.env >/dev/null
           sudo chmod 600 /etc/bitc/bitc.env
           sudo env BTCPAY_PROXY_NETWORK=ci-proxy LETSENCRYPT_EMAIL=ci@example.com docker compose -f deploy/hostinger/docker-compose.yml config --quiet
-      - name: Verify pricing and webhook security
+      - name: Verify prices and checkout security
         run: cd api && npm test
+      - name: Inspect storefront catalog markup
+        run: node api/audit-site-catalog.mjs
