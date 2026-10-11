@@ -4,7 +4,7 @@ import crypto from 'node:crypto';
 
 process.env.NODE_ENV = 'test';
 const { validatedOrder, validatedCustomer, ensureQuoteAccepted, paymentState,
-  encryptOrder, decryptOrder, keyBytes } = await import('./server.js');
+  encryptOrder, decryptOrder, keyBytes, getCatalog } = await import('./server.js');
 
 const base = { items: [{ id: 'reco-cards', qty: 1 }], shipping: 'dhl', shippingProtection: false };
 const TEST_KEY = crypto.randomBytes(32).toString('hex');
@@ -71,4 +71,14 @@ test('paid order classification never ships before BTCPay settlement', () => {
   assert.equal(paymentState({status:'Settled',additionalStatus:'PaidPartial'}),'REVIEW');
   assert.equal(paymentState({status:'Settled',additionalStatus:'PaidLate'}),'REVIEW');
   assert.equal(paymentState({status:'Settled',additionalStatus:'PaidOver'}),'REVIEW');
+});
+
+test('captured product pages map every option to a fixed server price', () => {
+  const cat = getCatalog();
+  assert.ok(Object.keys(cat).length >= 33);
+  assert.equal(cat['45599680004326'].cents, 11999);
+  assert.equal(cat['47340173164774'].cents, 79999);
+  assert.equal(cat['47012515250406'].cents, 89999);
+  const order=validatedOrder({...base,items:[{id:'45599680004326',qty:1}]});
+  assert.equal(order.amountCents,9599);
 });
