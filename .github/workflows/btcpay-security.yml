@@ -4,6 +4,7 @@ on:
     paths:
       - 'api/**'
       - 'assets/bm-checkout.js'
+      - 'deploy/hostinger/**'
       - '.github/workflows/btcpay-security.yml'
   push:
     branches:
@@ -26,5 +27,9 @@ jobs:
         run: |
           node --check api/server.js
           node --check assets/bm-checkout.js
+      - name: Check Hostinger deployment scripts
+        run: |
+          bash -n deploy/hostinger/preflight.sh
+          bash -n deploy/hostinger/publish.sh
       - name: Verify pricing and webhook security
         run: cd api && npm test
