@@ -1,4 +1,5 @@
 import http from 'node:http';
+import { readFileSync } from 'node:fs';
 import crypto from 'node:crypto';
 import { keyBytes, encryptOrder, decryptOrder, paymentState } from './order-utils.js';
 
@@ -17,22 +18,18 @@ const SHIPPING_CENTS = Object.freeze({ dhl: 0, fedex: 2499, ups: 2999 });
 const PROTECTION_CENTS = 1650;
 const DISCOUNT_PERCENT = 20;
 
-// Store-owned catalog. Never use browser-supplied prices to create invoices.
-// Additional approved SKUs/prices can be set in BITC_CATALOG_JSON on the backend.
-const BASE_CATALOG = {
-  'reco-cards': { title: 'Cardsmiths Crypto Currency Collectible Cards - 1 Pack', cents: 1800 },
-  'reco-gold-nugget': { title: 'Gold Nugget Lottery Miner', cents: 3600 }
-};
+// The captured storefront's canonical Shopify variant IDs/prices are checked in.
+// Never accept browser-provided prices or dynamic app-wide prices (which may be stale).
+const BASE_CATALOG = JSON.parse(readFileSync(new URL('./catalog.json', import.meta.url), 'utf8'));
 function getCatalog() {
-  const extras = process.env.BITC_CATALOG_JSON ? JSON.parse(process.env.BITC_CATALOG_JSON) : {};
-  const result = { ...BASE_CATALOG };
-  for (const [id, item] of Object.entries(extras)) {
-    if (!id || id.length > 350 || !item || !Number.isSafeInteger(item.cents) || item.cents <= 0 || !item.title) {
+  for (const [id, item] of Object.entries(BASE_CATALOG)) {
+    if (!/^(\\d{8,17}|reco-cards|reco-gold-nugget)$/.test(id) || !item ||
+        !Number.isSafeInteger(item.cents) || item.cents < 50 || item.cents > 10000000 ||
+        typeof item.title !== 'string' || !item.title.trim()) {
       throw new Error('invalid_server_catalog');
     }
-    result[id] = { title: String(item.title).slice(0, 200), cents: item.cents };
   }
-  return result;
+  return BASE_CATALOG;
 }
 function respond(res, status, body, origin = '') {
   if (ALLOWED.has(origin)) res.setHeader('Access-Control-Allow-Origin', origin);
