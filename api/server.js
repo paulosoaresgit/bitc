@@ -148,10 +148,27 @@ async function webhook(req, res) {
   const invoice = await btcpay('/invoices/' + encodeURIComponent(invoiceId));
   const status = invoice.status;
   if (!['New','Processing','Settled','Expired','Invalid'].includes(status)) return respond(res, 200, { ok: true });
+  const rows = await db('bitc_orders?invoice_id=eq.' + encodeURIComponent(invoiceId) +
+    '&select=id,amount_cents,currency,status', 'GET');
+  // The invoice can settle before our write of invoice_id has completed. Returning 503
+  // makes BTCPay retry instead of permanently losing the settlement notification.
+  if (!Array.isArray(rows) || rows.length !== 1) return respond(res, 503, { error: 'order_not_ready' });
+  const saved = rows[0];
+  const invoiceCents = Math.round(Number(invoice.amount) * 100);
+  if (invoice.id !== invoiceId || invoice.metadata?.orderId !== saved.id ||
+      invoice.currency !== saved.currency || !Number.isSafeInteger(invoiceCents) ||
+      invoiceCents !== saved.amount_cents) {
+    console.error('invoice_order_mismatch', invoiceId);
+    return respond(res, 409, { error: 'invoice_order_mismatch' });
+  }
+  if (['settled', 'review'].includes(saved.status)) return respond(res, 200, { ok: true });
   const mapped = { New: 'invoice_created', Processing: 'processing', Settled: 'settled', Expired: 'expired', Invalid: 'invalid' }[status];
-  // Never downgrade a settled order, even if a delayed webhook arrives.
-  await db('bitc_orders?invoice_id=eq.' + encodeURIComponent(invoiceId) + '&status=neq.settled',
-    'PATCH', { status: mapped, updated_at: new Date().toISOString() });
+  // BTCPay additionalStatus flags partial, late and exceptional payments.
+  // Do not automatically mark those as paid or fulfill them; manual review required.
+  const extra = invoice.additionalStatus || 'None';
+  const next = !['None', 'PaidOver'].includes(extra) ? 'review' : mapped;
+  await db('bitc_orders?invoice_id=eq.' + encodeURIComponent(invoiceId) + '&status=not.in.(settled,review)',
+    'PATCH', { status: next, updated_at: new Date().toISOString() });
   return respond(res, 200, { ok: true });
 }
 const server = http.createServer(async (req, res) => {
@@ -164,7 +181,7 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(204);
     return res.end();
   }
-  if (pathname === '/health' && req.method === 'GET') {
+  if ((pathname === '/health' || pathname === '/api/health') && req.method === 'GET') {
     return respond(res, 200, { ok: true, btcpayConfigured: Boolean(API_KEY && STORE_ID),
       orderStorageConfigured: Boolean(SUPABASE_URL && SUPABASE_KEY), webhookConfigured: Boolean(WEBHOOK_SECRET) }, origin);
   }
