@@ -1,51 +1,28 @@
 #!/usr/bin/env bash
-# Deliberately manual: run only after the read-only preflight and confirmed BTCPay wallet.
+# Manual, guarded deployment for the already-verified Hostinger BTCPay VPS.
 set -euo pipefail
 if [[ "${1:-}" != "--publish" ]]; then
-  echo "Usage: sudo BTCPAY_PROXY_NETWORK=<confirmed-network> LETSENCRYPT_EMAIL=<email> bash deploy/hostinger/publish.sh --publish" >&2
+  echo "Usage: as root, set BTCPAY_PROXY_NETWORK and LETSENCRYPT_EMAIL, then run publish.sh --publish" >&2
   exit 2
 fi
-[[ $(id -u) -eq 0 ]] || { echo "Run as root on the Hostinger VPS." >&2; exit 2; }
-: "${BTCPAY_PROXY_NETWORK:?Set the exact verified nginx-proxy Docker network name}"
-: "${LETSENCRYPT_EMAIL:?Set an operational email for TLS certificate renewal}"
+[[ "$(id -u)" -eq 0 ]] || { echo "Run as root on the Hostinger VPS." >&2; exit 2; }
+: "${BTCPAY_PROXY_NETWORK:?Set the actual existing BTCPay nginx network}"
+: "${LETSENCRYPT_EMAIL:?Set the real email for certificate renewal}"
 source_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
 env_file=/etc/bitc/bitc.env
-[[ -f "$env_file" ]] || { echo "Missing private credentials at $env_file (see README)." >&2; exit 2; }
-[[ $(stat -c '%a' "$env_file") == "600" ]] || { echo "$env_file must have chmod 600." >&2; exit 2; }
+[[ -f "$env_file" ]] || { echo "Missing $env_file." >&2; exit 2; }
+[[ "$(stat -c '%a' "$env_file")" == "600" ]] || { echo "$env_file must have chmod 600." >&2; exit 2; }
 for key in BTCPAY_URL BTCPAY_API_KEY BTCPAY_STORE_ID BITC_ORDER_ENCRYPTION_KEY BITC_CATALOG_JSON; do
   grep -qE "^${key}=.+" "$env_file" || { echo "Missing value: $key" >&2; exit 2; }
 done
-if grep -Eq 'REPLACE_IN_PRIVATE_VPS_FILE|YOUR_PROJECT|CONFIRMED_VARIANT_ID|PASTE_VERIFIED' "$env_file"; then
-  echo "Refusing to publish: private environment still contains example placeholders." >&2
+grep -qE '^BITC_ORDER_ENCRYPTION_KEY=[a-fA-F0-9]{64}$' "$env_file" || {
+  echo "BITC_ORDER_ENCRYPTION_KEY must be a 64-character hexadecimal key." >&2
+  exit 2
+}
+if grep -Eq 'REPLACE_IN_PRIVATE_VPS_FILE|YOUR_PROJECT|CONFIRMED_VARIANT_ID|PASTE_VERIFIED|YOUR_STORE_ID' "$env_file"; then
+  echo "Refusing to publish: example placeholders found in private credentials." >&2
   exit 2
 fi
-grep -qE '^BITC_ORDER_ENCRYPTION_KEY=[a-fA-F0-9]{64}
-docker network inspect "$BTCPAY_PROXY_NETWORK" >/dev/null
-proxy_found=false
-while IFS= read -r name; do
-  if [[ "$name" == nginx || "$name" == *nginx-proxy* ]]; then
-    if docker inspect --format '{{range $n, $v := .NetworkSettings.Networks}}{{println $n}}{{end}}' "$name" | grep -Fxq "$BTCPAY_PROXY_NETWORK"; then
-      proxy_found=true
-      break
-    fi
-  fi
-done < <(docker ps --format '{{.Names}}')
-[[ "$proxy_found" == true ]] || { echo "Refusing to deploy: no running BTCPay nginx proxy on $BTCPAY_PROXY_NETWORK." >&2; exit 2; }
-# Static published files are explicitly allowlisted: never expose source code or secrets.
-install -d -m 755 /opt/bitc/public
-stage="$(mktemp -d /opt/bitc/site.stage.XXXXXXXX)"
-trap 'rm -rf "$stage"' EXIT
-for item in index.html assets checkout collections products pages blogs; do
-  [[ -e "$source_dir/$item" ]] && cp -a "$source_dir/$item" "$stage/"
-done
-[[ -f "$stage/index.html" && -f "$stage/checkout/index.html" ]] || { echo "Storefront capture is incomplete." >&2; exit 2; }
-# Only update the dedicated BITC website folder, never the BTCPay directory.
-cp -a "$stage/." /opt/bitc/public/
-cd "$source_dir/deploy/hostinger"
-docker compose config --quiet
-docker compose up -d --build --wait
-echo "Deployment started. Before accepting orders, verify /api/health, BTCPay wallet, approved catalog and a complete checkout."
- "$env_file" || { echo "BITC_ORDER_ENCRYPTION_KEY must contain 64 hexadecimal characters." >&2; exit 2; }
 docker info >/dev/null
 docker network inspect "$BTCPAY_PROXY_NETWORK" >/dev/null
 proxy_found=false
@@ -57,18 +34,25 @@ while IFS= read -r name; do
     fi
   fi
 done < <(docker ps --format '{{.Names}}')
-[[ "$proxy_found" == true ]] || { echo "Refusing to deploy: no running BTCPay nginx proxy on $BTCPAY_PROXY_NETWORK." >&2; exit 2; }
-# Static published files are explicitly allowlisted: never expose source code or secrets.
+[[ "$proxy_found" == true ]] || {
+  echo "Existing BTCPay nginx proxy not found on $BTCPAY_PROXY_NETWORK; refusing to deploy." >&2
+  exit 2
+}
+[[ -f "$source_dir/index.html" && -f "$source_dir/checkout/index.html" ]] || {
+  echo "Required storefront pages missing." >&2
+  exit 2
+}
+# Only the static allowlisted site is copied; no credentials or source files become public.
 install -d -m 755 /opt/bitc/public
 stage="$(mktemp -d /opt/bitc/site.stage.XXXXXXXX)"
 trap 'rm -rf "$stage"' EXIT
 for item in index.html assets checkout collections products pages blogs; do
-  [[ -e "$source_dir/$item" ]] && cp -a "$source_dir/$item" "$stage/"
+  if [[ -e "$source_dir/$item" ]]; then
+    cp -a "$source_dir/$item" "$stage/"
+  fi
 done
-[[ -f "$stage/index.html" && -f "$stage/checkout/index.html" ]] || { echo "Storefront capture is incomplete." >&2; exit 2; }
-# Only update the dedicated BITC website folder, never the BTCPay directory.
 cp -a "$stage/." /opt/bitc/public/
 cd "$source_dir/deploy/hostinger"
 docker compose config --quiet
 docker compose up -d --build --wait
-echo "Deployment started. Before accepting orders, verify /api/health, BTCPay wallet, approved catalog and a complete checkout."
+echo "BITC containers started; verify proxy, HTTPS, approved prices, invoice QR and encrypted order before accepting sales."
