@@ -4,7 +4,7 @@ import crypto from 'node:crypto';
 
 process.env.NODE_ENV = 'test';
 process.env.BTCPAY_WEBHOOK_SECRET = 'local-test-secret';
-const { validatedOrder, validatedCustomer, signatureValid, ensureQuoteAccepted } = await import('./server.js');
+const { validatedOrder, validatedCustomer, signatureValid, ensureQuoteAccepted, verifiedInvoiceStatus } = await import('./server.js');
 
 const base = { items: [{ id: 'reco-cards', qty: 1 }], shipping: 'dhl', shippingProtection: false };
 test('invoice amount is calculated from server catalog, never from frontend price', () => {
@@ -50,8 +50,22 @@ test('payment invoice requires acceptance of the exact server quote', () => {
   assert.throws(() => ensureQuoteAccepted({}, order), /quote_expired/);
 });
 
-test('production reconciliation requires an authorized invoice with matching order and amount', () => {
-  // Complete webhook/BTCPay + DB integration tests must run against controlled test stores.
-  // Unit tests here cover prices and HMAC; live invoice credentials are intentionally absent.
-  assert.equal(validatedOrder(base).amountCents, 1440);
+test('signed webhook reconciliation validates invoice ID, order, currency and amount', () => {
+  const saved = { id: 'order-123', amount_cents: 1440, currency: 'USD', status: 'invoice_created' };
+  const invoice = { id: 'inv-123', metadata: { orderId: 'order-123' }, amount: '14.40',
+    currency: 'USD', status: 'Settled', additionalStatus: 'None' };
+  assert.equal(verifiedInvoiceStatus(invoice, saved, 'inv-123'), 'settled');
+  assert.throws(() => verifiedInvoiceStatus({...invoice, amount: '0.01'}, saved, 'inv-123'), /invoice_order_mismatch/);
+  assert.throws(() => verifiedInvoiceStatus({...invoice, currency: 'EUR'}, saved, 'inv-123'), /invoice_order_mismatch/);
+  assert.throws(() => verifiedInvoiceStatus({...invoice, metadata: {orderId: 'other'}}, saved, 'inv-123'), /invoice_order_mismatch/);
+  assert.throws(() => verifiedInvoiceStatus({...invoice, id: 'other'}, saved, 'inv-123'), /invoice_order_mismatch/);
+});
+test('partial or late BTCPay payments never mark the order as settled automatically', () => {
+  const saved = { id: 'order-123', amount_cents: 1440, currency: 'USD', status: 'invoice_created' };
+  const invoice = { id: 'inv-123', metadata: { orderId: 'order-123' }, amount: '14.40',
+    currency: 'USD', status: 'Settled', additionalStatus: 'PaidPartial' };
+  assert.equal(verifiedInvoiceStatus(invoice, saved, 'inv-123'), 'review');
+  assert.equal(verifiedInvoiceStatus({...invoice, additionalStatus: 'PaidLate'}, saved, 'inv-123'), 'review');
+  assert.equal(verifiedInvoiceStatus({...invoice, additionalStatus: 'PaidOver'}, saved, 'inv-123'), 'settled');
+  assert.equal(verifiedInvoiceStatus({...invoice, status: 'Expired', additionalStatus: 'None'}, saved, 'inv-123'), 'expired');
 });
