@@ -3,7 +3,7 @@
 Generated product pages are safe to preview. Never deploy without merchant review.
 """
 from concurrent.futures import ThreadPoolExecutor,as_completed
-import datetime,html,json,pathlib,re,sys,time,urllib.parse,urllib.request,urllib.error
+import datetime,html,json,os,pathlib,re,sys,time,urllib.parse,urllib.request,urllib.error
 
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 report=json.loads((ROOT/"api/product-page-report.json").read_text(encoding="utf-8"))
@@ -83,8 +83,9 @@ def page(path,p,approved,reason):
 # never bombard the upstream feed and never erase existing verified prices.
 cached=ROOT/"api/live-products.json"
 entries=json.loads(cached.read_text(encoding="utf-8")) if cached.exists() else {}
-errors={}
-remaining=[p for p in product_paths if p not in entries]
+offline=os.environ.get("BITC_CATALOG_OFFLINE")=="1"
+errors={p:"source_feed_unavailable" for p in product_paths if p not in entries} if offline else {}
+remaining=[] if offline else [p for p in product_paths if p not in entries]
 rate_limited=False
 for i,path in enumerate(remaining):
  if i>=200:
