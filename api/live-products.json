@@ -2818,5 +2818,2568 @@
     "capturedListingPriceCents": 39999,
     "priceMismatchWithListing": false,
     "availableVariants": 1
+  },
+  "/products/bitcoin-merch®-goldshell-sc5-pro-11th-s-blake2b-miner": {
+    "title": "Bitcoin Merch® - Goldshell SC5 Pro 11TH/s BLAKE2b Miner",
+    "variants": [
+      {
+        "id": "48208503963878",
+        "title": "Default Title",
+        "cents": 299999,
+        "available": false
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/SC5-PRO-Main01-1024.webp?v=1787080366",
+    "productId": "9820234875110",
+    "sourceUrl": "https://bitcoinmerch.com/products/bitcoin-merch%C2%AE-goldshell-sc5-pro-11th-s-blake2b-miner.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": false,
+    "capturedListingPriceCents": 299999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 0
+  },
+  "/products/bitcoin-merch®-hammer-miner-230mh-s-dc04-scrypt-doge-ltc": {
+    "title": "Bitcoin Merch® - Hammer Miner 230MH/s DC04 SCRYPT DOGE / LTC",
+    "variants": [
+      {
+        "id": "48168270889190",
+        "title": "Default Title",
+        "cents": 41999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/dc04444.png?v=1786562442",
+    "productId": "9814995960038",
+    "sourceUrl": "https://bitcoinmerch.com/products/bitcoin-merch%C2%AE-hammer-miner-230mh-s-dc04-scrypt-doge-ltc.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 41999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/bitcoin-merch®-hammer-miner-480mh-s-dc04-scrypt-doge-ltc": {
+    "title": "Bitcoin Merch® - Hammer Miner 440MH/s DC08 SCRYPT DOGE / LTC",
+    "variants": [
+      {
+        "id": "48168315453670",
+        "title": "Default Title",
+        "cents": 64999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/dc04444_d47c4983-a160-46f3-b437-7574cb4b3b32.png?v=1786562760",
+    "productId": "9815021519078",
+    "sourceUrl": "https://bitcoinmerch.com/products/bitcoin-merch%C2%AE-hammer-miner-480mh-s-dc04-scrypt-doge-ltc.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 64999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/bitcoin-merch®-hammer-miner-bc04-6th-s-bitcoin-miner-w-power-supply": {
+    "title": "Bitcoin Merch® - Hammer Miner BC04 6TH/s Bitcoin Miner w/ Power Supply",
+    "variants": [
+      {
+        "id": "48175169568998",
+        "title": "Default Title",
+        "cents": 34999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/bc04444.png?v=1786565949",
+    "productId": "9815091282150",
+    "sourceUrl": "https://bitcoinmerch.com/products/bitcoin-merch%C2%AE-hammer-miner-bc04-6th-s-bitcoin-miner-w-power-supply.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 34999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/bitcoin-merch®-hammer-miner-bc08-hydro-bitcoin-miner-w-power-supply": {
+    "title": "Bitcoin Merch® - Hammer Miner BC08 Hydro 12TH/s Bitcoin Miner w/ Power Supply",
+    "variants": [
+      {
+        "id": "48175156199654",
+        "title": "Default Title",
+        "cents": 69999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/bc0888.png?v=1786565760",
+    "productId": "9815084761318",
+    "sourceUrl": "https://bitcoinmerch.com/products/bitcoin-merch%C2%AE-hammer-miner-bc08-hydro-bitcoin-miner-w-power-supply.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 69999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/bitcoin-merch®-hammer-miner-glod-p3-12th-s-lottery-miner-w-power-supply": {
+    "title": "Bitcoin Merch® - Hammer Miner Glod P3 12TH/s Lottery Miner w/ Power Supply",
+    "variants": [
+      {
+        "id": "48161303167206",
+        "title": "Default Title",
+        "cents": 64999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/thorp33.webp?v=1786551680",
+    "productId": "9814919610598",
+    "sourceUrl": "https://bitcoinmerch.com/products/bitcoin-merch%C2%AE-hammer-miner-glod-p3-12th-s-lottery-miner-w-power-supply.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 64999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/bitcoin-merch®-hammer-miner-thor-p2-10th-s-lottery-miner-w-power-supply": {
+    "title": "Bitcoin Merch® - Hammer Miner Thor P2 10TH/s Lottery Miner w/ Power Supply",
+    "variants": [
+      {
+        "id": "48069276270822",
+        "title": "Default Title",
+        "cents": 58999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/thorp2_28ed1318-f49c-4782-8cb1-e5c443d0c9c0.png?v=1786552466",
+    "productId": "9787084701926",
+    "sourceUrl": "https://bitcoinmerch.com/products/bitcoin-merch%C2%AE-hammer-miner-thor-p2-10th-s-lottery-miner-w-power-supply.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 58999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/bitcoin-merch®-hammer-miner-thor-x1-3-2th-s-lottery-miner": {
+    "title": "Bitcoin Merch® - Hammer Miner Thor X1  3.2TH/s Lottery Miner w/ Power Supply",
+    "variants": [
+      {
+        "id": "47916378030310",
+        "title": "Default Title",
+        "cents": 32999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/b543330e-9b87-4415-8086-e08910135a8b.png?v=1786565613",
+    "productId": "9757088940262",
+    "sourceUrl": "https://bitcoinmerch.com/products/bitcoin-merch%C2%AE-hammer-miner-thor-x1-3-2th-s-lottery-miner.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 32999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/bitcoin-merch®-iceriver-xp-xp0-150gh-s": {
+    "title": "Bitcoin Merch® - IceRiver XP XP0 150GH/s",
+    "variants": [
+      {
+        "id": "47716978295014",
+        "title": "Default Title",
+        "cents": 139999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/iceriver-xp0-01.png?v=1779833382",
+    "productId": "9730108424422",
+    "sourceUrl": "https://bitcoinmerch.com/products/bitcoin-merch%C2%AE-iceriver-xp-xp0-150gh-s.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 139999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/bitcoin-merch®-legends-mystery-box": {
+    "title": "Bitcoin Merch® - Legends Mystery Box",
+    "variants": [
+      {
+        "id": "47392103792870",
+        "title": "Default Title",
+        "cents": 39999,
+        "available": false
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/NewLegendsBox.png?v=1772560381",
+    "productId": "9643066884326",
+    "sourceUrl": "https://bitcoinmerch.com/products/bitcoin-merch%C2%AE-legends-mystery-box.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": false,
+    "capturedListingPriceCents": null,
+    "priceMismatchWithListing": false,
+    "availableVariants": 0
+  },
+  "/products/bitcoin-merch®-magic-miner-40th-s-home-bitcoin-miner": {
+    "title": "Bitcoin Merch® - Magic Miner 40TH/s Home Bitcoin Miner",
+    "variants": [
+      {
+        "id": "48375207362790",
+        "title": "Default Title",
+        "cents": 84999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/magicmin.png?v=1789502405",
+    "productId": "9861933301990",
+    "sourceUrl": "https://bitcoinmerch.com/products/bitcoin-merch%C2%AE-magic-miner-40th-s-home-bitcoin-miner.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": null,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/bitcoin-merch®-mars-lander-3-all-in-one-lottery-miner-full-node-pre-order": {
+    "title": "Bitcoin Merch® - MARS LANDER 3 All-In-One Lottery Miner & Node",
+    "variants": [
+      {
+        "id": "48199344783590",
+        "title": "Air - 256GB",
+        "cents": 74999,
+        "available": true
+      },
+      {
+        "id": "48199344816358",
+        "title": "Full - 2TB",
+        "cents": 119999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/ml3333.png?v=1778109330",
+    "productId": "9611367874790",
+    "sourceUrl": "https://bitcoinmerch.com/products/bitcoin-merch%C2%AE-mars-lander-3-all-in-one-lottery-miner-full-node-pre-order.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 74999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 2
+  },
+  "/products/bitcoin-merch®-mars-lander-replacement-fan": {
+    "title": "Bitcoin Merch® MARS LANDER Replacement Fan",
+    "variants": [
+      {
+        "id": "43713269367014",
+        "title": "Default Title",
+        "cents": 899,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/products/IMG_5094-removebg-preview.png?v=1731347709",
+    "productId": "8173752320230",
+    "sourceUrl": "https://bitcoinmerch.com/products/bitcoin-merch%C2%AE-mars-lander-replacement-fan.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 899,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/bitcoin-merch®-mars-lander-solo-bitcoin-miner-up-to-250gh-s": {
+    "title": "Bitcoin Merch® - MARS LANDER V2 Lottery Miner",
+    "variants": [
+      {
+        "id": "44879531311334",
+        "title": "Compac F 250 - 275 GH/s",
+        "cents": 32999,
+        "available": true
+      },
+      {
+        "id": "44879531344102",
+        "title": "Compac A1 Double Speed 300 - 400 GH/s",
+        "cents": 39999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/AMS8825_copy.jpg?v=1750192679",
+    "productId": "7748292739302",
+    "sourceUrl": "https://bitcoinmerch.com/products/bitcoin-merch%C2%AE-mars-lander-solo-bitcoin-miner-up-to-250gh-s.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 32999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 2
+  },
+  "/products/bitcoin-merch®-nerdaxe-gaia-2-4th-s-bm1373-home-miner-w-power-supply": {
+    "title": "Bitcoin Merch® - Nerdaxe Gaia - 2.4TH/s BM1373 Home Miner w/ Power Supply",
+    "variants": [
+      {
+        "id": "47764332151014",
+        "title": "Default Title",
+        "cents": 39999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/nerdaxegaia.png?v=1781284778",
+    "productId": "9748732477670",
+    "sourceUrl": "https://bitcoinmerch.com/products/bitcoin-merch%C2%AE-nerdaxe-gaia-2-4th-s-bm1373-home-miner-w-power-supply.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 39999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/bitcoin-merch®-nerdoctaxe-hydro-12th-s-btc-miner-w-power-supply": {
+    "title": "Bitcoin Merch® - NerdOCTaxe Hydro 12TH/s BTC Miner w/ Power Supply",
+    "variants": [
+      {
+        "id": "47654859931878",
+        "title": "Default Title",
+        "cents": 59999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/IMG_0758.jpg?v=1780610374",
+    "productId": "9720468734182",
+    "sourceUrl": "https://bitcoinmerch.com/products/bitcoin-merch%C2%AE-nerdoctaxe-hydro-12th-s-btc-miner-w-power-supply.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 59999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/bitcoin-merch®-nerdqx-8th-s-home-miner-w-power-supply": {
+    "title": "Bitcoin Merch® - NerdQX 8TH/s Home Miner w/ Power Supply",
+    "variants": [
+      {
+        "id": "48123420573926",
+        "title": "Default Title",
+        "cents": 44999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/ChatGPTImageAug5_2026_11_07_14AM.png?v=1785958376",
+    "productId": "9807475933414",
+    "sourceUrl": "https://bitcoinmerch.com/products/bitcoin-merch%C2%AE-nerdqx-8th-s-home-miner-w-power-supply.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 44999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/bitcoin-merch®-nexus-s1-1-6th-s-home-miner-bm1373-w-power-supply": {
+    "title": "Bitcoin Merch® - NEXUS S1-1 6TH/s Home Miner BM1373 w/ Power Supply",
+    "variants": [
+      {
+        "id": "47911895924966",
+        "title": "Default Title",
+        "cents": 32499,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/nexuss1-1.png?v=1782238546",
+    "productId": "9756240740582",
+    "sourceUrl": "https://bitcoinmerch.com/products/bitcoin-merch%C2%AE-nexus-s1-1-6th-s-home-miner-bm1373-w-power-supply.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 32499,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/bitcoin-merch®-nexus-s1-10th-s-home-miner-w-power-supply": {
+    "title": "Bitcoin Merch® - NEXUS S1-2 - 10TH/s Home Miner w/ Power Supply",
+    "variants": [
+      {
+        "id": "47627837210854",
+        "title": "Default Title",
+        "cents": 59999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/unnamed_13.jpg?v=1781203475",
+    "productId": "9714206310630",
+    "sourceUrl": "https://bitcoinmerch.com/products/bitcoin-merch%C2%AE-nexus-s1-10th-s-home-miner-w-power-supply.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 59999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/bitcoin-merch®-openclaw-easy-ai-laptop": {
+    "title": "Bitcoin Merch® OpenClaw Easy AI Laptop",
+    "variants": [
+      {
+        "id": "47546284933350",
+        "title": "Default Title",
+        "cents": 59999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/AMS4517copy.jpg?v=1747865334",
+    "productId": "9692614557926",
+    "sourceUrl": "https://bitcoinmerch.com/products/bitcoin-merch%C2%AE-openclaw-easy-ai-laptop.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 59999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/bitcoin-merch®-poor-mans-mystery-box": {
+    "title": "Bitcoin Merch® - Poor Man's Mystery Box",
+    "variants": [
+      {
+        "id": "47392085868774",
+        "title": "Default Title",
+        "cents": 19999,
+        "available": false
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/NEW_Poor_Man_Mystery_Box.png?v=1772150043",
+    "productId": "9643055284454",
+    "sourceUrl": "https://bitcoinmerch.com/products/bitcoin-merch%C2%AE-poor-mans-mystery-box.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": false,
+    "capturedListingPriceCents": null,
+    "priceMismatchWithListing": false,
+    "availableVariants": 0
+  },
+  "/products/bitcoin-merch®-quiet-fan-upgrade-for-bitaxe": {
+    "title": "Bitcoin Merch® Quiet Fan Upgrade For Bitaxe (Supra / Gamma)",
+    "variants": [
+      {
+        "id": "45534097932518",
+        "title": "Premium Quiet Fan",
+        "cents": 3499,
+        "available": true
+      },
+      {
+        "id": "45661010231526",
+        "title": "Premium Quiet Fan 10mm",
+        "cents": 3499,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/71lyRpVR4OL.jpg?v=1731347724",
+    "productId": "8657010884838",
+    "sourceUrl": "https://bitcoinmerch.com/products/bitcoin-merch%C2%AE-quiet-fan-upgrade-for-bitaxe.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 3499,
+    "priceMismatchWithListing": false,
+    "availableVariants": 2
+  },
+  "/products/bitcoin-merch®-the-sovereign-suite-100th-s-complete-home-mining-setup": {
+    "title": "Bitcoin Merch® - The Sovereign Suite 115TH/s Complete Home Mining Setup",
+    "variants": [
+      {
+        "id": "47362108326118",
+        "title": "Default Title",
+        "cents": 399999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/final3.png?v=1787684158",
+    "productId": "9630957666534",
+    "sourceUrl": "https://bitcoinmerch.com/products/bitcoin-merch%C2%AE-the-sovereign-suite-100th-s-complete-home-mining-setup.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": false,
+    "capturedListingPriceCents": 599999,
+    "priceMismatchWithListing": true,
+    "availableVariants": 1
+  },
+  "/products/bitcoin-merch®-whale-mystery-box": {
+    "title": "Bitcoin Merch® - Whale Mystery Box",
+    "variants": [
+      {
+        "id": "47392125223142",
+        "title": "Default Title",
+        "cents": 79999,
+        "available": false
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/NewWhaleBox.png?v=1772560846",
+    "productId": "9643084185830",
+    "sourceUrl": "https://bitcoinmerch.com/products/bitcoin-merch%C2%AE-whale-mystery-box.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": false,
+    "capturedListingPriceCents": null,
+    "priceMismatchWithListing": false,
+    "availableVariants": 0
+  },
+  "/products/bitcoin-merch®-x-node-lite-pruned-bitcoin-node": {
+    "title": "Bitcoin Merch® - X Node LITE - Pruned Bitcoin Node",
+    "variants": [
+      {
+        "id": "47692188614886",
+        "title": "Default Title",
+        "cents": 59999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/node2_3025b915-4a15-4fb6-b3f6-c484df577510.png?v=1765905051",
+    "productId": "9725932830950",
+    "sourceUrl": "https://bitcoinmerch.com/products/bitcoin-merch%C2%AE-x-node-lite-pruned-bitcoin-node.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 59999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/bitcoin-merch®-zyber-12g-15th-s-high-performance-home-bitcoin-miner": {
+    "title": "Bitcoin Merch® - Zyber 12G 15TH/s+ High Performance Home Bitcoin Miner",
+    "variants": [
+      {
+        "id": "48364982042854",
+        "title": "Default Title",
+        "cents": 84999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/Zyber-12G-7_990x_c02e8427-963a-4596-9b8d-a3820aa820f1.webp?v=1789409987",
+    "productId": "9857919877350",
+    "sourceUrl": "https://bitcoinmerch.com/products/bitcoin-merch%C2%AE-zyber-12g-15th-s-high-performance-home-bitcoin-miner.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 84999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/bitcoin-metal-key-chain": {
+    "title": "Bitcoin Metal Keychain",
+    "variants": [
+      {
+        "id": "6002330533920",
+        "title": "Gold Plated",
+        "cents": 999,
+        "available": true
+      },
+      {
+        "id": "6002330566688",
+        "title": "Silver Plated",
+        "cents": 999,
+        "available": true
+      },
+      {
+        "id": "6002330599456",
+        "title": "Copper Plated",
+        "cents": 999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/products/s-l500_1024x1024_2x_231768a6-8fff-4c93-8d29-5b85872f3b03.png?v=1731347621",
+    "productId": "543808356384",
+    "sourceUrl": "https://bitcoinmerch.com/products/bitcoin-metal-key-chain.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 3
+  },
+  "/products/black-bitcoin-hat": {
+    "title": "Bitcoin Merch® - Orange Structured Flat Bill Hat",
+    "variants": [
+      {
+        "id": "40058612547733",
+        "title": "Default Title",
+        "cents": 3499,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/hat.jpg?v=1759188405",
+    "productId": "546780545056",
+    "sourceUrl": "https://bitcoinmerch.com/products/black-bitcoin-hat.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 3499,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/blockchain-the-complete-guide-for-bitcoin-cryptocurrency-mining-ethereum-book": {
+    "title": "BLOCKCHAIN: Guide For Beginners - Cryptocurrency Book",
+    "variants": [
+      {
+        "id": "12289540522074",
+        "title": "Default Title",
+        "cents": 2499,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/products/518Fu7fLxgL.jpg?v=1731347595",
+    "productId": "1344080347226",
+    "sourceUrl": "https://bitcoinmerch.com/products/blockchain-the-complete-guide-for-bitcoin-cryptocurrency-mining-ethereum-book.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 2499,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/blockchain-ultimate-guide-to-understanding-blockchain-bitcoin-cryptocurrencies-smart-contracts-and-the-future-of-money": {
+    "title": "Blockchain: Ultimate guide to understanding blockchain, bitcoin, cryptocurrencies, smart contracts and the future of money.",
+    "variants": [
+      {
+        "id": "12312156831834",
+        "title": "Default Title",
+        "cents": 1999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/products/51PsNd0ulzL.jpg?v=1731347596",
+    "productId": "1346213380186",
+    "sourceUrl": "https://bitcoinmerch.com/products/blockchain-ultimate-guide-to-understanding-blockchain-bitcoin-cryptocurrencies-smart-contracts-and-the-future-of-money.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 1999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/buy-the-antminer-s9-bitcoin-miner-bitmain-1": {
+    "title": "Bitcoin Merch® - Bitmain Antminer S9 13.5TH/s w Power Supply",
+    "variants": [
+      {
+        "id": "6070350544928",
+        "title": "Default Title",
+        "cents": 19999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/mining-now.s3.us-east-2.amazonaws-removebg-preview_1.png?v=1731347754",
+    "productId": "561821810720",
+    "sourceUrl": "https://bitcoinmerch.com/products/buy-the-antminer-s9-bitcoin-miner-bitmain-1.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 19999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/cardsmiths-crypto-currency-trading-cards": {
+    "title": "Bitcoin Merch® - Cardsmiths Crypto Currency Collectible Trading Cards - Win Real Crypto!",
+    "variants": [
+      {
+        "id": "48208497639654",
+        "title": "1 Pack",
+        "cents": 1999,
+        "available": true
+      },
+      {
+        "id": "48208497672422",
+        "title": "2 Packs",
+        "cents": 3699,
+        "available": true
+      },
+      {
+        "id": "48208497705190",
+        "title": "Megabox (8 Packs)",
+        "cents": 12999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/2packbox.webp?v=1786997007",
+    "productId": "9819835924710",
+    "sourceUrl": "https://bitcoinmerch.com/products/cardsmiths-crypto-currency-trading-cards.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 1999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 3
+  },
+  "/products/cat6-ethernet-cable": {
+    "title": "Cat6 RJ45 Ethernet Cable",
+    "variants": [
+      {
+        "id": "41207242162325",
+        "title": "10ft",
+        "cents": 999,
+        "available": true
+      },
+      {
+        "id": "41207209164949",
+        "title": "25ft",
+        "cents": 1499,
+        "available": true
+      },
+      {
+        "id": "41207209197717",
+        "title": "50ft",
+        "cents": 1999,
+        "available": true
+      },
+      {
+        "id": "41207209230485",
+        "title": "100ft",
+        "cents": 2499,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/products/71PaOS5TWrS._AC_SL1500.jpg?v=1731347650",
+    "productId": "7146157375637",
+    "sourceUrl": "https://bitcoinmerch.com/products/cat6-ethernet-cable.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 4
+  },
+  "/products/cryptoly-to-the-moon-and-beyond-bitcoin-board-game": {
+    "title": "CRYPTOLY - To The Moon And Beyond/ Bitcoin board game",
+    "variants": [
+      {
+        "id": "44843656610022",
+        "title": "Default Title",
+        "cents": 9999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/Main.jpg?v=1731347722",
+    "productId": "8632198398182",
+    "sourceUrl": "https://bitcoinmerch.com/products/cryptoly-to-the-moon-and-beyond-bitcoin-board-game.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 9999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/easy-miner-3-x-gekkoscience-compac-f-combo": {
+    "title": "Bitcoin Merch® - Easy Miner Laptop Kit - 3 x GekkoScience COMPAC F Laptop Combo BTC",
+    "variants": [
+      {
+        "id": "44097251705062",
+        "title": "LED / Compac F",
+        "cents": 99999,
+        "available": true
+      },
+      {
+        "id": "45437972807910",
+        "title": "LED / Compac A1",
+        "cents": 119999,
+        "available": true
+      },
+      {
+        "id": "44097251737830",
+        "title": "Performance / Compac F",
+        "cents": 99999,
+        "available": true
+      },
+      {
+        "id": "45437972840678",
+        "title": "Performance / Compac A1",
+        "cents": 119999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/AMS4556copy.jpg?v=1736276175",
+    "productId": "8371525976294",
+    "sourceUrl": "https://bitcoinmerch.com/products/easy-miner-3-x-gekkoscience-compac-f-combo.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 99999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 4
+  },
+  "/products/ebang-e9-plus-miner-bitcoin-mining-sha-256-algorithm-9th-s-13th-s": {
+    "title": "Bitcoin Merch® - Ebang E9+ Plus 9TH/s - 13TH/s Miner Bitcoin Mining SHA-256 algorithm",
+    "variants": [
+      {
+        "id": "39399836450965",
+        "title": "Default Title",
+        "cents": 7999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/products/uxr3epicp98tbs8tsotb.jpg?v=1731347660",
+    "productId": "6599253262485",
+    "sourceUrl": "https://bitcoinmerch.com/products/ebang-e9-plus-miner-bitcoin-mining-sha-256-algorithm-9th-s-13th-s.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 7999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/ellipal-titan-mini-compact-cold-wallet": {
+    "title": "ELLIPAL Titan Mini: Compact Cold Wallet",
+    "variants": [
+      {
+        "id": "45009273749734",
+        "title": "Default Title",
+        "cents": 12499,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/10t-fotor-bg-remover-20240601213119.png?v=1731347727",
+    "productId": "8701322166502",
+    "sourceUrl": "https://bitcoinmerch.com/products/ellipal-titan-mini-compact-cold-wallet.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": null,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/funny-cryptocurrency-stickers-50pcs": {
+    "title": "Funny Cryptocurrency Stickers - 50pcs",
+    "variants": [
+      {
+        "id": "42326455943398",
+        "title": "Default Title",
+        "cents": 999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/A1un8H7OKLL._AC_SL1500.jpg?v=1787159327",
+    "productId": "7560094580966",
+    "sourceUrl": "https://bitcoinmerch.com/products/funny-cryptocurrency-stickers-50pcs.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/futurebit-moonlander-2-litecoin-scrypt-miner-usb-stick": {
+    "title": "Bitcoin Merch® - FutureBit MoonLander 2 Dogecoin Litecoin Scrypt Miner USB Stick",
+    "variants": [
+      {
+        "id": "12398096875610",
+        "title": "Default Title",
+        "cents": 19999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/products/AGAE_131669156819759242XxF0G1JLqS.png?v=1731347646",
+    "productId": "1358312865882",
+    "sourceUrl": "https://bitcoinmerch.com/products/futurebit-moonlander-2-litecoin-scrypt-miner-usb-stick.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 19999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/gekkoscience-compac-a1-fan-upgrade-combo-up-to-500gh-s": {
+    "title": "Bitcoin Merch® - GekkoScience COMPAC A1 + Fan Upgrade COMBO 350 GHs",
+    "variants": [
+      {
+        "id": "45026377957606",
+        "title": "Performance",
+        "cents": 17999,
+        "available": true
+      },
+      {
+        "id": "45026377990374",
+        "title": "Color RGB",
+        "cents": 17999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/AMS8662_copy.jpg?v=1736275471",
+    "productId": "8561354572006",
+    "sourceUrl": "https://bitcoinmerch.com/products/gekkoscience-compac-a1-fan-upgrade-combo-up-to-500gh-s.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 17999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 2
+  },
+  "/products/gekkoscience-compac-f-fan-upgrade-combo-up-to-270gh-s": {
+    "title": "GekkoScience COMPAC F + Fan Upgrade - COMBO 250GH/s",
+    "variants": [
+      {
+        "id": "43558290555110",
+        "title": "Performance Fan",
+        "cents": 13499,
+        "available": true
+      },
+      {
+        "id": "43562180772070",
+        "title": "RGB Fan",
+        "cents": 13499,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/AMS8626_copy.jpg?v=1736278917",
+    "productId": "7341146276070",
+    "sourceUrl": "https://bitcoinmerch.com/products/gekkoscience-compac-f-fan-upgrade-combo-up-to-270gh-s.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 13499,
+    "priceMismatchWithListing": false,
+    "availableVariants": 2
+  },
+  "/products/goldnugget-nerdminer": {
+    "title": "Bitcoin Merch® - Gold Nugget Lottery Miner",
+    "variants": [
+      {
+        "id": "46781747593446",
+        "title": "Default Title",
+        "cents": 3999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/result_final.png?v=1787351864",
+    "productId": "9041819402470",
+    "sourceUrl": "https://bitcoinmerch.com/products/goldnugget-nerdminer.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 3999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/hdmi-gold-plated-cable-6-feet-high-speed-supports-ethernet": {
+    "title": "HDMI Cable - 6 Feet - High Speed - Supports Ethernet",
+    "variants": [
+      {
+        "id": "6448516431904",
+        "title": "Default Title",
+        "cents": 999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/products/61-efc-WyxL._SL1500.jpg?v=1731347594",
+    "productId": "637658005536",
+    "sourceUrl": "https://bitcoinmerch.com/products/hdmi-gold-plated-cable-6-feet-high-speed-supports-ethernet.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/intel-core-i5-9400-processor-9m-cache-up-to-4-10-ghz": {
+    "title": "Bitcoin Merch® 4 x GekkoScience COMPAC F with Fan Upgrade + 10-Port USB Hub - COMBO Up to 1.4+TH/s",
+    "variants": [
+      {
+        "id": "43568680534246",
+        "title": "Performance Fan / Compac F",
+        "cents": 59999,
+        "available": true
+      },
+      {
+        "id": "45108619903206",
+        "title": "Performance Fan / Compac A1",
+        "cents": 79999,
+        "available": true
+      },
+      {
+        "id": "43568680567014",
+        "title": "RGB Fan / Compac F",
+        "cents": 59999,
+        "available": true
+      },
+      {
+        "id": "45108619935974",
+        "title": "RGB Fan / Compac A1",
+        "cents": 79999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/AMS4300-Edit.jpg?v=1736281161",
+    "productId": "7170963112085",
+    "sourceUrl": "https://bitcoinmerch.com/products/intel-core-i5-9400-processor-9m-cache-up-to-4-10-ghz.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 59999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 4
+  },
+  "/products/ledger-nano-x-hardware-wallet": {
+    "title": "Ledger Nano X - Hardware Wallet",
+    "variants": [
+      {
+        "id": "40449010237589",
+        "title": "Default Title",
+        "cents": 19999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/products/ledger-nano-x-stand-up_grande_7a016731-824a-4d00-acec-40acfdfed9dc.png?v=1731347627",
+    "productId": "6941085073557",
+    "sourceUrl": "https://bitcoinmerch.com/products/ledger-nano-x-hardware-wallet.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": null,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/mein-coffee-27w-usb-c-power-bitcoin-merch": {
+    "title": "Bitcoin Merch® - Mein Coffee Silent 27W USB-C Miner: 1TH/s with WiFi & OLED Display",
+    "variants": [
+      {
+        "id": "45886127505638",
+        "title": "Standard",
+        "cents": 49999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/AMS0916copy.jpg?v=1747865351",
+    "productId": "8793013289190",
+    "sourceUrl": "https://bitcoinmerch.com/products/mein-coffee-27w-usb-c-power-bitcoin-merch.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 49999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/metal-novelty-crypto-coins": {
+    "title": "Metal Novelty Cryptocurrency Crypto Physical Commemorative Coin",
+    "variants": [
+      {
+        "id": "12410238402650",
+        "title": "Gold Bitcoin",
+        "cents": 999,
+        "available": true
+      },
+      {
+        "id": "12410238337114",
+        "title": "Silver Bitcoin",
+        "cents": 999,
+        "available": true
+      },
+      {
+        "id": "12410388775002",
+        "title": "Copper Bitcoin",
+        "cents": 999,
+        "available": true
+      },
+      {
+        "id": "12410373144666",
+        "title": "Gold Litecoin",
+        "cents": 999,
+        "available": true
+      },
+      {
+        "id": "12410355220570",
+        "title": "Silver Litecoin",
+        "cents": 999,
+        "available": true
+      },
+      {
+        "id": "12410343456858",
+        "title": "Silver Ethereum",
+        "cents": 999,
+        "available": true
+      },
+      {
+        "id": "12410348699738",
+        "title": "Gold Ripple",
+        "cents": 999,
+        "available": true
+      },
+      {
+        "id": "12410381992026",
+        "title": "Silver Ripple",
+        "cents": 999,
+        "available": true
+      },
+      {
+        "id": "12410371113050",
+        "title": "Copper Ripple",
+        "cents": 999,
+        "available": true
+      },
+      {
+        "id": "12410393886810",
+        "title": "Gold Troy Bitcoin",
+        "cents": 999,
+        "available": true
+      },
+      {
+        "id": "17336582602842",
+        "title": "Satoshi Gold Coin",
+        "cents": 999,
+        "available": true
+      },
+      {
+        "id": "40440681267349",
+        "title": "Red/Silver SHIB Shiba Inu Coin",
+        "cents": 1999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/products/1_MKAMBjidw_xcdA9holrOIg.jpg?v=1731347646",
+    "productId": "1359269265498",
+    "sourceUrl": "https://bitcoinmerch.com/products/metal-novelty-crypto-coins.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 12
+  },
+  "/products/microsd-pre-flashed-with-software-for-mars-lander": {
+    "title": "MicroSD Pre-Flashed with software for Mars Lander V2",
+    "variants": [
+      {
+        "id": "45244833267942",
+        "title": "Compac A1",
+        "cents": 2699,
+        "available": true
+      },
+      {
+        "id": "45244833333478",
+        "title": "Compac F",
+        "cents": 2699,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/products/micro-sd-card-vector-21709448_307541b2-d09f-4b78-be71-2599b647f152.jpg?v=1731347690",
+    "productId": "8053404696806",
+    "sourceUrl": "https://bitcoinmerch.com/products/microsd-pre-flashed-with-software-for-mars-lander.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 2699,
+    "priceMismatchWithListing": false,
+    "availableVariants": 2
+  },
+  "/products/mining-220v-travel-power-adapter-grounded-european-plug-type-e-f-outlet-adaptor-for-usa-to-europe-eu-socket": {
+    "title": "Mining 220V Travel Power Adapter Grounded European Plug - Type E/F Outlet, Adaptor for USA to Europe EU Socket",
+    "variants": [
+      {
+        "id": "40129917124757",
+        "title": "Default Title",
+        "cents": 539,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/products/1-14.jpg?v=1731347709",
+    "productId": "6857806315669",
+    "sourceUrl": "https://bitcoinmerch.com/products/mining-220v-travel-power-adapter-grounded-european-plug-type-e-f-outlet-adaptor-for-usa-to-europe-eu-socket.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 539,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/navidium-shipping-protection": {
+    "title": "Shipping Protection",
+    "variants": [
+      {
+        "id": "42851697983718",
+        "title": "Default",
+        "cents": 200,
+        "available": true
+      },
+      {
+        "id": "42851698016486",
+        "title": "0.75",
+        "cents": 75,
+        "available": true
+      },
+      {
+        "id": "42851698049254",
+        "title": "1.5",
+        "cents": 150,
+        "available": true
+      },
+      {
+        "id": "42851698082022",
+        "title": "2.25",
+        "cents": 225,
+        "available": true
+      },
+      {
+        "id": "42851698114790",
+        "title": "3",
+        "cents": 300,
+        "available": true
+      },
+      {
+        "id": "42851698147558",
+        "title": "3.75",
+        "cents": 375,
+        "available": true
+      },
+      {
+        "id": "42851698180326",
+        "title": "4.5",
+        "cents": 450,
+        "available": true
+      },
+      {
+        "id": "42851698213094",
+        "title": "5.25",
+        "cents": 525,
+        "available": true
+      },
+      {
+        "id": "42851698245862",
+        "title": "6",
+        "cents": 600,
+        "available": true
+      },
+      {
+        "id": "42851698278630",
+        "title": "6.75",
+        "cents": 675,
+        "available": true
+      },
+      {
+        "id": "42851698311398",
+        "title": "7.5",
+        "cents": 750,
+        "available": true
+      },
+      {
+        "id": "42851698344166",
+        "title": "8.25",
+        "cents": 825,
+        "available": true
+      },
+      {
+        "id": "42851698376934",
+        "title": "9",
+        "cents": 900,
+        "available": true
+      },
+      {
+        "id": "42851698409702",
+        "title": "9.75",
+        "cents": 975,
+        "available": true
+      },
+      {
+        "id": "42851698442470",
+        "title": "10.5",
+        "cents": 1050,
+        "available": true
+      },
+      {
+        "id": "42851698475238",
+        "title": "11.25",
+        "cents": 1125,
+        "available": true
+      },
+      {
+        "id": "42851698508006",
+        "title": "12",
+        "cents": 1200,
+        "available": true
+      },
+      {
+        "id": "42851698540774",
+        "title": "12.75",
+        "cents": 1275,
+        "available": true
+      },
+      {
+        "id": "42851698573542",
+        "title": "13.5",
+        "cents": 1350,
+        "available": true
+      },
+      {
+        "id": "42851698606310",
+        "title": "14.25",
+        "cents": 1425,
+        "available": true
+      },
+      {
+        "id": "42851698639078",
+        "title": "15",
+        "cents": 1500,
+        "available": true
+      },
+      {
+        "id": "42851698671846",
+        "title": "15.75",
+        "cents": 1575,
+        "available": true
+      },
+      {
+        "id": "42851698704614",
+        "title": "16.5",
+        "cents": 1650,
+        "available": true
+      },
+      {
+        "id": "42851698737382",
+        "title": "17.25",
+        "cents": 1725,
+        "available": true
+      },
+      {
+        "id": "42851698770150",
+        "title": "18",
+        "cents": 1800,
+        "available": true
+      },
+      {
+        "id": "42851698802918",
+        "title": "18.75",
+        "cents": 1875,
+        "available": true
+      },
+      {
+        "id": "42851698835686",
+        "title": "19.5",
+        "cents": 1950,
+        "available": true
+      },
+      {
+        "id": "42851698868454",
+        "title": "20.25",
+        "cents": 2025,
+        "available": true
+      },
+      {
+        "id": "42851698901222",
+        "title": "21",
+        "cents": 2100,
+        "available": true
+      },
+      {
+        "id": "42851698933990",
+        "title": "21.75",
+        "cents": 2175,
+        "available": true
+      },
+      {
+        "id": "42851698966758",
+        "title": "22.5",
+        "cents": 2250,
+        "available": true
+      },
+      {
+        "id": "42851698999526",
+        "title": "23.25",
+        "cents": 2325,
+        "available": true
+      },
+      {
+        "id": "42851699032294",
+        "title": "24",
+        "cents": 2400,
+        "available": true
+      },
+      {
+        "id": "42851699065062",
+        "title": "24.75",
+        "cents": 2475,
+        "available": true
+      },
+      {
+        "id": "42851699097830",
+        "title": "25.5",
+        "cents": 2550,
+        "available": true
+      },
+      {
+        "id": "42851699130598",
+        "title": "26.25",
+        "cents": 2625,
+        "available": true
+      },
+      {
+        "id": "42851699163366",
+        "title": "27",
+        "cents": 2700,
+        "available": true
+      },
+      {
+        "id": "42851699196134",
+        "title": "27.75",
+        "cents": 2775,
+        "available": true
+      },
+      {
+        "id": "42851699228902",
+        "title": "28.5",
+        "cents": 2850,
+        "available": true
+      },
+      {
+        "id": "42851699261670",
+        "title": "29.25",
+        "cents": 2925,
+        "available": true
+      },
+      {
+        "id": "42851699294438",
+        "title": "30",
+        "cents": 3000,
+        "available": true
+      },
+      {
+        "id": "42851699327206",
+        "title": "30.75",
+        "cents": 3075,
+        "available": true
+      },
+      {
+        "id": "42851699359974",
+        "title": "31.5",
+        "cents": 3150,
+        "available": true
+      },
+      {
+        "id": "42851699392742",
+        "title": "32.25",
+        "cents": 3225,
+        "available": true
+      },
+      {
+        "id": "42851699425510",
+        "title": "33",
+        "cents": 3300,
+        "available": true
+      },
+      {
+        "id": "42851699458278",
+        "title": "33.75",
+        "cents": 3375,
+        "available": true
+      },
+      {
+        "id": "42851699491046",
+        "title": "34.5",
+        "cents": 3450,
+        "available": true
+      },
+      {
+        "id": "42851699523814",
+        "title": "35.25",
+        "cents": 3525,
+        "available": true
+      },
+      {
+        "id": "42851699556582",
+        "title": "36",
+        "cents": 3600,
+        "available": true
+      },
+      {
+        "id": "42851699589350",
+        "title": "36.75",
+        "cents": 3675,
+        "available": true
+      },
+      {
+        "id": "42851699622118",
+        "title": "37.5",
+        "cents": 3750,
+        "available": true
+      },
+      {
+        "id": "42851699654886",
+        "title": "38.25",
+        "cents": 3825,
+        "available": true
+      },
+      {
+        "id": "42851699687654",
+        "title": "39",
+        "cents": 3900,
+        "available": true
+      },
+      {
+        "id": "42851699720422",
+        "title": "39.75",
+        "cents": 3975,
+        "available": true
+      },
+      {
+        "id": "42851699753190",
+        "title": "40.5",
+        "cents": 4050,
+        "available": true
+      },
+      {
+        "id": "42851699785958",
+        "title": "41.25",
+        "cents": 4125,
+        "available": true
+      },
+      {
+        "id": "42851699818726",
+        "title": "42",
+        "cents": 4200,
+        "available": true
+      },
+      {
+        "id": "42851699851494",
+        "title": "42.75",
+        "cents": 4275,
+        "available": true
+      },
+      {
+        "id": "42851699884262",
+        "title": "43.5",
+        "cents": 4350,
+        "available": true
+      },
+      {
+        "id": "42851699917030",
+        "title": "44.25",
+        "cents": 4425,
+        "available": true
+      },
+      {
+        "id": "42851699949798",
+        "title": "45",
+        "cents": 4500,
+        "available": true
+      },
+      {
+        "id": "42851699982566",
+        "title": "45.75",
+        "cents": 4575,
+        "available": true
+      },
+      {
+        "id": "42851700015334",
+        "title": "46.5",
+        "cents": 4650,
+        "available": true
+      },
+      {
+        "id": "42851700048102",
+        "title": "47.25",
+        "cents": 4725,
+        "available": true
+      },
+      {
+        "id": "42851700080870",
+        "title": "48",
+        "cents": 4800,
+        "available": true
+      },
+      {
+        "id": "42851700113638",
+        "title": "48.75",
+        "cents": 4875,
+        "available": true
+      },
+      {
+        "id": "42851700146406",
+        "title": "49.5",
+        "cents": 4950,
+        "available": true
+      },
+      {
+        "id": "42851700179174",
+        "title": "50.25",
+        "cents": 5025,
+        "available": true
+      },
+      {
+        "id": "42851700211942",
+        "title": "51",
+        "cents": 5100,
+        "available": true
+      },
+      {
+        "id": "42851700244710",
+        "title": "51.75",
+        "cents": 5175,
+        "available": true
+      },
+      {
+        "id": "42851700277478",
+        "title": "52.5",
+        "cents": 5250,
+        "available": true
+      },
+      {
+        "id": "42851700310246",
+        "title": "53.25",
+        "cents": 5325,
+        "available": true
+      },
+      {
+        "id": "42851700343014",
+        "title": "54",
+        "cents": 5400,
+        "available": true
+      },
+      {
+        "id": "42851700375782",
+        "title": "54.75",
+        "cents": 5475,
+        "available": true
+      },
+      {
+        "id": "42851700408550",
+        "title": "55.5",
+        "cents": 5550,
+        "available": true
+      },
+      {
+        "id": "42851700441318",
+        "title": "56.25",
+        "cents": 5625,
+        "available": true
+      },
+      {
+        "id": "42851700474086",
+        "title": "57",
+        "cents": 5700,
+        "available": true
+      },
+      {
+        "id": "42851700506854",
+        "title": "57.75",
+        "cents": 5775,
+        "available": true
+      },
+      {
+        "id": "42851700539622",
+        "title": "58.5",
+        "cents": 5850,
+        "available": true
+      },
+      {
+        "id": "42851700572390",
+        "title": "59.25",
+        "cents": 5925,
+        "available": true
+      },
+      {
+        "id": "42851700605158",
+        "title": "60",
+        "cents": 6000,
+        "available": true
+      },
+      {
+        "id": "42851700637926",
+        "title": "60.75",
+        "cents": 6075,
+        "available": true
+      },
+      {
+        "id": "42851700670694",
+        "title": "61.5",
+        "cents": 6150,
+        "available": true
+      },
+      {
+        "id": "42851700703462",
+        "title": "62.25",
+        "cents": 6225,
+        "available": true
+      },
+      {
+        "id": "42851700736230",
+        "title": "63",
+        "cents": 6300,
+        "available": true
+      },
+      {
+        "id": "42851700768998",
+        "title": "63.75",
+        "cents": 6375,
+        "available": true
+      },
+      {
+        "id": "42851700801766",
+        "title": "64.5",
+        "cents": 6450,
+        "available": true
+      },
+      {
+        "id": "42851700834534",
+        "title": "65.25",
+        "cents": 6525,
+        "available": true
+      },
+      {
+        "id": "42851700867302",
+        "title": "66",
+        "cents": 6600,
+        "available": true
+      },
+      {
+        "id": "42851700900070",
+        "title": "66.75",
+        "cents": 6675,
+        "available": true
+      },
+      {
+        "id": "42851700932838",
+        "title": "67.5",
+        "cents": 6750,
+        "available": true
+      },
+      {
+        "id": "42851700965606",
+        "title": "68.25",
+        "cents": 6825,
+        "available": true
+      },
+      {
+        "id": "42851700998374",
+        "title": "69",
+        "cents": 6900,
+        "available": true
+      },
+      {
+        "id": "42851701031142",
+        "title": "69.75",
+        "cents": 6975,
+        "available": true
+      },
+      {
+        "id": "42851701063910",
+        "title": "70.5",
+        "cents": 7050,
+        "available": true
+      },
+      {
+        "id": "42851701096678",
+        "title": "71.25",
+        "cents": 7125,
+        "available": true
+      },
+      {
+        "id": "42851701129446",
+        "title": "72",
+        "cents": 7200,
+        "available": true
+      },
+      {
+        "id": "42851701162214",
+        "title": "72.75",
+        "cents": 7275,
+        "available": true
+      },
+      {
+        "id": "42851701194982",
+        "title": "73.5",
+        "cents": 7350,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/products/demo-upload.png?v=1731347698",
+    "productId": "7757917716710",
+    "sourceUrl": "https://bitcoinmerch.com/products/navidium-shipping-protection.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 75,
+    "priceMismatchWithListing": false,
+    "availableVariants": 99
+  },
+  "/products/nerdminer2": {
+    "title": "Bitcoin Merch® - USB Lottery Miner",
+    "variants": [
+      {
+        "id": "45551650504934",
+        "title": "Standard",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "45551650537702",
+        "title": "Large Screen",
+        "cents": 3499,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/AMS4746.jpg?v=1764973513",
+    "productId": "8751841640678",
+    "sourceUrl": "https://bitcoinmerch.com/products/nerdminer2.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 2999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 2
+  },
+  "/products/nerdqaxe-plus-plus": {
+    "title": "Bitcoin Merch® - NerdQaxe++ 4.8-6TH/s Multi-Chip BTC Miner w Power Supply",
+    "variants": [
+      {
+        "id": "46034473844966",
+        "title": "Black / Standard 4.8TH/s",
+        "cents": 24999,
+        "available": true
+      },
+      {
+        "id": "47660501500134",
+        "title": "Black / Rev 6.1 6TH/s",
+        "cents": 29999,
+        "available": true
+      },
+      {
+        "id": "67607469719782",
+        "title": "Black / Rev 7",
+        "cents": 34999,
+        "available": true
+      },
+      {
+        "id": "46759964311782",
+        "title": "Snowblind Limited Edition / Standard 4.8TH/s",
+        "cents": 34999,
+        "available": false
+      },
+      {
+        "id": "47660501532902",
+        "title": "Snowblind Limited Edition / Rev 6.1 6TH/s",
+        "cents": 44999,
+        "available": false
+      },
+      {
+        "id": "67607469752550",
+        "title": "Snowblind Limited Edition / Rev 7",
+        "cents": 54999,
+        "available": false
+      },
+      {
+        "id": "46034473713894",
+        "title": "Orange / Standard 4.8TH/s",
+        "cents": 24999,
+        "available": true
+      },
+      {
+        "id": "47660501565670",
+        "title": "Orange / Rev 6.1 6TH/s",
+        "cents": 29999,
+        "available": true
+      },
+      {
+        "id": "67607469785318",
+        "title": "Orange / Rev 7",
+        "cents": 34999,
+        "available": true
+      },
+      {
+        "id": "46034473746662",
+        "title": "Blue / Standard 4.8TH/s",
+        "cents": 24999,
+        "available": true
+      },
+      {
+        "id": "47660501598438",
+        "title": "Blue / Rev 6.1 6TH/s",
+        "cents": 29999,
+        "available": true
+      },
+      {
+        "id": "67607469818086",
+        "title": "Blue / Rev 7",
+        "cents": 34999,
+        "available": true
+      },
+      {
+        "id": "46034473779430",
+        "title": "Red / Standard 4.8TH/s",
+        "cents": 24999,
+        "available": true
+      },
+      {
+        "id": "47660501631206",
+        "title": "Red / Rev 6.1 6TH/s",
+        "cents": 29999,
+        "available": true
+      },
+      {
+        "id": "67607469850854",
+        "title": "Red / Rev 7",
+        "cents": 34999,
+        "available": true
+      },
+      {
+        "id": "46034473812198",
+        "title": "Green / Standard 4.8TH/s",
+        "cents": 24999,
+        "available": true
+      },
+      {
+        "id": "47660501663974",
+        "title": "Green / Rev 6.1 6TH/s",
+        "cents": 29999,
+        "available": true
+      },
+      {
+        "id": "67607469883622",
+        "title": "Green / Rev 7",
+        "cents": 34999,
+        "available": true
+      },
+      {
+        "id": "46034473910502",
+        "title": "Purple / Standard 4.8TH/s",
+        "cents": 24999,
+        "available": true
+      },
+      {
+        "id": "47660501696742",
+        "title": "Purple / Rev 6.1 6TH/s",
+        "cents": 29999,
+        "available": true
+      },
+      {
+        "id": "67607469916390",
+        "title": "Purple / Rev 7",
+        "cents": 34999,
+        "available": true
+      },
+      {
+        "id": "46034473943270",
+        "title": "Pink / Standard 4.8TH/s",
+        "cents": 24999,
+        "available": true
+      },
+      {
+        "id": "47660501729510",
+        "title": "Pink / Rev 6.1 6TH/s",
+        "cents": 29999,
+        "available": true
+      },
+      {
+        "id": "67607469949158",
+        "title": "Pink / Rev 7",
+        "cents": 34999,
+        "available": true
+      },
+      {
+        "id": "46497420902630",
+        "title": "Gray / Standard 4.8TH/s",
+        "cents": 24999,
+        "available": true
+      },
+      {
+        "id": "47660501762278",
+        "title": "Gray / Rev 6.1 6TH/s",
+        "cents": 29999,
+        "available": true
+      },
+      {
+        "id": "67607469981926",
+        "title": "Gray / Rev 7",
+        "cents": 34999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/unnamed_11_755ce8d9-787d-4d2c-ac2d-2eee5f40d7e7.jpg?v=1778187906",
+    "productId": "9007580446950",
+    "sourceUrl": "https://bitcoinmerch.com/products/nerdqaxe-plus-plus.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 24999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 24
+  },
+  "/products/powered-usb-hub-3-0-7-port-50w-for-usb-miners-newpac-twopac-moonlander-antminer-us-plug": {
+    "title": "Bitcoin Merch® - 7-Port Powered USB Hub",
+    "variants": [
+      {
+        "id": "38035901317269",
+        "title": "Default Title",
+        "cents": 7999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/newwwwwwwwwwwwwww_1.png?v=1733341988",
+    "productId": "6441729032341",
+    "sourceUrl": "https://bitcoinmerch.com/products/powered-usb-hub-3-0-7-port-50w-for-usb-miners-newpac-twopac-moonlander-antminer-us-plug.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 7999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/secux-w20-cryptocurrency-hardware-wallet": {
+    "title": "SecuX W20 Cryptocurrency Hardware Wallet",
+    "variants": [
+      {
+        "id": "42270381768934",
+        "title": "Default Title",
+        "cents": 12999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/products/Screenshot2022-01-05111606.jpg?v=1731347667",
+    "productId": "7537837375718",
+    "sourceUrl": "https://bitcoinmerch.com/products/secux-w20-cryptocurrency-hardware-wallet.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": null,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/shamory-bitcoin-card-game": {
+    "title": "SHAmory Bitcoin Card Game",
+    "variants": [
+      {
+        "id": "42895183315174",
+        "title": "Default Title",
+        "cents": 2899,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/products/SHAmory-Bitcoin-Card-Game-Package-With-Shadow-and-STEM-Certification.jpg?v=1731347698",
+    "productId": "7776572997862",
+    "sourceUrl": "https://bitcoinmerch.com/products/shamory-bitcoin-card-game.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 2899,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/shamory-goodnight-bitcoin-kids-book": {
+    "title": "SHAmory Goodnight Bitcoin Kids Book",
+    "variants": [
+      {
+        "id": "42895208841446",
+        "title": "Default Title",
+        "cents": 1999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/products/2.webp?v=1731347699",
+    "productId": "7776578699494",
+    "sourceUrl": "https://bitcoinmerch.com/products/shamory-goodnight-bitcoin-kids-book.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 1999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/the-internet-of-money-payperback-book": {
+    "title": "The Internet of Money (Payperback Book)",
+    "variants": [
+      {
+        "id": "12347469103194",
+        "title": "Default Title",
+        "cents": 2999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/products/61h0HxBIIAL.jpg?v=1731347606",
+    "productId": "1350636503130",
+    "sourceUrl": "https://bitcoinmerch.com/products/the-internet-of-money-payperback-book.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 2999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/the-story-of-the-blockchain-a-beginners-guide-to-the-technology-that-nobody-understands": {
+    "title": "The Story of the Blockchain: A Beginner's Guide to the Technology That Nobody Understands",
+    "variants": [
+      {
+        "id": "12312213553242",
+        "title": "Default Title",
+        "cents": 1999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/products/51naTRAy04L.jpg?v=1731347595",
+    "productId": "1346216591450",
+    "sourceUrl": "https://bitcoinmerch.com/products/the-story-of-the-blockchain-a-beginners-guide-to-the-technology-that-nobody-understands.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 1999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/usb-ethernet-internet-adapter-for-mars-lander-upgrade": {
+    "title": "USB Ethernet Internet Adapter for Mars Lander Upgrade",
+    "variants": [
+      {
+        "id": "43674420773094",
+        "title": "Default Title",
+        "cents": 1799,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/afb1d2bb325b5202c30ab1e8a9395111-removebg-preview.png?v=1731347710",
+    "productId": "8152665161958",
+    "sourceUrl": "https://bitcoinmerch.com/products/usb-ethernet-internet-adapter-for-mars-lander-upgrade.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 1799,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/usb-ethernet-internet-adapter-for-mars-lander-upgrade-1": {
+    "title": "USB Ethernet Internet Adapter for Mars Lander Upgrade",
+    "variants": [
+      {
+        "id": "43806944592102",
+        "title": "Default Title",
+        "cents": 2999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/afb1d2bb325b5202c30ab1e8a9395111-removebg-preview_f55537e7-c704-4919-aead-87fd6fd33021.png?v=1731347710",
+    "productId": "8230481527014",
+    "sourceUrl": "https://bitcoinmerch.com/products/usb-ethernet-internet-adapter-for-mars-lander-upgrade-1.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 2999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 1
+  },
+  "/products/vintage-look-bitcoin-logo-t-shirt": {
+    "title": "Bitcoin Merch® - Logo T-Shirt",
+    "variants": [
+      {
+        "id": "46005892645094",
+        "title": "Men / Black / Small",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005892677862",
+        "title": "Men / Black / Medium",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005892710630",
+        "title": "Men / Black / Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005892743398",
+        "title": "Men / Black / X-Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005892776166",
+        "title": "Men / Black / XX-Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005892808934",
+        "title": "Men / Navy Blue / Small",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005892841702",
+        "title": "Men / Navy Blue / Medium",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005892874470",
+        "title": "Men / Navy Blue / Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005892907238",
+        "title": "Men / Navy Blue / X-Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005892940006",
+        "title": "Men / Navy Blue / XX-Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005892972774",
+        "title": "Men / White / Small",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005893005542",
+        "title": "Men / White / Medium",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005893038310",
+        "title": "Men / White / Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005893071078",
+        "title": "Men / White / X-Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005893103846",
+        "title": "Men / White / XX-Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005893136614",
+        "title": "Men / Red / Small",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005893169382",
+        "title": "Men / Red / Medium",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005893202150",
+        "title": "Men / Red / Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005893234918",
+        "title": "Men / Red / X-Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005893267686",
+        "title": "Men / Red / XX-Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005893300454",
+        "title": "Men / Kelly Green / Small",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005893333222",
+        "title": "Men / Kelly Green / Medium",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005893365990",
+        "title": "Men / Kelly Green / Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005893398758",
+        "title": "Men / Kelly Green / X-Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005893431526",
+        "title": "Men / Kelly Green / XX-Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005893464294",
+        "title": "Men / Dark Heather Grey / Small",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005893497062",
+        "title": "Men / Dark Heather Grey / Medium",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005893529830",
+        "title": "Men / Dark Heather Grey / Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005893562598",
+        "title": "Men / Dark Heather Grey / X-Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005893595366",
+        "title": "Men / Dark Heather Grey / XX-Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005893628134",
+        "title": "Men / Purple / Small",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005893660902",
+        "title": "Men / Purple / Medium",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005893693670",
+        "title": "Men / Purple / Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005893726438",
+        "title": "Men / Purple / X-Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005893759206",
+        "title": "Men / Purple / XX-Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005893791974",
+        "title": "Men / Royal Blue / Small",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005893824742",
+        "title": "Men / Royal Blue / Medium",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005893857510",
+        "title": "Men / Royal Blue / Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005893890278",
+        "title": "Men / Royal Blue / X-Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005893923046",
+        "title": "Men / Royal Blue / XX-Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005893955814",
+        "title": "Women / Black / Small",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005893988582",
+        "title": "Women / Black / Medium",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005894021350",
+        "title": "Women / Black / Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005894054118",
+        "title": "Women / Black / X-Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005894086886",
+        "title": "Women / Black / XX-Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005894119654",
+        "title": "Women / Navy Blue / Small",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005894152422",
+        "title": "Women / Navy Blue / Medium",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005894185190",
+        "title": "Women / Navy Blue / Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005894217958",
+        "title": "Women / Navy Blue / X-Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005894250726",
+        "title": "Women / Navy Blue / XX-Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005894283494",
+        "title": "Women / White / Small",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005894316262",
+        "title": "Women / White / Medium",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005894349030",
+        "title": "Women / White / Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005894381798",
+        "title": "Women / White / X-Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005894414566",
+        "title": "Women / White / XX-Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005894447334",
+        "title": "Women / Red / Small",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005894480102",
+        "title": "Women / Red / Medium",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005894512870",
+        "title": "Women / Red / Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005894545638",
+        "title": "Women / Red / X-Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005894578406",
+        "title": "Women / Red / XX-Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005894611174",
+        "title": "Women / Kelly Green / Small",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005894643942",
+        "title": "Women / Kelly Green / Medium",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005894676710",
+        "title": "Women / Kelly Green / Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005894709478",
+        "title": "Women / Kelly Green / X-Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005894742246",
+        "title": "Women / Kelly Green / XX-Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005894775014",
+        "title": "Women / Dark Heather Grey / Small",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005894807782",
+        "title": "Women / Dark Heather Grey / Medium",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005894840550",
+        "title": "Women / Dark Heather Grey / Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005894873318",
+        "title": "Women / Dark Heather Grey / X-Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005894906086",
+        "title": "Women / Dark Heather Grey / XX-Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005894938854",
+        "title": "Women / Purple / Small",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005894971622",
+        "title": "Women / Purple / Medium",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005895004390",
+        "title": "Women / Purple / Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005895037158",
+        "title": "Women / Purple / X-Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005895069926",
+        "title": "Women / Purple / XX-Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005895102694",
+        "title": "Women / Royal Blue / Small",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005895135462",
+        "title": "Women / Royal Blue / Medium",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005895168230",
+        "title": "Women / Royal Blue / Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005895200998",
+        "title": "Women / Royal Blue / X-Large",
+        "cents": 2999,
+        "available": true
+      },
+      {
+        "id": "46005895233766",
+        "title": "Women / Royal Blue / XX-Large",
+        "cents": 2999,
+        "available": true
+      }
+    ],
+    "image": "https://cdn.shopify.com/s/files/1/2609/9556/files/bitcoin_tshirt_main_576709b1-f9a6-4c78-befe-4e3d5c306c30.jpg?v=1749079013",
+    "productId": "9028497866982",
+    "sourceUrl": "https://bitcoinmerch.com/products/vintage-look-bitcoin-logo-t-shirt.js",
+    "source": "public_product_feed",
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 2999,
+    "priceMismatchWithListing": false,
+    "availableVariants": 80
   }
 }
