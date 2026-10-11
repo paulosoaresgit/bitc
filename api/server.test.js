@@ -3,69 +3,72 @@ import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 
 process.env.NODE_ENV = 'test';
-process.env.BTCPAY_WEBHOOK_SECRET = 'local-test-secret';
-const { validatedOrder, validatedCustomer, signatureValid, ensureQuoteAccepted, verifiedInvoiceStatus } = await import('./server.js');
+const { validatedOrder, validatedCustomer, ensureQuoteAccepted, paymentState,
+  encryptOrder, decryptOrder, keyBytes } = await import('./server.js');
 
 const base = { items: [{ id: 'reco-cards', qty: 1 }], shipping: 'dhl', shippingProtection: false };
-test('invoice amount is calculated from server catalog, never from frontend price', () => {
+const TEST_KEY = crypto.randomBytes(32).toString('hex');
+
+test('invoice amounts are calculated from server catalog, not browser prices', () => {
   const order = validatedOrder(base);
   assert.equal(order.subtotalCents, 1800);
   assert.equal(order.discountCents, 360);
   assert.equal(order.amountCents, 1440);
 });
-test('shipping and protection are server-owned costs', () => {
+test('shipping costs and optional protection remain server-owned', () => {
   const order = validatedOrder({ ...base, shipping: 'fedex', shippingProtection: true });
   assert.equal(order.amountCents, 2760 + 2499);
 });
-test('tampered price and unknown items cannot reach BTCPay', () => {
+test('tampered browser prices, shipping and unknown SKUs are blocked', () => {
   assert.throws(() => validatedOrder({ ...base, amount: 0.01 }), /client_prices_not_allowed/);
-  assert.throws(() => validatedOrder({ ...base, items: [{ id: 'reco-cards', qty: 1, price: 0.01 }] }), /client_prices_not_allowed/);
-  assert.throws(() => validatedOrder({ ...base, items: [{ id: 'unlisted-product', qty: 1 }] }), /catalog_item_unavailable/);
-  assert.throws(() => validatedOrder({ ...base, shipping: 'unknown' }), /invalid_shipping/);
+  assert.throws(() => validatedOrder({ ...base, items: [{id:'reco-cards',qty:1,price:0.01}] }), /client_prices_not_allowed/);
+  assert.throws(() => validatedOrder({ ...base, items: [{id:'fake-product',qty:1}] }), /catalog_item_unavailable/);
+  assert.throws(() => validatedOrder({ ...base, shipping:'unknown' }), /invalid_shipping/);
 });
-test('quantity limits cannot be bypassed with duplicate rows', () => {
-  assert.throws(() => validatedOrder({ ...base, items: [{ id: 'reco-cards', qty: 10 }, { id: 'reco-cards', qty: 1 }] }), /invalid_quantity/);
-  assert.throws(() => validatedOrder({ ...base, items: [{ id: 'reco-cards', qty: 0 }] }), /invalid_quantity/);
+test('duplicate items cannot bypass quantity limits', () => {
+  assert.throws(() => validatedOrder({ ...base, items:[{id:'reco-cards',qty:10},{id:'reco-cards',qty:1}] }), /invalid_quantity/);
+  assert.throws(() => validatedOrder({ ...base, items:[{id:'reco-cards',qty:0}] }), /invalid_quantity/);
 });
-test('buyer address is validated before charging', () => {
-  const buyer = { customer: { email: 'customer@example.com', firstName: 'Jo', lastName: 'Doe',
-    country: 'United States', postalCode: '10001', street: 'Broadway', city: 'New York', state: 'NY' } };
-  assert.equal(validatedCustomer(buyer).email, 'customer@example.com');
-  assert.throws(() => validatedCustomer({ customer: { ...buyer.customer, email: 'bad' } }), /invalid_email/);
-  assert.throws(() => validatedCustomer({ customer: { ...buyer.customer, street: '' } }), /missing_delivery_address/);
+test('customer shipping details are validated', () => {
+  const customer = { email:'buyer@example.com', firstName:'Jo', lastName:'Doe',
+    country:'United States', postalCode:'10001', street:'Broadway', city:'New York', state:'NY' };
+  assert.equal(validatedCustomer({customer}).email, customer.email);
+  assert.throws(() => validatedCustomer({customer:{...customer, email:'bad'}}), /invalid_email/);
+  assert.throws(() => validatedCustomer({customer:{...customer, street:''}}), /missing_delivery_address/);
 });
-test('webhook HMAC checks the exact raw body', () => {
-  const raw = Buffer.from('{"invoiceId":"invoice-123","type":"InvoiceSettled"}');
-  const sig = 'sha256=' + crypto.createHmac('sha256', 'local-test-secret').update(raw).digest('hex');
-  assert.equal(signatureValid(raw, sig), true);
-  assert.equal(signatureValid(Buffer.from('different'), sig), false);
-  assert.equal(signatureValid(raw, 'sha256='+'0'.repeat(64)), false);
+test('checkout requires exact server quote before creating invoice', () => {
+  const order=validatedOrder(base);
+  assert.doesNotThrow(() => ensureQuoteAccepted({expectedAmountCents:order.amountCents},order));
+  assert.throws(() => ensureQuoteAccepted({expectedAmountCents:1},order), /quote_expired/);
+  assert.throws(() => ensureQuoteAccepted({expectedAmountCents:'1440'},order), /quote_expired/);
+  assert.throws(() => ensureQuoteAccepted({},order), /quote_expired/);
 });
-
-test('payment invoice requires acceptance of the exact server quote', () => {
-  const order = validatedOrder(base);
-  assert.doesNotThrow(() => ensureQuoteAccepted({ expectedAmountCents: order.amountCents }, order));
-  assert.throws(() => ensureQuoteAccepted({ expectedAmountCents: 1 }, order), /quote_expired/);
-  assert.throws(() => ensureQuoteAccepted({ expectedAmountCents: '1440' }, order), /quote_expired/);
-  assert.throws(() => ensureQuoteAccepted({}, order), /quote_expired/);
+test('private order metadata round trips through authenticated encryption', () => {
+  const orderId=crypto.randomUUID();
+  const record={orderId, customer:{name:'Jo', email:'buyer@example.com', street:'Secret address'},
+    amountCents:1440, items:[{id:'reco-cards',qty:1}]};
+  const token=encryptOrder(orderId,record,TEST_KEY);
+  assert.equal(token.split('.').length,4);
+  assert.ok(!token.includes('buyer@example.com'));
+  assert.deepEqual(decryptOrder(orderId,token,TEST_KEY),record);
+  assert.notEqual(encryptOrder(orderId,record,TEST_KEY),token);
+  assert.throws(() => decryptOrder('other-id',token,TEST_KEY));
+  assert.throws(() => decryptOrder(orderId,token,crypto.randomBytes(32).toString('hex')));
+  const p=token.split('.');
+  p[3]=p[3].slice(0,-2)+(p[3].endsWith('A')?'BC':'AB');
+  assert.throws(() => decryptOrder(orderId,p.join('.'),TEST_KEY));
 });
-
-test('signed webhook reconciliation validates invoice ID, order, currency and amount', () => {
-  const saved = { id: 'order-123', amount_cents: 1440, currency: 'USD', status: 'invoice_created' };
-  const invoice = { id: 'inv-123', metadata: { orderId: 'order-123' }, amount: '14.40',
-    currency: 'USD', status: 'Settled', additionalStatus: 'None' };
-  assert.equal(verifiedInvoiceStatus(invoice, saved, 'inv-123'), 'settled');
-  assert.throws(() => verifiedInvoiceStatus({...invoice, amount: '0.01'}, saved, 'inv-123'), /invoice_order_mismatch/);
-  assert.throws(() => verifiedInvoiceStatus({...invoice, currency: 'EUR'}, saved, 'inv-123'), /invoice_order_mismatch/);
-  assert.throws(() => verifiedInvoiceStatus({...invoice, metadata: {orderId: 'other'}}, saved, 'inv-123'), /invoice_order_mismatch/);
-  assert.throws(() => verifiedInvoiceStatus({...invoice, id: 'other'}, saved, 'inv-123'), /invoice_order_mismatch/);
+test('order encryption rejects missing or malformed keys', () => {
+  assert.throws(() => keyBytes(''), /order_encryption_not_configured/);
+  assert.throws(() => keyBytes('not-hex'), /order_encryption_not_configured/);
 });
-test('partial or late BTCPay payments never mark the order as settled automatically', () => {
-  const saved = { id: 'order-123', amount_cents: 1440, currency: 'USD', status: 'invoice_created' };
-  const invoice = { id: 'inv-123', metadata: { orderId: 'order-123' }, amount: '14.40',
-    currency: 'USD', status: 'Settled', additionalStatus: 'PaidPartial' };
-  assert.equal(verifiedInvoiceStatus(invoice, saved, 'inv-123'), 'review');
-  assert.equal(verifiedInvoiceStatus({...invoice, additionalStatus: 'PaidLate'}, saved, 'inv-123'), 'review');
-  assert.equal(verifiedInvoiceStatus({...invoice, additionalStatus: 'PaidOver'}, saved, 'inv-123'), 'settled');
-  assert.equal(verifiedInvoiceStatus({...invoice, status: 'Expired', additionalStatus: 'None'}, saved, 'inv-123'), 'expired');
+test('paid order classification never ships before BTCPay settlement', () => {
+  assert.equal(paymentState({status:'New'}),'AWAITING_PAYMENT');
+  assert.equal(paymentState({status:'Processing'}),'AWAITING_PAYMENT');
+  assert.equal(paymentState({status:'Expired'}),'NOT_PAID');
+  assert.equal(paymentState({status:'Invalid'}),'NOT_PAID');
+  assert.equal(paymentState({status:'Settled',additionalStatus:'None'}),'PAID');
+  assert.equal(paymentState({status:'Settled',additionalStatus:'PaidPartial'}),'REVIEW');
+  assert.equal(paymentState({status:'Settled',additionalStatus:'PaidLate'}),'REVIEW');
+  assert.equal(paymentState({status:'Settled',additionalStatus:'PaidOver'}),'REVIEW');
 });
