@@ -43,4 +43,4 @@ jobs:
       - name: Verify prices and checkout security
         run: cd api && npm test
       - name: Inspect storefront catalog markup
-        run: node api/generate-catalog.mjs
+        run: node api/generate-catalog.mjs --check
