@@ -1,44 +1,53 @@
-# BITC Mining — BTCPay integration
+# BITC Mining — BTCPay-only checkout (no extra database)
 
-## What this branch changes
+This branch replaces the old Supabase order integration. **BTCPay is the sole invoice and order record**; the private order/shipping record is encrypted in each BTCPay invoice's metadata. The payment API runs on the existing Hostinger VPS, not Render. Do not deploy until prices, DNS, and merchant fulfillment workflow are verified.
 
-- Browser submits SKU IDs, integer quantities, shipping choice, protection and delivery information.
-- Prices are calculated in integer USD cents ONLY on the backend with a server-owned catalog.
-- Backend stores an order in the private database before creating BTCPay invoice and saves the invoice ID.
-- Browser obtains a server-priced quote first, explicitly acknowledges any cart/quote difference and only then requests a BTCPay invoice at the exact server amount.
-- Browser redirects to the actual BTCPay checkoutLink. Addresses supplied through URL query parameters are no longer displayed.
-- Signed BTCPay webhook re-reads invoice from BTCPay, verifies order ID/currency/server price, and marks paid only after Settled status with no exceptional payment flags. Exceptional late/partial invoices are recorded as review, not fulfilled.
-- Unimplemented card and PayPal fields are removed.
+## Flow
 
-## Required setup (before going live)
+1. Browser submits SKU and integer quantity; the backend calculates the price from the server-owned catalog, shipping and a configured 20% Bitcoin discount. Any supplied price/amount field is rejected.
+2. `POST /api/quote` returns the actual server quote. The buyer accepts it, then `POST /api/create-btcpay-invoice` sends the same items and accepted amount.
+3. Backend validates delivery details and encrypts the **entire order** with AES-256-GCM using `BITC_ORDER_ENCRYPTION_KEY`. BTCPay stores the ciphertext in `metadata.bitcOrderEncrypted` and the indexed `metadata.orderId`.
+4. Backend creates a BTCPay Greenfield invoice with the exact server amount, reads it back to verify the encrypted data was retained, then redirects to the real `checkoutLink`. An invoice/address is **never** read from untrusted query parameters.
+5. BTCPay retains all payment statuses. No webhook or second database is necessary in this **manual fulfillment** model. Buyer return to the success page never marks an order paid.
 
-1. Set up a dedicated Supabase project and execute api/migrations/001_bitc_orders.sql. The migration explicitly grants REST access ONLY to service_role (new Supabase projects no longer automatically expose newly created tables).
-2. Deploy the separate API and static storefront containers on the existing **Hostinger VPS**, not Render. Read deploy/hostinger/README.md; use existing BTCPay nginx-proxy network without competing for ports 80/443.
-3. Configure these backend environment variables: BTCPAY_URL, BTCPAY_API_KEY, BTCPAY_STORE_ID, BTCPAY_WEBHOOK_SECRET, BITC_SUPABASE_URL, BITC_SUPABASE_SERVICE_KEY, BITC_CATALOG_JSON.
-4. The BTCPay URL is set by default to https://pay.bitcmining.tech; verify that it is your BTCPay instance and has a functional Bitcoin wallet.
-5. In BTCPay, register a webhook at https://YOUR_API_HOST/api/btcpay-webhook. Store its secret as BTCPAY_WEBHOOK_SECRET. Subscribe to processing, settled, invalid and expired invoice events.
-6. In checkout/index.html set the meta tag named bitc-payment-api to your API base URL if the API is on a different origin. If hosting together, proxy /api/* to the API.
-   The checkout first calls POST /api/quote, then POST /api/create-btcpay-invoice with the accepted expectedAmountCents. Deploy BOTH routes or payment will fail closed.
-7. GET /api/health should show btcpayConfigured, orderStorageConfigured and webhookConfigured true (this verifies environment variables ONLY, not a real working wallet).
+**Important:** There is no automatic shipping, email confirmation or order management panel yet. The operator must verify `Settled` with no exceptional additionalStatus in the private CLI before fulfilling orders. Partial, late, invalid, expired and overpaid invoices must not auto-fulfill.
 
-NEVER expose BTCPAY_API_KEY or BITC_SUPABASE_SERVICE_KEY in browser code or GitHub.
+## Configuration
 
-## Server-owned product catalog
+Hostinger private file: `/etc/bitc/bitc.env` (root-owned, mode `600`):
 
-The only initial approved products are checkout recommendations reco-cards at USD 18.00 and reco-gold-nugget at USD 36.00, reflecting this site's checkout UI. Main catalog SKUs are deliberately BLOCKED pending server-side price configuration.
+```dotenv
+BTCPAY_URL=https://pay.bitcmining.tech
+BTCPAY_API_KEY=PRIVATE_API_KEY_WITH_CREATE_AND_VIEW_INVOICES
+BTCPAY_STORE_ID=YOUR_STORE_ID
+BITC_ORDER_ENCRYPTION_KEY=64_HEX_CHARACTERS_FROM_OPENSSL_RAND_HEX_32
+BITC_CATALOG_JSON={"VERIFIED_VARIANT_ID":{"title":"Approved product and variant","cents":11999}}
+```
 
-Configure BITC_CATALOG_JSON in the API environment as a JSON object that maps exact cart SKU IDs to approved prices in cents. Example:
+Generate a private **new 32-byte encryption key** securely on the VPS using `openssl rand -hex 32` and paste it only into the root-owned environment file. Do not publish, print, commit, transmit or photograph it. **Make a secure offline backup** of this key: losing it makes shipping data for existing invoices unrecoverable. Do not replace/rotate the key while you still need to read old orders without implementing key versioning first.
 
-    {"YOUR_ACTUAL_SKU_ID":{"title":"Bitaxe miner","cents":11999}}
+`BITC_CATALOG_JSON` above is an example, **not approved pricing**. Collect and approve exact SKU/variant IDs and independent official prices. Unknown SKUs are blocked. The only preconfigured example add-ons are `reco-cards` (USD 18) and `reco-gold-nugget` (USD 36); the main product catalog is not configured, so launch must wait.
 
-Retrieve each exact SKU ID from the cart's bm_cart_v1 localStorage record. Check your actual inventory and prices rather than inferring prices from the storefront or another merchant. Unknown SKUs produce catalog_item_unavailable and no invoice. Amount, currency, price or total fields sent by the browser are explicitly rejected.
+Existing pricing assumptions requiring merchant approval: discount 20% on products and USD 16.50 optional protection, DHL USD 0, FedEx USD 24.99, UPS USD 29.99. These are **not validated shipping costs or promises**.
 
-Backend pricing applies a 20% BTC discount to product + optional USD 16.50 shipping protection, then adds server-side shipping: DHL USD 0.00, FedEx USD 24.99, UPS USD 29.99.
+The public invoice metadata includes only a generated order ID, product summary and encrypted order record. It intentionally does **not** include plaintext shipping addresses or customer contact information. The details needed for fulfillment must be decrypted on your own VPS.
 
-## Tests and live verification
+## Private order lookup (after deployment)
 
-From the api directory run npm test. Automated tests cover tampered prices, expired or edited price quotes, unknown SKUs, quantity limits, shipping/discount calculations, delivery validation and signed webhook HMAC.
+In the VPS terminal, inside `/opt/bitc/repo/deploy/hostinger`:
 
-Before accepting actual customers, check a real invoice is generated with the expected USD price, a real Bitcoin QR/address appears on the BTCPay page, delivery details are saved privately, the BTCPay signed webhook marks only Settled invoices as paid, unpaid/expired invoices are not fulfilled, and repeated webhooks cannot downgrade a Settled order, unknown invoices are retried, and partial/late payments require manual review.
+```bash
+docker compose exec -T api node order-read.js INVOICE_ID_FROM_BTCPAY
+```
 
-NO live payment, wallet confirmation or end-to-end deployment was performed as part of this code patch. The checkout is NOT production-verified until these checks pass.
+The command retrieves the invoice via the scoped BTCPay API, checks that the ID, currency and amount match the encrypted record, and prints the shipping address and order details locally. **Do not share that output in screenshots or logs**. It refuses to approve fulfillment unless BTCPay reports `Settled` with no exceptional payment status. No additional database is involved.
+
+Dashboard for invoices: `https://pay.bitcmining.tech` → BITC Mining → Invoices.
+
+## Tests and release
+
+`cd api && npm test`
+
+The GitHub Actions pipeline also checks JavaScript, private CLI, VPS scripts and Compose syntax. Tests **do not** make real payments or prove wallet sync. Read `deploy/hostinger/README.md` and perform a live invoice/QR/wallet/settlement test before running ads. Verify BTCPay backup strategy and retain a private encryption-key backup.
+
+The previously drafted Supabase migration and `BTCPAY_WEBHOOK_SECRET` are no longer required for this manual, database-free flow.
