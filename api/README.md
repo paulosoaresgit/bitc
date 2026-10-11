@@ -5,18 +5,20 @@
 - Browser submits SKU IDs, integer quantities, shipping choice, protection and delivery information.
 - Prices are calculated in integer USD cents ONLY on the backend with a server-owned catalog.
 - Backend stores an order in the private database before creating BTCPay invoice and saves the invoice ID.
+- Browser obtains a server-priced quote first, explicitly acknowledges any cart/quote difference and only then requests a BTCPay invoice at the exact server amount.
 - Browser redirects to the actual BTCPay checkoutLink. Addresses supplied through URL query parameters are no longer displayed.
 - Signed BTCPay webhook re-reads invoice from BTCPay, and marks paid only after Settled status.
 - Unimplemented card and PayPal fields are removed.
 
 ## Required setup (before going live)
 
-1. Set up a dedicated Supabase project and execute api/migrations/001_bitc_orders.sql.
+1. Set up a dedicated Supabase project and execute api/migrations/001_bitc_orders.sql. The migration explicitly grants REST access ONLY to service_role (new Supabase projects no longer automatically expose newly created tables).
 2. Deploy the api/ directory as a separate HTTPS Node service on Render (npm start, Node 20+).
 3. Configure these backend environment variables: BTCPAY_URL, BTCPAY_API_KEY, BTCPAY_STORE_ID, BTCPAY_WEBHOOK_SECRET, BITC_SUPABASE_URL, BITC_SUPABASE_SERVICE_KEY, BITC_CATALOG_JSON.
 4. The BTCPay URL is set by default to https://pay.bitcmining.tech; verify that it is your BTCPay instance and has a functional Bitcoin wallet.
 5. In BTCPay, register a webhook at https://YOUR_API_HOST/api/btcpay-webhook. Store its secret as BTCPAY_WEBHOOK_SECRET. Subscribe to processing, settled, invalid and expired invoice events.
 6. In checkout/index.html set the meta tag named bitc-payment-api to your API base URL if the API is on a different origin. If hosting together, proxy /api/* to the API.
+   The checkout first calls POST /api/quote, then POST /api/create-btcpay-invoice with the accepted expectedAmountCents. Deploy BOTH routes or payment will fail closed.
 7. GET /health should show btcpayConfigured, orderStorageConfigured and webhookConfigured true (this verifies environment variables ONLY, not a real working wallet).
 
 NEVER expose BTCPAY_API_KEY or BITC_SUPABASE_SERVICE_KEY in browser code or GitHub.
@@ -35,7 +37,7 @@ Backend pricing applies a 20% BTC discount to product + optional USD 16.50 shipp
 
 ## Tests and live verification
 
-From the api directory run npm test. Automated tests cover tampered prices, unknown SKUs, quantity limits, shipping/discount calculations, delivery validation and signed webhook HMAC.
+From the api directory run npm test. Automated tests cover tampered prices, expired or edited price quotes, unknown SKUs, quantity limits, shipping/discount calculations, delivery validation and signed webhook HMAC.
 
 Before accepting actual customers, check a real invoice is generated with the expected USD price, a real Bitcoin QR/address appears on the BTCPay page, delivery details are saved privately, the BTCPay signed webhook marks only Settled invoices as paid, unpaid/expired invoices are not fulfilled, and repeated webhooks cannot downgrade a Settled order.
 
