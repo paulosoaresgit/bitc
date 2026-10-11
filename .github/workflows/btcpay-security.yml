@@ -46,3 +46,7 @@ jobs:
         run: node api/generate-catalog.mjs --check
       - name: Audit product links before storefront launch
         run: node api/audit-site-links.mjs
+      - name: Analyze captured collection cards
+        run: |
+          python -m pip install beautifulsoup4 -q
+          python api/audit-product-cards.py
