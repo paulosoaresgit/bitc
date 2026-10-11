@@ -172,6 +172,7 @@ const server = http.createServer(async (req, res) => {
       subtotalCents: order.subtotalCents, discountCents: order.discountCents,
       protectionCents: order.protectionCents, shippingCents: order.shippingCents
     };
+    const encryptedRecord = encryptOrder(id, privateOrder);
     const invoice = await btcpay('/invoices', 'POST', {
       amount: (order.amountCents / 100).toFixed(2),
       currency: 'USD',
@@ -179,12 +180,20 @@ const server = http.createServer(async (req, res) => {
         orderId: id,
         itemDesc: order.items.map(x => x.title + ' x' + x.qty).join(' | ').slice(0, 250),
         physical: true,
-        bitcOrderEncrypted: encryptOrder(id, privateOrder)
+        bitcOrderEncrypted: encryptedRecord
       },
       checkout: { redirectURL: 'https://bitcmining.tech/checkout/success/', redirectAutomatically: false }
     });
     if (!invoice.id || !invoice.checkoutLink || new URL(invoice.checkoutLink).origin !== new URL(BTCPAY_URL).origin) {
       throw new Error('invalid_btcpay_invoice');
+    }
+    // Confirm BTCPay actually persisted the order before sending the buyer to pay.
+    const persisted = await btcpay('/invoices/' + encodeURIComponent(invoice.id));
+    if (persisted.metadata?.orderId !== id ||
+        persisted.metadata?.bitcOrderEncrypted !== encryptedRecord ||
+        persisted.currency !== 'USD' ||
+        Math.round(Number(persisted.amount) * 100) !== order.amountCents) {
+      throw new Error('btcpay_order_record_not_persisted');
     }
     return respond(res, 200, { orderId: id, id: invoice.id, checkoutLink: invoice.checkoutLink,
       amountUSD: (order.amountCents / 100).toFixed(2), status: invoice.status }, origin);
