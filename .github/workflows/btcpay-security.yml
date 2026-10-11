@@ -50,5 +50,7 @@ jobs:
         run: |
           python -m pip install beautifulsoup4 -q
           python api/audit-product-cards.py
+      - name: Lock merchant-approved prices and sold-out safeguards
+        run: python api/verify-approved-price-fixes.py
       - name: Validate live product feed availability
         run: python api/audit-live-prices.py
