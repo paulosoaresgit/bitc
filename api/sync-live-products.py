@@ -40,7 +40,8 @@ def grab(path):
     "variants":variants,"image":image,"productId":str(product.get("id") or ""),
     "sourceUrl":endpoint,"source":"public_product_feed"},None
   except Exception as e:
-   if attempt==1:return path,None,str(e)[:180]
+   if attempt==1 or isinstance(e,urllib.error.HTTPError) and e.code==429:
+    return path,None,str(e)[:180]
    time.sleep(0.7)
 def esc(v):return html.escape(str(v),quote=True)
 def fmt(n):return "$"+format(n/100,",.2f")
@@ -112,6 +113,9 @@ for path in product_paths:
  total_variants+=len(p["variants"])
  old=report["products"][path]
  available=[v for v in p["variants"] if v["available"]]
+ # Never keep a purchasable server SKU that the source now explicitly marks unavailable.
+ for v in p["variants"]:
+  if not v["available"]:catalog.pop(v["id"],None)
  minprice=min((v["cents"] for v in available),default=None)
  listed=old.get("priceCents")
  # If the captured page says a different minimum amount, do not silently charge more.
@@ -128,7 +132,9 @@ for path in product_paths:
    if prev is not None and prev["cents"]!=v["cents"]:
     collisions.append({"path":path,"variant":v["id"],"oldPrice":prev["cents"],"newPrice":v["cents"]})
     conflict=True
- if conflict:approved=False
+ if conflict:
+  approved=False
+  for v in p["variants"]:catalog.pop(v["id"],None)
  if approved:
   for v in available:catalog[v["id"]]={"title":(p["title"]+" — "+v["title"]).strip()[:200],"cents":v["cents"]}
   enabled+=1
