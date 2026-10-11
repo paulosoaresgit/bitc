@@ -139,6 +139,20 @@ function signatureValid(raw, received) {
   const expected = 'sha256=' + crypto.createHmac('sha256', WEBHOOK_SECRET).update(raw).digest('hex');
   return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(received));
 }
+function verifiedInvoiceStatus(invoice, saved, invoiceId) {
+  const invoiceCents = Math.round(Number(invoice.amount) * 100);
+  if (invoice.id !== invoiceId || invoice.metadata?.orderId !== saved.id ||
+      invoice.currency !== saved.currency || !Number.isSafeInteger(invoiceCents) ||
+      invoiceCents !== saved.amount_cents) {
+    throw new Error('invoice_order_mismatch');
+  }
+  const mapped = { New: 'invoice_created', Processing: 'processing', Settled: 'settled',
+    Expired: 'expired', Invalid: 'invalid' }[invoice.status];
+  if (!mapped) throw new Error('unknown_invoice_status');
+  const extra = invoice.additionalStatus || 'None';
+  // Exceptional payments must not trigger automatic fulfillment.
+  return !['None', 'PaidOver'].includes(extra) ? 'review' : mapped;
+}
 async function webhook(req, res) {
   const raw = await rawBody(req);
   if (!signatureValid(raw, req.headers['btcpay-sig'] || '')) return respond(res, 401, { error: 'invalid_signature' });
@@ -154,19 +168,14 @@ async function webhook(req, res) {
   // makes BTCPay retry instead of permanently losing the settlement notification.
   if (!Array.isArray(rows) || rows.length !== 1) return respond(res, 503, { error: 'order_not_ready' });
   const saved = rows[0];
-  const invoiceCents = Math.round(Number(invoice.amount) * 100);
-  if (invoice.id !== invoiceId || invoice.metadata?.orderId !== saved.id ||
-      invoice.currency !== saved.currency || !Number.isSafeInteger(invoiceCents) ||
-      invoiceCents !== saved.amount_cents) {
+  let next;
+  try {
+    next = verifiedInvoiceStatus(invoice, saved, invoiceId);
+  } catch {
     console.error('invoice_order_mismatch', invoiceId);
     return respond(res, 409, { error: 'invoice_order_mismatch' });
   }
   if (['settled', 'review'].includes(saved.status)) return respond(res, 200, { ok: true });
-  const mapped = { New: 'invoice_created', Processing: 'processing', Settled: 'settled', Expired: 'expired', Invalid: 'invalid' }[status];
-  // BTCPay additionalStatus flags partial, late and exceptional payments.
-  // Do not automatically mark those as paid or fulfill them; manual review required.
-  const extra = invoice.additionalStatus || 'None';
-  const next = !['None', 'PaidOver'].includes(extra) ? 'review' : mapped;
   await db('bitc_orders?invoice_id=eq.' + encodeURIComponent(invoiceId) + '&status=not.in.(settled,review)',
     'PATCH', { status: next, updated_at: new Date().toISOString() });
   return respond(res, 200, { ok: true });
@@ -252,4 +261,4 @@ const server = http.createServer(async (req, res) => {
   }
 });
 if (process.env.NODE_ENV !== 'test') server.listen(PORT, () => console.log('BITC payment API listening on ' + PORT));
-export { validatedOrder, validatedCustomer, getCatalog, signatureValid, ensureQuoteAccepted };
+export { validatedOrder, validatedCustomer, getCatalog, signatureValid, ensureQuoteAccepted, verifiedInvoiceStatus };
