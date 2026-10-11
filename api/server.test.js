@@ -1,6 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
+import { existsSync, readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
 
 process.env.NODE_ENV = 'test';
 const { validatedOrder, validatedCustomer, ensureQuoteAccepted, paymentState,
@@ -81,4 +84,31 @@ test('captured product pages map every option to a fixed server price', () => {
   assert.equal(cat['47012515250406'].cents, 89999);
   const order=validatedOrder({...base,items:[{id:'45599680004326',qty:1}]});
   assert.equal(order.amountCents,9599);
+});
+
+test('every referenced product has a local detail page', () => {
+  const report = JSON.parse(readFileSync(new URL('./product-page-report.json', import.meta.url), 'utf8'));
+  const base = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+  assert.equal(report.totalRoutes, 152);
+  for (const route of Object.keys(report.products)) {
+    assert.ok(route.startsWith('/products/') && !route.includes('..'));
+    assert.ok(existsSync(path.join(base, route.slice(1), 'index.html')), route);
+  }
+});
+
+test('each purchase-enabled product variant is price-pinned to the actual server catalog', () => {
+  const live = JSON.parse(readFileSync(new URL('./live-products.json', import.meta.url), 'utf8'));
+  const catalog = getCatalog();
+  for (const [route,product] of Object.entries(live)) {
+    const available = product.variants.filter(v=>v.available);
+    if (product.checkoutEnabledForReview) {
+      assert.ok(available.length>0, route);
+      for (const v of available)
+        assert.equal(catalog[v.id]?.cents, v.cents, 'price mismatch for '+route+' variant '+v.id);
+    }
+    if (product.priceMismatchWithListing) {
+      for (const v of product.variants)
+        assert.equal(catalog[v.id], undefined, 'disputed price must stay blocked for '+route);
+    }
+  }
 });
