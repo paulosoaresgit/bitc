@@ -18,7 +18,7 @@ for(const rel of paths){
   try{u=new URL(hit[1].replace(/&amp;/g,'&'),'https://bitcmining.tech')}catch{continue}
   if(!origins.has(u.hostname))continue;
   let pathName;
-  try{pathName=decodeURIComponent(u.pathname).replace(/\\/+$/,'');}
+  try{pathName=decodeURIComponent(u.pathname).replace(/\/+$/,'');}
   catch{continue;}
   if(!/^\/products\/[^/]+$/.test(pathName))continue;
   if(!products.has(pathName))products.set(pathName,new Set());
