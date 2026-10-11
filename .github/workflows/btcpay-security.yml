@@ -44,3 +44,5 @@ jobs:
         run: cd api && npm test
       - name: Inspect storefront catalog markup
         run: node api/generate-catalog.mjs --check
+      - name: Audit product links before storefront launch
+        run: node api/audit-site-links.mjs
