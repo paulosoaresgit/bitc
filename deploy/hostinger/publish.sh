@@ -15,6 +15,10 @@ env_file=/etc/bitc/bitc.env
 for key in BTCPAY_URL BTCPAY_API_KEY BTCPAY_STORE_ID BTCPAY_WEBHOOK_SECRET BITC_SUPABASE_URL BITC_SUPABASE_SERVICE_KEY BITC_CATALOG_JSON; do
   grep -qE "^${key}=.+" "$env_file" || { echo "Missing value: $key" >&2; exit 2; }
 done
+if grep -Eq 'REPLACE_IN_PRIVATE_VPS_FILE|YOUR_PROJECT|CONFIRMED_VARIANT_ID|PASTE_VERIFIED' "$env_file"; then
+  echo "Refusing to publish: private environment still contains example placeholders." >&2
+  exit 2
+fi
 docker info >/dev/null
 docker network inspect "$BTCPAY_PROXY_NETWORK" >/dev/null
 proxy_found=false
