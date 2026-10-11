@@ -87,6 +87,12 @@ function validatedOrder(data) {
   return { items, shipping, shippingProtection: data.shippingProtection, subtotalCents: subtotal,
     protectionCents, discountCents, shippingCents: SHIPPING_CENTS[shipping], amountCents };
 }
+// The client may acknowledge a quote, but can never set the payable amount.
+function ensureQuoteAccepted(data, order) {
+  if (!Number.isSafeInteger(data.expectedAmountCents) || data.expectedAmountCents !== order.amountCents) {
+    throw new Error('quote_expired');
+  }
+}
 function validatedCustomer(data) {
   const c = data.customer;
   if (!c || typeof c !== 'object' || Array.isArray(c)) throw new Error('missing_delivery_address');
@@ -171,6 +177,23 @@ const server = http.createServer(async (req, res) => {
       return respond(res, 500, { error: 'webhook_failed' });
     }
   }
+  if (pathname === '/api/quote' && req.method === 'POST') {
+    if (!ALLOWED.has(origin)) return respond(res, 403, { error: 'origin_not_allowed' }, origin);
+    try {
+      const body = JSON.parse((await rawBody(req)).toString('utf8'));
+      const order = validatedOrder(body);
+      return respond(res, 200, {
+        amountCents: order.amountCents, amountUSD: (order.amountCents / 100).toFixed(2),
+        subtotalCents: order.subtotalCents, discountCents: order.discountCents,
+        shippingCents: order.shippingCents, protectionCents: order.protectionCents
+      }, origin);
+    } catch (error) {
+      const code = String(error.message || '');
+      const allowed = new Set(['client_prices_not_allowed','invalid_order','invalid_items','catalog_item_unavailable','invalid_quantity',
+        'invalid_shipping','invalid_protection','invalid_total']);
+      return respond(res, allowed.has(code) ? 400 : 503, { error: allowed.has(code) ? code : 'quote_unavailable' }, origin);
+    }
+  }
   if (pathname !== '/api/create-btcpay-invoice' || req.method !== 'POST') return respond(res, 404, { error: 'not_found' }, origin);
   if (!ALLOWED.has(origin)) return respond(res, 403, { error: 'origin_not_allowed' }, origin);
   if (!API_KEY || !STORE_ID || !WEBHOOK_SECRET || !SUPABASE_URL || !SUPABASE_KEY) {
@@ -180,6 +203,7 @@ const server = http.createServer(async (req, res) => {
   try {
     const body = JSON.parse((await rawBody(req)).toString('utf8'));
     const order = validatedOrder(body);
+    ensureQuoteAccepted(body, order);
     const customer = validatedCustomer(body);
     id = crypto.randomUUID();
     await db('bitc_orders', 'POST', {
@@ -204,11 +228,11 @@ const server = http.createServer(async (req, res) => {
   } catch (error) {
     console.error('checkout_failed', id || '', error);
     const clientErrors = new Set(['invalid_order','client_prices_not_allowed','invalid_items','catalog_item_unavailable',
-      'invalid_quantity','invalid_shipping','invalid_protection','invalid_total','missing_delivery_address','invalid_email']);
+      'invalid_quantity','invalid_shipping','invalid_protection','invalid_total','missing_delivery_address','invalid_email','quote_expired']);
     const errorCode = String(error.message || '');
-    return respond(res, clientErrors.has(errorCode) ? 400 : 503,
+    return respond(res, errorCode === 'quote_expired' ? 409 : clientErrors.has(errorCode) ? 400 : 503,
       { error: clientErrors.has(errorCode) ? errorCode : 'checkout_unavailable' }, origin);
   }
 });
 if (process.env.NODE_ENV !== 'test') server.listen(PORT, () => console.log('BITC payment API listening on ' + PORT));
-export { validatedOrder, validatedCustomer, getCatalog, signatureValid };
+export { validatedOrder, validatedCustomer, getCatalog, signatureValid, ensureQuoteAccepted };
