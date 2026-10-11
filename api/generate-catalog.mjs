@@ -59,3 +59,10 @@ for(const file of productPaths){
 }
 console.log('CANONICAL_CATALOG_AUDIT='+JSON.stringify({count:Object.keys(catalog).length,report}));
 console.log('CATALOG_JSON='+JSON.stringify(catalog));
+
+if(process.argv.includes('--check')){
+ const committed=JSON.parse(fs.readFileSync(path.join(root,'api/catalog.json'),'utf8'));
+ const ordered=obj=>JSON.stringify(Object.entries(obj).sort(([a],[b])=>a.localeCompare(b)));
+ if(ordered(committed)!==ordered(catalog))throw new Error('Committed canonical product variant prices differ from captured pages');
+ console.log('CATALOG_CHECK=OK');
+}
