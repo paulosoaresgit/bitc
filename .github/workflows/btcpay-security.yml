@@ -26,6 +26,8 @@ jobs:
       - name: Syntax-check API and checkout
         run: |
           node --check api/server.js
+          node --check api/order-utils.js
+          node --check api/order-read.js
           node --check assets/bm-checkout.js
       - name: Check Hostinger deployment scripts
         run: |
