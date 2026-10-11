@@ -17,4 +17,7 @@ create table if not exists public.bitc_orders (
 create index if not exists bitc_orders_status_created_idx on public.bitc_orders(status, created_at desc);
 alter table public.bitc_orders enable row level security;
 revoke all privileges on table public.bitc_orders from anon, authenticated;
+-- Supabase 2026+ does not always auto-expose new tables to the Data API.
+-- The backend service role needs explicit REST table permissions, never the public roles.
+grant select, insert, update on table public.bitc_orders to service_role;
 -- No anon/authenticated RLS policies. Service-role operations are backend-only.
