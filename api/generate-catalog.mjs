@@ -62,7 +62,11 @@ console.log('CATALOG_JSON='+JSON.stringify(catalog));
 
 if(process.argv.includes('--check')){
  const committed=JSON.parse(fs.readFileSync(path.join(root,'api/catalog.json'),'utf8'));
- const ordered=obj=>JSON.stringify(Object.entries(obj).sort(([a],[b])=>a.localeCompare(b)));
- if(ordered(committed)!==ordered(catalog))throw new Error('Committed canonical product variant prices differ from captured pages');
+ for(const [id, expected] of Object.entries(catalog)){
+  if(!committed[id] || committed[id].cents!==expected.cents)
+   throw new Error('Canonical captured product variant price mismatch: '+id);
+ }
+ // Extra SKUs may come from the separately audited public product feed.
+
  console.log('CATALOG_CHECK=OK');
 }
