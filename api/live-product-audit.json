@@ -2,38 +2,12 @@
   "requested": 152,
   "resolved": 151,
   "failedProducts": {
-    "/products/bitcoin-merch®-goldshell-mini-doge-iii-810mh-s-scrypt-miner": "HTTP Error 404: Not Found"
+    "/products/bitcoin-merch®-goldshell-mini-doge-iii-810mh-s-scrypt-miner": "source_feed_unavailable"
   },
-  "listingPriceMismatches": [
-    {
-      "path": "/products/bitcoin-merch-goldshell-xt-box-580gh-s-xtm-miner",
-      "capturedMin": 299999,
-      "feedMin": 249999
-    },
-    {
-      "path": "/products/bitcoin-merch®-bitforge-nano-2-6th-s-w-power-supply",
-      "capturedMin": 29999,
-      "feedMin": 26999
-    },
-    {
-      "path": "/products/bitcoin-merch®-bitmain-antminer-z15-pro-860k-zcash-miner",
-      "capturedMin": 1169999,
-      "feedMin": 1099999
-    },
-    {
-      "path": "/products/bitcoin-merch®-braiins-axe-forge-4-8th-s-expandable-bitcoin-miner",
-      "capturedMin": 44999,
-      "feedMin": 39999
-    },
-    {
-      "path": "/products/bitcoin-merch®-the-sovereign-suite-100th-s-complete-home-mining-setup",
-      "capturedMin": 599999,
-      "feedMin": 399999
-    }
-  ],
+  "listingPriceMismatches": [],
   "variantIdConflicts": [],
   "liveVariants": 570,
-  "purchaseEligibleListings": 139,
-  "reviewNeededListings": 13,
+  "purchaseEligibleListings": 144,
+  "reviewNeededListings": 8,
   "note": "Data from the public source storefront; merchant must verify inventory, fulfillment, sourcing, and captured storefront price before production."
 }

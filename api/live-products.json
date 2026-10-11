@@ -1453,9 +1453,9 @@
     "productId": "9425672962278",
     "sourceUrl": "https://bitcoinmerch.com/products/bitcoin-merch-goldshell-xt-box-580gh-s-xtm-miner.js",
     "source": "public_product_feed",
-    "checkoutEnabledForReview": false,
-    "capturedListingPriceCents": 299999,
-    "priceMismatchWithListing": true,
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 249999,
+    "priceMismatchWithListing": false,
     "availableVariants": 1
   },
   "/products/bitcoin-merch-iceriver-kas-ks7-lite-4-2th-s-kas-miner": {
@@ -2562,9 +2562,9 @@
     "productId": "9721573671142",
     "sourceUrl": "https://bitcoinmerch.com/products/bitcoin-merch%C2%AE-bitforge-nano-2-6th-s-w-power-supply.js",
     "source": "public_product_feed",
-    "checkoutEnabledForReview": false,
-    "capturedListingPriceCents": 29999,
-    "priceMismatchWithListing": true,
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 26999,
+    "priceMismatchWithListing": false,
     "availableVariants": 1
   },
   "/products/bitcoin-merch®-bitmain-antminer-l11-20gh-s-doge-ltc-miner": {
@@ -2676,9 +2676,9 @@
     "productId": "9769689383142",
     "sourceUrl": "https://bitcoinmerch.com/products/bitcoin-merch%C2%AE-bitmain-antminer-z15-pro-860k-zcash-miner.js",
     "source": "public_product_feed",
-    "checkoutEnabledForReview": false,
-    "capturedListingPriceCents": 1169999,
-    "priceMismatchWithListing": true,
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 1099999,
+    "priceMismatchWithListing": false,
     "availableVariants": 1
   },
   "/products/bitcoin-merch®-braiins-axe-forge-4-8th-s-expandable-bitcoin-miner": {
@@ -2695,9 +2695,9 @@
     "productId": "9815031152870",
     "sourceUrl": "https://bitcoinmerch.com/products/bitcoin-merch%C2%AE-braiins-axe-forge-4-8th-s-expandable-bitcoin-miner.js",
     "source": "public_product_feed",
-    "checkoutEnabledForReview": false,
-    "capturedListingPriceCents": 44999,
-    "priceMismatchWithListing": true,
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 39999,
+    "priceMismatchWithListing": false,
     "availableVariants": 1
   },
   "/products/bitcoin-merch®-doge-digger-lottery-hammer-miner-dc02-105mh-s-scrypt-ltc-doge": {
@@ -3269,9 +3269,9 @@
     "productId": "9630957666534",
     "sourceUrl": "https://bitcoinmerch.com/products/bitcoin-merch%C2%AE-the-sovereign-suite-100th-s-complete-home-mining-setup.js",
     "source": "public_product_feed",
-    "checkoutEnabledForReview": false,
-    "capturedListingPriceCents": 599999,
-    "priceMismatchWithListing": true,
+    "checkoutEnabledForReview": true,
+    "capturedListingPriceCents": 399999,
+    "priceMismatchWithListing": false,
     "availableVariants": 1
   },
   "/products/bitcoin-merch®-whale-mystery-box": {

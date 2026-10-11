@@ -511,8 +511,8 @@
     "/products/bitcoin-merch-goldshell-xt-box-580gh-s-xtm-miner": {
       "path": "/products/bitcoin-merch-goldshell-xt-box-580gh-s-xtm-miner",
       "title": "Bitcoin Merch® - Goldshell XT BOX 580GH/s XTM Miner with Power Supply",
-      "priceText": "Sale price $2,999.99",
-      "priceCents": 299999,
+      "priceText": "Sale price $2,499.99",
+      "priceCents": 249999,
       "variantId": "46689766244582",
       "image": "https://bitcoinmerch.com/cdn/shop/files/Goldshell-HS-Box-II_1_cdf5ffed-2737-4e81-910d-24aca1755e4e_800x.jpg?v=1738194760",
       "source": "collections/premium-asic-miners/index.html",
@@ -929,8 +929,8 @@
     "/products/bitcoin-merch®-bitforge-nano-2-6th-s-w-power-supply": {
       "path": "/products/bitcoin-merch®-bitforge-nano-2-6th-s-w-power-supply",
       "title": "Bitcoin Merch® - BitForge Nano 2.6TH/s w Power Supply",
-      "priceText": "Sale price $299.99",
-      "priceCents": 29999,
+      "priceText": "Sale price $269.99",
+      "priceCents": 26999,
       "variantId": "47658543448294",
       "image": "https://bitcoinmerch.com/cdn/shop/files/bitforge_800x.jpg?v=1778715549",
       "source": "collections/bitaxe-miners/index.html",
@@ -1001,8 +1001,8 @@
     "/products/bitcoin-merch®-bitmain-antminer-z15-pro-860k-zcash-miner": {
       "path": "/products/bitcoin-merch®-bitmain-antminer-z15-pro-860k-zcash-miner",
       "title": "Bitcoin Merch® - Bitmain Antminer Z15 Pro 840Ksol Zcash Miner",
-      "priceText": "Sale price $11,699.99",
-      "priceCents": 1169999,
+      "priceText": "Sale price $10,999.99",
+      "priceCents": 1099999,
       "variantId": "47962542866662",
       "image": "https://bitcoinmerch.com/cdn/shop/files/z15pro_800x.jpg?v=1783537580",
       "source": "collections/industrial-asic-miners/index.html",
@@ -1013,8 +1013,8 @@
     "/products/bitcoin-merch®-braiins-axe-forge-4-8th-s-expandable-bitcoin-miner": {
       "path": "/products/bitcoin-merch®-braiins-axe-forge-4-8th-s-expandable-bitcoin-miner",
       "title": "Bitcoin Merch® - Braiins Axe Forge 4.8TH/s Expandable Bitcoin Miner",
-      "priceText": "Sale price $449.99",
-      "priceCents": 44999,
+      "priceText": "Sale price $399.99",
+      "priceCents": 39999,
       "variantId": "48168332132582",
       "image": "https://bitcoinmerch.com/cdn/shop/files/braiinsaxe_800x.png?v=1786565087",
       "source": "collections/beginner-miners/index.html",
@@ -1353,8 +1353,8 @@
     "/products/bitcoin-merch®-the-sovereign-suite-100th-s-complete-home-mining-setup": {
       "path": "/products/bitcoin-merch®-the-sovereign-suite-100th-s-complete-home-mining-setup",
       "title": "Bitcoin Merch® - The Sovereign Suite 115TH/s Complete Home Mining Setup",
-      "priceText": "Sale price $5,999.99",
-      "priceCents": 599999,
+      "priceText": "Sale price $3,999.99",
+      "priceCents": 399999,
       "variantId": "47362108326118",
       "image": "https://bitcoinmerch.com/cdn/shop/files/final3_800x.png?v=1787684158",
       "source": "collections/bitaxe-miners/index.html",
@@ -1810,5 +1810,37 @@
       "listingPriceIsFrom": false,
       "checkoutApproved": false
     }
-  }
+  },
+  "approvedPriceChanges": [
+    {
+      "path": "/products/bitcoin-merch-goldshell-xt-box-580gh-s-xtm-miner",
+      "oldCents": 299999,
+      "newCents": 249999,
+      "variantId": "46689766244582"
+    },
+    {
+      "path": "/products/bitcoin-merch®-bitforge-nano-2-6th-s-w-power-supply",
+      "oldCents": 29999,
+      "newCents": 26999,
+      "variantId": "47658543448294"
+    },
+    {
+      "path": "/products/bitcoin-merch®-bitmain-antminer-z15-pro-860k-zcash-miner",
+      "oldCents": 1169999,
+      "newCents": 1099999,
+      "variantId": "47962542866662"
+    },
+    {
+      "path": "/products/bitcoin-merch®-braiins-axe-forge-4-8th-s-expandable-bitcoin-miner",
+      "oldCents": 44999,
+      "newCents": 39999,
+      "variantId": "48168332132582"
+    },
+    {
+      "path": "/products/bitcoin-merch®-the-sovereign-suite-100th-s-complete-home-mining-setup",
+      "oldCents": 599999,
+      "newCents": 399999,
+      "variantId": "47362108326118"
+    }
+  ]
 }
