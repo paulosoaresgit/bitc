@@ -4,7 +4,7 @@ import crypto from 'node:crypto';
 
 process.env.NODE_ENV = 'test';
 process.env.BTCPAY_WEBHOOK_SECRET = 'local-test-secret';
-const { validatedOrder, validatedCustomer, signatureValid } = await import('./server.js');
+const { validatedOrder, validatedCustomer, signatureValid, ensureQuoteAccepted } = await import('./server.js');
 
 const base = { items: [{ id: 'reco-cards', qty: 1 }], shipping: 'dhl', shippingProtection: false };
 test('invoice amount is calculated from server catalog, never from frontend price', () => {
@@ -40,4 +40,12 @@ test('webhook HMAC checks the exact raw body', () => {
   assert.equal(signatureValid(raw, sig), true);
   assert.equal(signatureValid(Buffer.from('different'), sig), false);
   assert.equal(signatureValid(raw, 'sha256='+'0'.repeat(64)), false);
+});
+
+test('payment invoice requires acceptance of the exact server quote', () => {
+  const order = validatedOrder(base);
+  assert.doesNotThrow(() => ensureQuoteAccepted({ expectedAmountCents: order.amountCents }, order));
+  assert.throws(() => ensureQuoteAccepted({ expectedAmountCents: 1 }, order), /quote_expired/);
+  assert.throws(() => ensureQuoteAccepted({ expectedAmountCents: '1440' }, order), /quote_expired/);
+  assert.throws(() => ensureQuoteAccepted({}, order), /quote_expired/);
 });
