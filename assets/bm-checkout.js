@@ -24,10 +24,26 @@ async function createPayment(){
   const missing=required.find(k=>!buyer[k]);
   if(missing){alert('Please complete your contact and delivery address before paying. Missing: '+missing);document.querySelector('[name="'+missing+'"]')?.focus();return}
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(buyer.email)){alert('Enter a valid email address.');document.querySelector('[name="email"]')?.focus();return}
-  const payload={items:cart.map(x=>({id:String(x.id),qty:Number(x.qty)})),shipping:selectedShipping,shippingProtection:protection(),customer:buyer};
+  const cartPayload={items:cart.map(x=>({id:String(x.id),qty:Number(x.qty)})),shipping:selectedShipping,shippingProtection:protection()};
   const previousLabel=label.textContent;
-  btn.disabled=true;label.textContent='Creating secure BTCPay invoice…';
+  btn.disabled=true;label.textContent='Verifying your total…';
   try{
+    // Before creating any invoice, obtain the amount from the server-owned catalog.
+    const quoted=await fetch(paymentApi()+'/api/quote',{
+      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(cartPayload),
+      signal:AbortSignal.timeout(15000)
+    });
+    const quote=await quoted.json().catch(()=>({error:'invalid_api_response'}));
+    if(!quoted.ok)throw new Error(quote.error||'quote_unavailable');
+    if(!Number.isSafeInteger(quote.amountCents)||quote.amountCents<=0)throw new Error('invalid_api_response');
+    const verifiedTotal=quote.amountCents/100;
+    const displayedTotal=subtotal()*(1-CRYPTO_DISCOUNT)+(SHIPPING_PRICES[selectedShipping]||0);
+    if(Math.abs(verifiedTotal-displayedTotal)>0.011){
+      const accepted=window.confirm('Your cart price differs from the verified price. Server-confirmed total: '+money(verifiedTotal)+' (displayed: '+money(displayedTotal)+'). Continue with the verified amount?');
+      if(!accepted)return;
+    }
+    label.textContent='Creating secure BTCPay invoice…';
+    const payload={...cartPayload,customer:buyer,expectedAmountCents:quote.amountCents};
     const response=await fetch(paymentApi()+'/api/create-btcpay-invoice',{
       method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),
       signal:AbortSignal.timeout(25000)
@@ -35,8 +51,7 @@ async function createPayment(){
     const invoice=await response.json().catch(()=>({error:'invalid_api_response'}));
     if(!response.ok)throw new Error(invoice.error||'invoice_creation_failed');
     if(!invoice.checkoutLink||!invoice.id)throw new Error('invoice_creation_failed');
-    const expected=subtotal()*(1-CRYPTO_DISCOUNT)+(SHIPPING_PRICES[selectedShipping]||0);
-    if(Math.abs(Number(invoice.amountUSD)-expected)>0.011)throw new Error('price_mismatch_refresh_cart');
+    if(Math.abs(Number(invoice.amountUSD)-verifiedTotal)>0.011)throw new Error('quote_expired');
     // The invoice checkout URL is supplied by our backend, which validates the BTCPay host.
     window.location.assign(invoice.checkoutLink);
   }catch(err){
@@ -45,6 +60,8 @@ async function createPayment(){
       client_prices_not_allowed:'The checkout rejected an invalid price. Please refresh your cart.',
       checkout_not_configured:'Payment setup is incomplete. No charge was generated.',
       checkout_unavailable:'Payment is temporarily unavailable. No charge was generated.',
+      quote_unavailable:'Unable to confirm the price. No invoice was created.',
+      quote_expired:'The price changed before payment. Refresh and try again.',
       price_mismatch_refresh_cart:'The verified server price differs from the cart. Please refresh your cart before paying.',
       invalid_api_response:'The payment API is not connected to this storefront.'
     };
