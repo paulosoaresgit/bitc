@@ -83,6 +83,7 @@ function validatedOrder(data) {
   const shipping = String(data.shipping || '');
   if (!Object.hasOwn(SHIPPING_CENTS, shipping)) throw new Error('invalid_shipping');
   if (typeof data.shippingProtection !== 'boolean') throw new Error('invalid_protection');
+  if (data.shippingProtection && process.env.BITC_PROTECTION_APPROVED !== 'true') throw new Error('protection_not_available');
   const protectionCents = data.shippingProtection ? PROTECTION_CENTS : 0;
   const discountedBase = subtotal + protectionCents;
   const discountCents = Math.round(discountedBase * DISCOUNT_PERCENT / 100);
@@ -109,6 +110,14 @@ function validatedCustomer(data) {
   }
   return customer;
 }
+// Public source availability does not prove our physical inventory or fulfillment contract.
+function verifiedFulfillment(order, customer) {
+  const approved = new Set(String(process.env.BITC_FULFILLABLE_SKUS || '').split(',').map(s => s.trim()).filter(Boolean));
+  if (order.items.some(item => !approved.has(item.id))) throw new Error('inventory_not_verified');
+  const countries = new Set(String(process.env.BITC_SHIP_TO_COUNTRIES || '').split(',').map(s => s.trim()).filter(Boolean));
+  if (!countries.has(customer.country)) throw new Error('delivery_country_unavailable');
+}
+
 async function btcpay(path, method = 'GET', payload) {
   const response = await fetch(BTCPAY_URL + '/api/v1/stores/' + encodeURIComponent(STORE_ID) + path, {
     method,
@@ -150,7 +159,7 @@ const server = http.createServer(async (req, res) => {
     } catch (error) {
       const code = String(error.message || '');
       const allowed = new Set(['client_prices_not_allowed','invalid_order','invalid_items','catalog_item_unavailable','invalid_quantity',
-        'invalid_shipping','invalid_protection','invalid_total']);
+        'invalid_shipping','invalid_protection','protection_not_available','invalid_total']);
       return respond(res, allowed.has(code) ? 400 : 503, { error: allowed.has(code) ? code : 'quote_unavailable' }, origin);
     }
   }
@@ -166,6 +175,7 @@ const server = http.createServer(async (req, res) => {
     const order = validatedOrder(body);
     ensureQuoteAccepted(body, order);
     const customer = validatedCustomer(body);
+    verifiedFulfillment(order, customer);
     id = crypto.randomUUID();
     // BTCPay invoices are the sole payment/order record. No extra database required.
     // Keep shipping PII encrypted even if invoice metadata is returned in a public receipt.
@@ -205,7 +215,7 @@ const server = http.createServer(async (req, res) => {
   } catch (error) {
     console.error('checkout_failed', id || '', String(error?.message || 'unknown'));
     const clientErrors = new Set(['invalid_order','client_prices_not_allowed','invalid_items','catalog_item_unavailable',
-      'invalid_quantity','invalid_shipping','invalid_protection','invalid_total','missing_delivery_address','invalid_email','quote_expired']);
+      'invalid_quantity','invalid_shipping','invalid_protection','invalid_total','inventory_not_verified','delivery_country_unavailable','missing_delivery_address','invalid_email','quote_expired']);
     const errorCode = String(error.message || '');
     return respond(res, errorCode === 'quote_expired' ? 409 : clientErrors.has(errorCode) ? 400 : 503,
       { error: clientErrors.has(errorCode) ? errorCode : 'checkout_unavailable' }, origin);
