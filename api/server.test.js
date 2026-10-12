@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 process.env.NODE_ENV = 'test';
+process.env.BITC_PROTECTION_APPROVED = 'true';
 const { validatedOrder, validatedCustomer, ensureQuoteAccepted, paymentState,
   encryptOrder, decryptOrder, keyBytes, getCatalog } = await import('./server.js');
 
@@ -111,4 +112,10 @@ test('each purchase-enabled product variant is price-pinned to the actual server
         assert.equal(catalog[v.id], undefined, 'disputed price must stay blocked for '+route);
     }
   }
+});
+
+test('protection cannot be charged without merchant approval',()=>{
+  delete process.env.BITC_PROTECTION_APPROVED;
+  try{assert.throws(()=>validatedOrder({...base,shippingProtection:true}), /protection_not_available/);}
+  finally{process.env.BITC_PROTECTION_APPROVED='true';}
 });
