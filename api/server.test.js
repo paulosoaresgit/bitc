@@ -8,7 +8,7 @@ import path from 'node:path';
 process.env.NODE_ENV = 'test';
 process.env.BITC_PROTECTION_APPROVED = 'true';
 const { validatedOrder, validatedCustomer, ensureQuoteAccepted, paymentState,
-  encryptOrder, decryptOrder, keyBytes, getCatalog } = await import('./server.js');
+  encryptOrder, decryptOrder, keyBytes, getCatalog, verifiedFulfillment, SHIPPING_CENTS } = await import('./server.js');
 
 const base = { items: [{ id: 'reco-cards', qty: 1 }], shipping: 'dhl', shippingProtection: false };
 const TEST_KEY = crypto.randomBytes(32).toString('hex');
@@ -146,6 +146,45 @@ test('unavailable source product variants are never accepted by quote',()=>{
     if(p.checkoutEnabledForReview)continue;
     for(const v of p.variants){
       if(!v.available) assert.equal(cat[v.id],undefined,'unavailable '+route+' '+v.id);
+    }
+  }
+});
+
+test('flat shipping prices do not depend on delivery country', () => {
+  assert.deepEqual(SHIPPING_CENTS, { dhl: 0, fedex: 2499, ups: 2999 });
+  const order=validatedOrder({ ...base, items: [{ id:'45599680004326', qty: 1 }] });
+  const customers=['Brazil','United States','Canada','Japan','Australia','South Africa','France','New Zealand'];
+  for(const country of customers)assert.doesNotThrow(()=>verifiedFulfillment(order,{country}),country);
+  for(const [service,fee] of Object.entries(SHIPPING_CENTS)){
+    const quote=validatedOrder({...base,shipping:service});
+    assert.equal(quote.shippingCents,fee,service);
+    assert.equal(quote.amountCents,1440+fee,service);
+  }
+});
+test('optional inventory and country exclusions still block selected SKUs or destinations', () => {
+  const o=validatedOrder(base);
+  const oldBlocked=process.env.BITC_BLOCKED_SKUS;
+  const oldCountries=process.env.BITC_BLOCKED_SHIP_TO_COUNTRIES;
+  const oldAllowed=process.env.BITC_FULFILLABLE_SKUS;
+  const oldDest=process.env.BITC_SHIP_TO_COUNTRIES;
+  try {
+    delete process.env.BITC_FULFILLABLE_SKUS;
+    delete process.env.BITC_SHIP_TO_COUNTRIES;
+    process.env.BITC_BLOCKED_SKUS='reco-cards';
+    assert.throws(()=>verifiedFulfillment(o,{country:'Brazil'}),/inventory_not_verified/);
+    delete process.env.BITC_BLOCKED_SKUS;
+    process.env.BITC_BLOCKED_SHIP_TO_COUNTRIES='Brazil';
+    assert.throws(()=>verifiedFulfillment(o,{country:'brazil'}),/delivery_country_unavailable/);
+    delete process.env.BITC_BLOCKED_SHIP_TO_COUNTRIES;
+    process.env.BITC_FULFILLABLE_SKUS='45599680004326';
+    assert.throws(()=>verifiedFulfillment(o,{country:'France'}),/inventory_not_verified/);
+    delete process.env.BITC_FULFILLABLE_SKUS;
+    process.env.BITC_SHIP_TO_COUNTRIES='Canada';
+    assert.throws(()=>verifiedFulfillment(o,{country:'France'}),/delivery_country_unavailable/);
+  } finally {
+    for(const [name,v] of [['BITC_BLOCKED_SKUS',oldBlocked],['BITC_BLOCKED_SHIP_TO_COUNTRIES',oldCountries],['BITC_FULFILLABLE_SKUS',oldAllowed],['BITC_SHIP_TO_COUNTRIES',oldDest]]){
+      if(v===undefined) delete process.env[name];
+      else process.env[name]=v;
     }
   }
 });
