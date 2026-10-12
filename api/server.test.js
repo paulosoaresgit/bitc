@@ -188,3 +188,24 @@ test('optional inventory and country exclusions still block selected SKUs or des
     }
   }
 });
+
+test('merchant-confirmed shipping policy matches API and client fixed rates', () => {
+  const policy = JSON.parse(readFileSync(new URL('./approved-shipping-policy.json', import.meta.url), 'utf8'));
+  assert.equal(policy.currency, 'USD');
+  assert.equal(policy.basis, 'per_order');
+  assert.equal(policy.destinationPricing, 'same_price_for_all_served_regions');
+  assert.equal(policy.merchantConfirmedOn, '2026-10-12');
+  assert.equal(policy.paymentLaunchAuthorized, false);
+  assert.deepEqual(SHIPPING_CENTS, policy.ratesCents);
+  const cartJS=readFileSync(new URL('../assets/bm-checkout.js', import.meta.url), 'utf8');
+  const found=/\bSHIPPING_PRICES\s*=\s*\{([^}]+)\}/.exec(cartJS);
+  assert.ok(found, 'client shipping rate map must exist');
+  const entries=found[1].split(',').map(x=>x.trim().split(':'));
+  const clientRates=Object.fromEntries(entries.map(([carrier, USD])=>[carrier,Math.round(Number(USD)*100)]));
+  assert.deepEqual(clientRates,policy.ratesCents,'API and browser shipping rates must stay aligned');
+  const checkoutHTML=readFileSync(new URL('../checkout/index.html', import.meta.url), 'utf8');
+  for(const carrier of Object.keys(policy.ratesCents)){
+    assert.match(checkoutHTML,new RegExp('data-shipping="'+carrier+'"'));
+  }
+  assert.match(checkoutHTML,/Checkout not published yet/);
+});
