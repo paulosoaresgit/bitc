@@ -1,0 +1,15 @@
+{
+  "policyVersion": 1,
+  "merchantConfirmedOn": "2026-10-12",
+  "currency": "USD",
+  "basis": "per_order",
+  "destinationPricing": "same_price_for_all_served_regions",
+  "ratesCents": {
+    "dhl": 0,
+    "fedex": 2499,
+    "ups": 2999
+  },
+  "carrierServiceArea": "destinations actually served by the merchant and carrier, not unconditional worldwide coverage",
+  "paymentLaunchAuthorized": false,
+  "note": "The merchant explicitly confirmed these shipping prices. Publication and payment activation remain prohibited until separate launch authorization."
+}
