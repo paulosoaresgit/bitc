@@ -48,31 +48,31 @@
   <div class="co-title-row">
     <div>
       <div class="co-title">Shipping method</div>
-      <div class="co-shipping-sub">Flat shipping rate per method, independent of delivery region</div>
+      <div class="co-shipping-sub">Confirmed flat-rate shipping per order for serviced destinations</div>
     </div>
-    <span class="co-free-shipping-badge">FLAT SHIPPING RATES</span>
+    <span class="co-free-shipping-badge">CONFIRMED FLAT SHIPPING RATES</span>
   </div>
   <div class="co-shipping-methods" id="shipMethod">
     <button type="button" class="co-shipping-option selected" data-shipping="dhl">
       <span class="co-ship-radio"></span>
       <span class="co-ship-brand dhl">DHL</span>
-      <span class="co-ship-copy"><b>DHL — flat shipping rate</b><small>Same rate across regions; delivery time provided after dispatch</small></span>
+      <span class="co-ship-copy"><b>DHL — flat shipping rate</b><small>Same fee per order in serviced regions; delivery time varies</small></span>
       <span class="co-ship-price">Pending</span>
     </button>
     <button type="button" class="co-shipping-option" data-shipping="fedex">
       <span class="co-ship-radio"></span>
       <span class="co-ship-brand fedex">FedEx</span>
-      <span class="co-ship-copy"><b>FedEx — flat shipping rate</b><small>Same rate across regions; delivery time provided after dispatch</small></span>
+      <span class="co-ship-copy"><b>FedEx — flat shipping rate</b><small>Same fee per order in serviced regions; delivery time varies</small></span>
       <span class="co-ship-price paid">Pending</span>
     </button>
     <button type="button" class="co-shipping-option" data-shipping="ups">
       <span class="co-ship-radio"></span>
       <span class="co-ship-brand ups">UPS</span>
-      <span class="co-ship-copy"><b>UPS — flat shipping rate</b><small>Same rate across regions; delivery time provided after dispatch</small></span>
+      <span class="co-ship-copy"><b>UPS — flat shipping rate</b><small>Same fee per order in serviced regions; delivery time varies</small></span>
       <span class="co-ship-price paid">Pending</span>
     </button>
   </div>
-  <div class="co-shipping-note">Shipping charges depend on the selected service, not the destination. Final checkout activation and dispatch arrangements are still pending.</div>
+  <div class="co-shipping-note">Merchant-confirmed shipping fees: DHL FREE, FedEx $24.99, UPS $29.99 per order in serviced regions. Checkout is not published yet.</div>
 </div>
 <button type="button" class="co-recos-toggle" id="recosToggle"><span>+ Add extras to your order</span><small>Optional</small><span class="co-recos-chevron">⌄</span></button><div class="co-recos" id="recosPanel"><h3>Optional accessories (availability must be verified)</h3><div class="co-reco"><div class="co-reco-thumb cards">CRYPTO<br>CARDS</div><div><div class="co-reco-name">Bitcoin Merch® - Cardsmiths Crypto Currency Collectible Trading Cards - Win Real Crypto! </div><div class="co-reco-price">$18.00 <span class="co-old">$19.99</span></div></div><div class="co-reco-action"><select><option>1 Pack</option></select><button class="co-add" id="addCards">Add</button></div></div><div class="co-reco"><div class="co-reco-thumb">₿</div><div><div class="co-reco-name">Bitcoin Merch® - Gold Nugget Lottery Miner <span class="co-sale">(10% OFF)</span></div><div class="co-reco-price">$36.00 <span class="co-old">$39.99</span></div></div><div class="co-reco-action"><input id="goldQty" type="number" min="1" value="1" placeholder="Quantity"><button class="co-add" id="addGold">Add</button></div></div></div>
 <div class="co-section co-payment-section" style="margin-top:28px">
@@ -153,8 +153,8 @@
 
   <p class="co-payment-sub" style="margin:18px 0">Bitcoin payment is currently the only enabled method. Other payment methods are not available yet.</p>
 
-  <p role="status" class="co-shipping-note" id="checkoutReadinessNotice">Purchases are disabled until the final review and publication are authorized. No Bitcoin invoice will be created while checkout is inactive.</p><button class="co-pay-now co-pay-crypto" id="payNow" disabled aria-disabled="true"><span class="co-cta-btc">₿</span><span id="payNowLabel">Checkout pending verification</span><span class="co-cta-arrow">→</span></button>
+  <p role="status" class="co-shipping-note" id="checkoutReadinessNotice">Purchases are disabled until the final review and publication are authorized. No Bitcoin invoice will be created while checkout is inactive.</p><button class="co-pay-now co-pay-crypto" id="payNow" disabled aria-disabled="true"><span class="co-cta-btc">₿</span><span id="payNowLabel">Checkout not published yet</span><span class="co-cta-arrow">→</span></button>
 </div><div class="co-footer-links"><a href="#">Refund policy</a><a href="#">Privacy policy</a><a href="#">Terms of service</a><a href="#">Cancellations</a></div>
 </section>
-<aside class="co-right"><button type="button" class="co-summary-toggle" id="summaryToggle"><span>Order summary</span><span class="co-summary-toggle-total" id="summaryToggleTotal">$0.00</span><span class="co-summary-toggle-chevron">⌄</span></button><div class="co-summary-inner" id="summaryInner"><div class="co-right-products" id="coItems"></div><div class="co-totals"><div class="co-total-row"><span id="coSubtotalLabel">Subtotal</span><span id="coSubtotal">$0.00</span></div><div class="co-total-row"><span>Shipping</span><span id="coShipping" class="co-shipping-summary">FREE</span></div><div class="co-total-row co-crypto-discount-row" id="coCryptoDiscountRow"><span>Crypto discount <b>-20%</b></span><span id="coCryptoDiscount">-$0.00</span></div><div class="co-total-row co-total-final"><span>Estimated total (not payable yet)</span><span><span class="co-original-total" id="coOriginalTotal"></span><span class="usd">USD</span><span id="coTotal">$0.00</span></span></div></div><div class="co-trust"><div class="co-trust-title">Order review</div><div class="co-trust-reviews">Availability and shipping are being verified.</div><div class="co-trust-brand">BITC Mining</div></div></div></aside>
+<aside class="co-right"><button type="button" class="co-summary-toggle" id="summaryToggle"><span>Order summary</span><span class="co-summary-toggle-total" id="summaryToggleTotal">$0.00</span><span class="co-summary-toggle-chevron">⌄</span></button><div class="co-summary-inner" id="summaryInner"><div class="co-right-products" id="coItems"></div><div class="co-totals"><div class="co-total-row"><span id="coSubtotalLabel">Subtotal</span><span id="coSubtotal">$0.00</span></div><div class="co-total-row"><span>Shipping</span><span id="coShipping" class="co-shipping-summary">FREE</span></div><div class="co-total-row co-crypto-discount-row" id="coCryptoDiscountRow"><span>Crypto discount <b>-20%</b></span><span id="coCryptoDiscount">-$0.00</span></div><div class="co-total-row co-total-final"><span>Estimated total (not payable yet)</span><span><span class="co-original-total" id="coOriginalTotal"></span><span class="usd">USD</span><span id="coTotal">$0.00</span></span></div></div><div class="co-trust"><div class="co-trust-title">Order review</div><div class="co-trust-reviews">Flat shipping confirmed; orders are not being accepted yet.</div><div class="co-trust-brand">BITC Mining</div></div></div></aside>
 </main><div class="co-toast" id="coToast"></div><script src="/assets/bm-checkout.js"></script></body></html>
