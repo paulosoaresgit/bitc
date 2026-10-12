@@ -10,9 +10,8 @@
   <div class="co-stack co-delivery-fields">
     <div>
       <div class="co-mini-label">Country/Region</div>
-      <select class="co-field co-select" name="country" autocomplete="country-name">
-        <option>Brazil</option><option>United States</option><option>Canada</option><option>United Kingdom</option><option>Australia</option><option>France</option><option>Germany</option><option>Italy</option><option>Portugal</option><option>Spain</option><option>Japan</option><option>Mexico</option><option>India</option><option>United Arab Emirates</option><option>South Africa</option><option>Argentina</option><option>Chile</option><option>Colombia</option><option>New Zealand</option>
-      </select>
+      <input class="co-field co-select" name="country" autocomplete="country-name" placeholder="Country / region" list="bitc-country-suggestions" required>
+      <datalist id="bitc-country-suggestions"><option value="Brazil"><option value="United States"><option value="Canada"><option value="United Kingdom"><option value="Australia"><option value="France"><option value="Germany"><option value="Italy"><option value="Portugal"><option value="Spain"><option value="Japan"><option value="Mexico"><option value="India"><option value="United Arab Emirates"><option value="South Africa"><option value="Argentina"><option value="Chile"><option value="Colombia"><option value="New Zealand"></datalist>
     </div>
     <div class="co-grid2 co-name-grid">
       <input class="co-field co-address-input" name="firstName" autocomplete="given-name" placeholder="First name">
