@@ -119,3 +119,33 @@ test('protection cannot be charged without merchant approval',()=>{
   try{assert.throws(()=>validatedOrder({...base,shippingProtection:true}), /protection_not_available/);}
   finally{process.env.BITC_PROTECTION_APPROVED='true';}
 });
+
+test('prelaunch checkout is disabled even if BTCPay credentials are present',async()=>{
+  const {server}=await import('./server.js');
+  delete process.env.BITC_SALES_ENABLED;
+  const origin='https://bitcmining.tech';
+  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
+  try{
+    const baseUrl='http://127.0.0.1:'+server.address().port;
+    const health=await fetch(baseUrl+'/api/health',{headers:{Origin:origin}});
+    assert.equal(health.status,200);
+    assert.equal((await health.json()).salesEnabled,false);
+    const response=await fetch(baseUrl+'/api/create-btcpay-invoice',{
+      method:'POST',headers:{'Content-Type':'application/json',Origin:origin},
+      body:JSON.stringify({items:[{id:'45599680004326',qty:1}],shipping:'dhl',shippingProtection:false,expectedAmountCents:9599})
+    });
+    assert.equal(response.status,503);
+    assert.equal((await response.json()).error,'checkout_not_ready');
+  }finally{await new Promise((resolve,reject)=>server.close(err=>err?reject(err):resolve()));}
+});
+
+test('unavailable source product variants are never accepted by quote',()=>{
+  const live=JSON.parse(readFileSync(new URL('./live-products.json',import.meta.url),'utf8'));
+  const cat=getCatalog();
+  for(const [route,p] of Object.entries(live)){
+    if(p.checkoutEnabledForReview)continue;
+    for(const v of p.variants){
+      if(!v.available) assert.equal(cat[v.id],undefined,'unavailable '+route+' '+v.id);
+    }
+  }
+});
