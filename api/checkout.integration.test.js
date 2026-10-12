@@ -68,14 +68,18 @@ test('full API-to-mocked-BTCPay contract: payment lock, quotes, price, invoice, 
     assert.equal(illegal.status,400);
     assert.equal(illegal.body.error,'client_prices_not_allowed');
     assert.equal(network.length,0,'rejected requests must not contact BTCPay');
+    // Merchant-approved ample stock + flat-rate delivery do not require
+    // an exhaustive SKU/country allowlist, but exceptions must stay blockable.
+    process.env.BITC_BLOCKED_SKUS='45599680004326';
     const noStock=await API('/api/create-btcpay-invoice',request);
     assert.equal(noStock.status,400);
     assert.equal(noStock.body.error,'inventory_not_verified');
-    process.env.BITC_FULFILLABLE_SKUS='45599680004326';
+    delete process.env.BITC_BLOCKED_SKUS;
+    process.env.BITC_BLOCKED_SHIP_TO_COUNTRIES='United States';
     const noCountry=await API('/api/create-btcpay-invoice',request);
     assert.equal(noCountry.status,400);
     assert.equal(noCountry.body.error,'delivery_country_unavailable');
-    process.env.BITC_SHIP_TO_COUNTRIES='United States';
+    delete process.env.BITC_BLOCKED_SHIP_TO_COUNTRIES;
     const invoice=await API('/api/create-btcpay-invoice',request);
     assert.equal(invoice.status,200);
     assert.equal(invoice.body.id,'INVOICE_TEST_123');
@@ -99,6 +103,8 @@ test('full API-to-mocked-BTCPay contract: payment lock, quotes, price, invoice, 
       delete process.env[name];
     delete process.env.BITC_FULFILLABLE_SKUS;
     delete process.env.BITC_SHIP_TO_COUNTRIES;
+    delete process.env.BITC_BLOCKED_SKUS;
+    delete process.env.BITC_BLOCKED_SHIP_TO_COUNTRIES;
     await new Promise((resolve,reject)=>server.close(err=>err?reject(err):resolve()));
   }
 });
