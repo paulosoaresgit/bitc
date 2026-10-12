@@ -110,12 +110,19 @@ function validatedCustomer(data) {
   }
   return customer;
 }
-// Public source availability does not prove our physical inventory or fulfillment contract.
+// The merchant reports ample stock and flat-rate shipping regardless of destination.
+// No per-SKU stock counter or per-country shipping calculation is needed. The
+// catalog still excludes unverified/unavailable products. Optional restrictive
+// lists can be supplied later (e.g. for shipping compliance or a recalled item).
 function verifiedFulfillment(order, customer) {
-  const approved = new Set(String(process.env.BITC_FULFILLABLE_SKUS || '').split(',').map(s => s.trim()).filter(Boolean));
-  if (order.items.some(item => !approved.has(item.id))) throw new Error('inventory_not_verified');
-  const countries = new Set(String(process.env.BITC_SHIP_TO_COUNTRIES || '').split(',').map(s => s.trim()).filter(Boolean));
-  if (!countries.has(customer.country)) throw new Error('delivery_country_unavailable');
+  const allowed = new Set(String(process.env.BITC_FULFILLABLE_SKUS || '').split(',').map(s => s.trim()).filter(Boolean));
+  if (allowed.size && order.items.some(item => !allowed.has(item.id))) throw new Error('inventory_not_verified');
+  const blocked = new Set(String(process.env.BITC_BLOCKED_SKUS || '').split(',').map(s => s.trim()).filter(Boolean));
+  if (order.items.some(item => blocked.has(item.id))) throw new Error('inventory_not_verified');
+  const destinations = new Set(String(process.env.BITC_SHIP_TO_COUNTRIES || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean));
+  if (destinations.size && !destinations.has(customer.country.toLowerCase())) throw new Error('delivery_country_unavailable');
+  const exclusions = new Set(String(process.env.BITC_BLOCKED_SHIP_TO_COUNTRIES || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean));
+  if (exclusions.has(customer.country.toLowerCase())) throw new Error('delivery_country_unavailable');
 }
 
 async function btcpay(path, method = 'GET', payload) {
