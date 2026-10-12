@@ -4,7 +4,7 @@
 <section class="co-left">
 <div class="co-badges"><div class="co-badge"><svg viewBox="0 0 24 24" fill="none"><rect x="6" y="10" width="12" height="10" rx="2" stroke="#111" stroke-width="1.6"/><path d="M9 10V7a3 3 0 0 1 6 0v3" stroke="#111" stroke-width="1.6"/></svg><b>Secure Payments</b></div><div class="co-badge"><svg viewBox="0 0 24 24" fill="none"><path d="M6 8h12v11H6zM8 8V5h8v3M9 12h6" stroke="#111" stroke-width="1.5"/></svg><b>Warranty terms pending</b></div><div class="co-badge"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="#111" stroke-width="1.5"/><path d="m9 12 2 2 4-4" stroke="#111" stroke-width="1.7"/></svg><b>Order support details pending</b></div></div>
 
-<div class="co-section co-contact-section"><div class="co-title-row"><div><div class="co-title">Contact</div><div class="co-form-hint">Receipt and order updates</div></div><span class="co-signin">Guest checkout</span></div><div class="co-field-wrap"><input class="co-field" type="email" name="email" autocomplete="email" inputmode="email" placeholder="Email address"><span class="co-help">?</span></div><label class="co-check co-marketing-check"><input type="checkbox"> Email me with news and offers</label></div>
+<div class="co-section co-contact-section"><div class="co-title-row"><div><div class="co-title">Contact</div><div class="co-form-hint">Receipt and order updates</div></div><span class="co-signin">Guest checkout</span></div><div class="co-field-wrap"><input class="co-field" type="email" name="email" autocomplete="email" inputmode="email" placeholder="Email address"><span class="co-help">?</span></div></div>
 <div class="co-section co-delivery-section">
   <div class="co-title-row"><div><div class="co-title">Delivery</div><div class="co-form-hint">Where should we send your order?</div></div></div>
   <div class="co-stack co-delivery-fields">
@@ -42,8 +42,8 @@
       <input class="co-field" name="neighborhood" placeholder="Neighborhood (optional)">
     </div>
   </div>
-  <label class="co-check co-save-info"><input type="checkbox"> Save this information for next time</label>
-  <label class="co-check co-marketing-check"><input type="checkbox"> Text me with news and offers</label>
+  
+  
 </div>
 <div class="co-section">
   <div class="co-title-row">
@@ -57,25 +57,25 @@
     <button type="button" class="co-shipping-option selected" data-shipping="dhl">
       <span class="co-ship-radio"></span>
       <span class="co-ship-brand dhl">DHL</span>
-      <span class="co-ship-copy"><b>DHL Express Worldwide</b><small>Availability, timing and final charge to be confirmed</small></span>
+      <span class="co-ship-copy"><b>DHL — proposal, pending approval</b><small>Availability, timing and final charge to be confirmed</small></span>
       <span class="co-ship-price">Pending</span>
     </button>
     <button type="button" class="co-shipping-option" data-shipping="fedex">
       <span class="co-ship-radio"></span>
       <span class="co-ship-brand fedex">FedEx</span>
-      <span class="co-ship-copy"><b>FedEx International Priority</b><small>Carrier, timing and final charge to be confirmed</small></span>
+      <span class="co-ship-copy"><b>FedEx — proposal, pending approval</b><small>Carrier, timing and final charge to be confirmed</small></span>
       <span class="co-ship-price paid">Pending</span>
     </button>
     <button type="button" class="co-shipping-option" data-shipping="ups">
       <span class="co-ship-radio"></span>
       <span class="co-ship-brand ups">UPS</span>
-      <span class="co-ship-copy"><b>UPS Worldwide Saver</b><small>Carrier, timing and final charge to be confirmed</small></span>
+      <span class="co-ship-copy"><b>UPS — proposal, pending approval</b><small>Carrier, timing and final charge to be confirmed</small></span>
       <span class="co-ship-price paid">Pending</span>
     </button>
   </div>
   <div class="co-shipping-note">Shipping destinations, rates and delivery dates have not been approved. No payment will be created until confirmation.</div>
 </div>
-<button type="button" class="co-recos-toggle" id="recosToggle"><span>+ Add extras to your order</span><small>Optional</small><span class="co-recos-chevron">⌄</span></button><div class="co-recos" id="recosPanel"><h3>Current Best Sellers ↘</h3><div class="co-reco"><div class="co-reco-thumb cards">CRYPTO<br>CARDS</div><div><div class="co-reco-name">Bitcoin Merch® - Cardsmiths Crypto Currency Collectible Trading Cards - Win Real Crypto! <span class="co-sale">(10% OFF)</span></div><div class="co-reco-price">$18.00 <span class="co-old">$19.99</span></div></div><div class="co-reco-action"><select><option>1 Pack</option></select><button class="co-add" id="addCards">Add</button></div></div><div class="co-reco"><div class="co-reco-thumb">₿</div><div><div class="co-reco-name">Bitcoin Merch® - Gold Nugget Lottery Miner <span class="co-sale">(10% OFF)</span></div><div class="co-reco-price">$36.00 <span class="co-old">$39.99</span></div></div><div class="co-reco-action"><input id="goldQty" type="number" min="1" value="1" placeholder="Quantity"><button class="co-add" id="addGold">Add</button></div></div></div>
+<button type="button" class="co-recos-toggle" id="recosToggle"><span>+ Add extras to your order</span><small>Optional</small><span class="co-recos-chevron">⌄</span></button><div class="co-recos" id="recosPanel"><h3>Optional accessories (availability must be verified)</h3><div class="co-reco"><div class="co-reco-thumb cards">CRYPTO<br>CARDS</div><div><div class="co-reco-name">Bitcoin Merch® - Cardsmiths Crypto Currency Collectible Trading Cards - Win Real Crypto! </div><div class="co-reco-price">$18.00 <span class="co-old">$19.99</span></div></div><div class="co-reco-action"><select><option>1 Pack</option></select><button class="co-add" id="addCards">Add</button></div></div><div class="co-reco"><div class="co-reco-thumb">₿</div><div><div class="co-reco-name">Bitcoin Merch® - Gold Nugget Lottery Miner <span class="co-sale">(10% OFF)</span></div><div class="co-reco-price">$36.00 <span class="co-old">$39.99</span></div></div><div class="co-reco-action"><input id="goldQty" type="number" min="1" value="1" placeholder="Quantity"><button class="co-add" id="addGold">Add</button></div></div></div>
 <div class="co-section co-payment-section" style="margin-top:28px">
   <div class="co-payment-headline">
     <div>
@@ -122,7 +122,7 @@
       <span class="co-radio co-radio-lg"></span>
       <span class="co-crypto-icon co-binance-icon"><img src="/assets/binance-bnb.svg" alt="Binance"></span>
       <span class="co-crypto-copy">
-        <b>Pay with Binance</b>
+        <b>Binance (not available as a separate payment method)</b>
         <small>Use your Binance BTC balance</small>
       </span>
       <span class="co-crypto-card-side">
@@ -154,8 +154,8 @@
 
   <p class="co-payment-sub" style="margin:18px 0">Bitcoin payment is currently the only enabled method. Other payment methods are not available yet.</p>
 
-  <button class="co-pay-now co-pay-crypto" id="payNow"><span class="co-cta-btc">₿</span><span id="payNowLabel">Checkout pending verification</span><span class="co-cta-arrow">→</span></button>
+  <p role="status" class="co-shipping-note" id="checkoutReadinessNotice">Purchases are disabled until the store verifies stock, delivery rates and fulfillment terms. No Bitcoin invoice will be created while verification is pending.</p><button class="co-pay-now co-pay-crypto" id="payNow" disabled aria-disabled="true"><span class="co-cta-btc">₿</span><span id="payNowLabel">Checkout pending verification</span><span class="co-cta-arrow">→</span></button>
 </div><div class="co-footer-links"><a href="#">Refund policy</a><a href="#">Privacy policy</a><a href="#">Terms of service</a><a href="#">Cancellations</a></div>
 </section>
-<aside class="co-right"><button type="button" class="co-summary-toggle" id="summaryToggle"><span>Order summary</span><span class="co-summary-toggle-total" id="summaryToggleTotal">$0.00</span><span class="co-summary-toggle-chevron">⌄</span></button><div class="co-summary-inner" id="summaryInner"><div class="co-right-products" id="coItems"></div><div class="co-coupon"><input class="co-field" placeholder="Discount code or gift card"><button id="applyCoupon">Apply</button></div><div class="co-totals"><div class="co-total-row"><span id="coSubtotalLabel">Subtotal</span><span id="coSubtotal">$0.00</span></div><div class="co-total-row"><span>Shipping</span><span id="coShipping" class="co-shipping-summary">FREE</span></div><div class="co-total-row co-crypto-discount-row" id="coCryptoDiscountRow"><span>Crypto discount <b>-20%</b></span><span id="coCryptoDiscount">-$0.00</span></div><div class="co-total-row co-total-final"><span>Estimated total (not payable yet)</span><span><span class="co-original-total" id="coOriginalTotal"></span><span class="usd">USD</span><span id="coTotal">$0.00</span></span></div></div><div class="co-trust"><div class="co-trust-title">Order review</div><div class="co-trust-reviews">Availability and shipping are being verified.</div><div class="co-trust-brand">BITC Mining</div></div></div></aside>
+<aside class="co-right"><button type="button" class="co-summary-toggle" id="summaryToggle"><span>Order summary</span><span class="co-summary-toggle-total" id="summaryToggleTotal">$0.00</span><span class="co-summary-toggle-chevron">⌄</span></button><div class="co-summary-inner" id="summaryInner"><div class="co-right-products" id="coItems"></div><div class="co-totals"><div class="co-total-row"><span id="coSubtotalLabel">Subtotal</span><span id="coSubtotal">$0.00</span></div><div class="co-total-row"><span>Shipping</span><span id="coShipping" class="co-shipping-summary">FREE</span></div><div class="co-total-row co-crypto-discount-row" id="coCryptoDiscountRow"><span>Crypto discount <b>-20%</b></span><span id="coCryptoDiscount">-$0.00</span></div><div class="co-total-row co-total-final"><span>Estimated total (not payable yet)</span><span><span class="co-original-total" id="coOriginalTotal"></span><span class="usd">USD</span><span id="coTotal">$0.00</span></span></div></div><div class="co-trust"><div class="co-trust-title">Order review</div><div class="co-trust-reviews">Availability and shipping are being verified.</div><div class="co-trust-brand">BITC Mining</div></div></div></aside>
 </main><div class="co-toast" id="coToast"></div><script src="/assets/bm-checkout.js"></script></body></html>
