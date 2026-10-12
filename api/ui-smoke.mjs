@@ -43,7 +43,7 @@ try{
   assert.ok(!(await page.locator('#bmCartDrawer').innerText()).includes('666 miner reviews'));
   assert.ok(!(await page.locator('#bmCartDrawer').innerText()).includes('You unlocked Free Shipping'));
   await page.goto(origin+'/checkout/',{waitUntil:'domcontentloaded'});
-  await page.waitForFunction(()=>document.querySelector('#payNowLabel')?.textContent?.includes('verification'));
+  await page.waitForFunction(()=>document.querySelector('#payNowLabel')?.textContent?.includes('not published'));
   assert.equal(await page.locator('#payNow').isDisabled(),true,'payment must be disabled until approved');
   assert.ok((await page.locator('.co-shipping-note').first().innerText()).toLowerCase().includes('flat-rate'));
   assert.equal(await page.locator('.co-shipping-option[data-shipping="dhl"] .co-ship-price').innerText(),'FREE');
