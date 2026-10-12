@@ -68,6 +68,14 @@ test('full API-to-mocked-BTCPay contract: payment lock, quotes, price, invoice, 
     assert.equal(illegal.status,400);
     assert.equal(illegal.body.error,'client_prices_not_allowed');
     assert.equal(network.length,0,'rejected requests must not contact BTCPay');
+    const noStock=await API('/api/create-btcpay-invoice',request);
+    assert.equal(noStock.status,400);
+    assert.equal(noStock.body.error,'inventory_not_verified');
+    process.env.BITC_FULFILLABLE_SKUS='45599680004326';
+    const noCountry=await API('/api/create-btcpay-invoice',request);
+    assert.equal(noCountry.status,400);
+    assert.equal(noCountry.body.error,'delivery_country_unavailable');
+    process.env.BITC_SHIP_TO_COUNTRIES='United States';
     const invoice=await API('/api/create-btcpay-invoice',request);
     assert.equal(invoice.status,200);
     assert.equal(invoice.body.id,'INVOICE_TEST_123');
@@ -89,6 +97,8 @@ test('full API-to-mocked-BTCPay contract: payment lock, quotes, price, invoice, 
     globalThis.fetch=fetchHTTP;
     for(const name of ['BITC_SALES_ENABLED','BITC_SHIPPING_APPROVED','BITC_INVENTORY_APPROVED','BITC_TERMS_APPROVED'])
       delete process.env[name];
+    delete process.env.BITC_FULFILLABLE_SKUS;
+    delete process.env.BITC_SHIP_TO_COUNTRIES;
     await new Promise((resolve,reject)=>server.close(err=>err?reject(err):resolve()));
   }
 });
