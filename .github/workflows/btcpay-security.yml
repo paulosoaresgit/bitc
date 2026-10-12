@@ -33,6 +33,7 @@ jobs:
         run: |
           bash -n deploy/hostinger/preflight.sh
           bash -n deploy/hostinger/publish.sh
+          bash -n deploy/hostinger/check-prod.sh
       - name: Validate Hostinger Docker Compose configuration
         shell: bash
         run: |
