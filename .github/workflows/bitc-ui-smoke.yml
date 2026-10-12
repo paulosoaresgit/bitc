@@ -1,0 +1,35 @@
+name: BITC prelaunch browser checkout smoke
+on:
+  push:
+    branches:
+      - fix/btcpay-server-pricing-checkout
+    paths:
+      - api/ui-smoke.mjs
+      - checkout/index.html
+      - assets/bm-cart.js
+      - assets/bm-checkout.js
+      - .github/workflows/bitc-ui-smoke.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Set up isolated Playwright browser
+        run: |
+          mkdir -p /tmp/bitc-ui-playwright
+          cd /tmp/bitc-ui-playwright
+          npm init -y >/dev/null
+          npm install --no-save playwright
+          npx playwright install chromium
+          echo "NODE_PATH=/tmp/bitc-ui-playwright/node_modules" >> "$GITHUB_ENV"
+      - name: Run storefront product-to-checkout browser tests
+        run: |
+          ln -s /tmp/bitc-ui-playwright/node_modules ./node_modules
+          node api/ui-smoke.mjs
