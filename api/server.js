@@ -229,4 +229,4 @@ const server = http.createServer(async (req, res) => {
   }
 });
 if (process.env.NODE_ENV !== 'test') server.listen(PORT, () => console.log('BITC payment API listening on ' + PORT));
-export { server, salesReady, validatedOrder, validatedCustomer, getCatalog, ensureQuoteAccepted, encryptOrder, decryptOrder, paymentState, keyBytes };
+export { server, salesReady, validatedOrder, validatedCustomer, verifiedFulfillment, SHIPPING_CENTS, getCatalog, ensureQuoteAccepted, encryptOrder, decryptOrder, paymentState, keyBytes };
