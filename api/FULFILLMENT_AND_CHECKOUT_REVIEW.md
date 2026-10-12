@@ -1,33 +1,33 @@
-# BITC checkout and fulfillment gate review — 2026-10-12
+# BITC Mining — shipping and inventory policy review (2026-10-12)
 
-This review modifies GitHub draft code **only**, not the published website, VPS, BTCPay or DNS.
+**GitHub draft only. No publication, DNS modifications, production server changes or Bitcoin payment attempted.**
 
-## Verified from source
+## Merchant-provided conditions
 
-- Payment API has an opt-in kill-switch. Invoice creation requires all of `BITC_SALES_ENABLED=true`, `BITC_SHIPPING_APPROVED=true`, `BITC_INVENTORY_APPROVED=true`, and `BITC_TERMS_APPROVED=true`.
-- Even if the global switches are enabled later, each SKU must appear in private `BITC_FULFILLABLE_SKUS`; an order to a country outside `BITC_SHIP_TO_COUNTRIES` is rejected.
-- Delivery protection cannot be purchased unless `BITC_PROTECTION_APPROVED=true`. The shipping matrix presently hardcodes DHL USD 0, FedEx USD 24.99 and UPS USD 29.99. These rates are **unverified** and MUST NOT be enabled until actual fulfillment arrangements and all destinations are agreed.
-- Client-submitted cart prices cannot determine the invoice amount. The server uses `api/catalog.json` and checks the exact invoice amount after creation.
-- The cart now stores the selected SKU variant's exact `data-cents` value rather than guessing from the product's first visible price; disabled options are refused.
-- The checkout retains its sales-readiness kill-switch if an invoice request errors.
-- Public product-feed stock flags are only reference data and **do not establish inventory possession or supplier authorization**.
-- 152 product URLs exist, 553 server catalog entries and eight unavailable/unverified products remain blocked.
+- Merchant states the store has sufficient inventory to fulfill orders without tracking a separate numerical stock ceiling. For checkout, we treat catalogued and eligible SKUs as having ample stock. The **per-order 10-unit limit** is retained as an order validation rule, not a stock limit.
+- Merchant states shipping charges **do not vary with the customer's region**. The three existing draft methods remain DHL **$0.00**, FedEx **$24.99**, and UPS **$29.99** per order in USD. **The exact amounts still need to be explicitly confirmed**; no claim has been made about carrier transit times or actual service coverage.
+- We do not infer a shipping service is legal or physically available to every destination just because the charge is fixed. The API allows future optional country and SKU exclusions.
 
-## Tasks requiring user/supplier confirmation
+## Implemented in branch
 
-1. Confirm whether the business owns or can actually fulfill the listed products and has permission to use photographs, brands and marketing copy. Captured assets and pages reference `bitcoinmerch.com`; do not assert authorization without documentation.
-2. Verify shipping methods/rates, package weights and supported countries; free or fixed shipping is not automatically valid worldwide.
-3. Approve 20% Bitcoin discount, returns/cancellations policies, taxes/duties and any optional shipping-protection terms.
-4. Inspect mobile and desktop visually and test browser cart behavior with multiple variants and quantity changes in a private preview.
-5. Back up BTCPay wallet recovery material and `BITC_ORDER_ENCRYPTION_KEY` outside the VPS.
-6. Deploy only after the owner authorizes publication, then perform a limited invoice/QR/payment confirmation test. **No real bitcoin was sent** in this audit; do not claim a live payment passed.
+- `verifiedFulfillment()` no longer requires a manually enumerated `BITC_FULFILLABLE_SKUS` or `BITC_SHIP_TO_COUNTRIES` value. **Optional** allowlist settings still work when set, and new `BITC_BLOCKED_SKUS` / `BITC_BLOCKED_SHIP_TO_COUNTRIES` exclusions can prevent particular purchases.
+- Server prices remain pinned to `api/catalog.json`, and rejected/unavailable source variants do not get purchase prices. The previously explicitly blocked **8 products** remain unavailable pending SKU-by-SKU review.
+- Shipping is calculated from the method alone, always in fixed integer USD cents and added **after** the 20% Bitcoin product discount. The buyer cannot submit a custom payable amount.
+- Checkout shows current fixed shipping draft amounts even while payment remains disabled. Delivery country can be entered beyond the previous four-country selector.
+- The default launch kill switch is unchanged. Invoice creation still requires four explicit flags `BITC_SALES_ENABLED`, `BITC_SHIPPING_APPROVED`, `BITC_INVENTORY_APPROVED`, `BITC_TERMS_APPROVED` all set to the literal `true`; none have been set on the VPS.
+- Delivery protection is still disabled unless separately approved by `BITC_PROTECTION_APPROVED`.
 
-## Non-production tests
+## Remaining non-code checks before launch
 
-```bash
-cd api && npm test
-node --check ../assets/bm-cart.js
-node --check ../assets/bm-checkout.js
-```
+- Explicitly confirm the existing USD **0.00 / 24.99 / 29.99** shipping values.
+- Confirm the merchant has legal distribution, delivery arrangements and the right to use third-party product photography and copy. The live product feed does **not** independently validate merchant stock.
+- Review eight blocked items (seven source-unavailable and one missing feed) if they should be offered.
+- Confirm supported delivery destinations, customs/duties, refund terms, fulfillment process and the 20% discount.
+- Back up the BTCPay wallet recovery information and private encryption key. Conduct a controlled real invoice, QR, settlement and order-read test after receiving permission to deploy. No real payment was made.
+- Visual/mobile user acceptance in preview and security review.
 
-The tests include a prelaunch mock HTTP request that verifies `/api/create-btcpay-invoice` returns HTTP 503 with `checkout_not_ready` before enabling the four approvals. It does not contact a live BTCPay instance.
+## Automated validation
+
+`cd api && npm test`, GitHub Actions browser checkout smoke, `node api/audit-site-links.mjs`, and merchant price approval tests.
+
+The browser test checks all three flat-rate amounts and confirms switching shipping options cannot activate payment.
