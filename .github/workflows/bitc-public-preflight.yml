@@ -1,0 +1,22 @@
+name: BITC public production preflight (read-only)
+on:
+  push:
+    branches:
+      - fix/btcpay-server-pricing-checkout
+    paths:
+      - api/public-preflight.mjs
+      - .github/workflows/bitc-public-preflight.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check DNS, HTTPS, the parked domain and policy links, without making payments
+        run: node api/public-preflight.mjs
