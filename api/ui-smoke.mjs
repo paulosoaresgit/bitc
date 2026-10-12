@@ -45,7 +45,16 @@ try{
   await page.goto(origin+'/checkout/',{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>document.querySelector('#payNowLabel')?.textContent?.includes('verification'));
   assert.equal(await page.locator('#payNow').isDisabled(),true,'payment must be disabled until approved');
-  assert.ok((await page.locator('.co-shipping-note').first().innerText()).toLowerCase().includes('approved'));
+  assert.ok((await page.locator('.co-shipping-note').first().innerText()).toLowerCase().includes('flat-rate'));
+  assert.equal(await page.locator('.co-shipping-option[data-shipping="dhl"] .co-ship-price').innerText(),'FREE');
+  assert.equal(await page.locator('.co-shipping-option[data-shipping="fedex"] .co-ship-price').innerText(),'$24.99');
+  assert.equal(await page.locator('.co-shipping-option[data-shipping="ups"] .co-ship-price').innerText(),'$29.99');
+  assert.equal(await page.locator('input[name="country"]').count(),1,'country entry must be open for regional delivery');
+  await page.locator('input[name="country"]').fill('Japan');
+  assert.equal(await page.locator('input[name="country"]').inputValue(),'Japan');
+  await page.locator('.co-shipping-option[data-shipping="ups"]').click();
+  assert.equal(await page.locator('#coShipping').innerText(),'$29.99');
+  assert.equal(await page.locator('#payNow').isDisabled(),true,'reviewing other shipping methods cannot enable payment');
   assert.equal(await page.locator('#coSubtotal').innerText(),'$2,499.99');
   assert.equal(await page.locator('#coTotal').innerText(),'$1,999.99','20% draft discount must match server cents');
   assert.equal(apiHits,0,'no API invoice call is permitted during draft checkout');
