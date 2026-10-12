@@ -8,6 +8,13 @@ const BTCPAY_URL = (process.env.BTCPAY_URL || 'https://pay.bitcmining.tech').rep
 const API_KEY = process.env.BTCPAY_API_KEY || '';
 const STORE_ID = process.env.BTCPAY_STORE_ID || '';
 const ORDER_ENCRYPTION_KEY = process.env.BITC_ORDER_ENCRYPTION_KEY || '';
+// Payments are opt-in only after the merchant verifies shipping, physical stock,
+// fulfillment/returns and accepts a test invoice. Never auto-enable on deploy.
+function salesReady() {
+  return ['BITC_SALES_ENABLED', 'BITC_SHIPPING_APPROVED', 'BITC_INVENTORY_APPROVED', 'BITC_TERMS_APPROVED']
+    .every(name => process.env[name] === 'true');
+}
+
 
 const ALLOWED = new Set([
   'https://bitc-mining-preview.onrender.com',
@@ -111,7 +118,7 @@ async function btcpay(path, method = 'GET', payload) {
   });
   const result = await response.text();
   if (!response.ok) {
-    console.error('btcpay_request_failed', response.status, result.slice(0, 350));
+    console.error('btcpay_request_failed', response.status);
     throw new Error('btcpay_request_failed');
   }
   return JSON.parse(result);
@@ -128,7 +135,7 @@ const server = http.createServer(async (req, res) => {
   }
   if ((pathname === '/health' || pathname === '/api/health') && req.method === 'GET') {
     return respond(res, 200, { ok: true, btcpayConfigured: Boolean(API_KEY && STORE_ID),
-      orderStorage: 'encrypted_btcpay_invoice_metadata', orderEncryptionConfigured: /^[a-fA-F0-9]{64}$/.test(ORDER_ENCRYPTION_KEY) }, origin);
+      orderStorage: 'encrypted_btcpay_invoice_metadata', orderEncryptionConfigured: /^[a-fA-F0-9]{64}$/.test(ORDER_ENCRYPTION_KEY), salesEnabled: salesReady() }, origin);
   }
   if (pathname === '/api/quote' && req.method === 'POST') {
     if (!ALLOWED.has(origin)) return respond(res, 403, { error: 'origin_not_allowed' }, origin);
@@ -149,6 +156,7 @@ const server = http.createServer(async (req, res) => {
   }
   if (pathname !== '/api/create-btcpay-invoice' || req.method !== 'POST') return respond(res, 404, { error: 'not_found' }, origin);
   if (!ALLOWED.has(origin)) return respond(res, 403, { error: 'origin_not_allowed' }, origin);
+  if (!salesReady()) return respond(res, 503, { error: 'checkout_not_ready' }, origin);
   if (!API_KEY || !STORE_ID || !/^[a-fA-F0-9]{64}$/.test(ORDER_ENCRYPTION_KEY)) {
     return respond(res, 503, { error: 'checkout_not_configured' }, origin);
   }
@@ -195,7 +203,7 @@ const server = http.createServer(async (req, res) => {
     return respond(res, 200, { orderId: id, id: invoice.id, checkoutLink: invoice.checkoutLink,
       amountUSD: (order.amountCents / 100).toFixed(2), status: invoice.status }, origin);
   } catch (error) {
-    console.error('checkout_failed', id || '', error);
+    console.error('checkout_failed', id || '', String(error?.message || 'unknown'));
     const clientErrors = new Set(['invalid_order','client_prices_not_allowed','invalid_items','catalog_item_unavailable',
       'invalid_quantity','invalid_shipping','invalid_protection','invalid_total','missing_delivery_address','invalid_email','quote_expired']);
     const errorCode = String(error.message || '');
@@ -204,4 +212,4 @@ const server = http.createServer(async (req, res) => {
   }
 });
 if (process.env.NODE_ENV !== 'test') server.listen(PORT, () => console.log('BITC payment API listening on ' + PORT));
-export { validatedOrder, validatedCustomer, getCatalog, ensureQuoteAccepted, encryptOrder, decryptOrder, paymentState, keyBytes };
+export { server, salesReady, validatedOrder, validatedCustomer, getCatalog, ensureQuoteAccepted, encryptOrder, decryptOrder, paymentState, keyBytes };
