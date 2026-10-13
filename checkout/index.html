@@ -117,12 +117,12 @@
       <span class="co-chevron">›</span>
     </button>
 
-    <button type="button" class="co-crypto-card" data-method="binance" disabled aria-disabled="true" title="Use the Bitcoin payment option instead">
+    <button type="button" class="co-crypto-card" data-method="binance" aria-controls="binanceGuide" aria-expanded="false" title="Learn how to send Bitcoin from your Binance balance">
       <span class="co-radio co-radio-lg"></span>
       <span class="co-crypto-icon co-binance-icon"><img src="/assets/binance-bnb.svg" alt="Binance"></span>
       <span class="co-crypto-copy">
-        <b>Binance (not available as a separate payment method)</b>
-        <small>Use your Binance BTC balance</small>
+        <b>Pay BTC from Binance</b>
+        <small>Bitcoin network · Opens payment instructions</small>
       </span>
       <span class="co-crypto-card-side">
         <span class="co-save-badge-lg">SAVE 20%</span>
@@ -132,26 +132,18 @@
     </button>
   </div>
 
-  <div class="co-binance-guide" id="binanceGuide">
-    <div class="co-binance-head"><span class="co-binance-logo"><img src="/assets/binance-bnb.svg" alt="Binance"></span><div><b>How to pay with Binance</b><small>3 simple steps · about 1 minute</small></div></div>
-    <div class="co-binance-alert">Do not use the Binance Pay QR scanner for this payment.</div>
+  <div class="co-binance-guide" id="binanceGuide" role="region" aria-label="Instructions for sending BTC from Binance">
+    <div class="co-binance-head"><span class="co-binance-logo"><img src="/assets/binance-bnb.svg" alt=""></span><div><b>Pay from your Binance BTC balance</b><small>Uses the Bitcoin network and a secure BTCPay invoice — not Binance Pay</small></div></div>
+    <div class="co-binance-alert">Do not scan your BTCPay invoice with Binance Pay. Use the BTC withdrawal function and select the Bitcoin network.</div>
     <div class="co-binance-steps">
-      <div class="co-binance-step"><b>1</b><span>Open <strong>Binance</strong> → Assets → Withdraw → <strong>BTC</strong></span></div>
-      <div class="co-binance-step"><b>2</b><span>Choose the <strong>Bitcoin (BTC)</strong> network</span></div>
-      <div class="co-binance-step"><b>3</b><span>Copy the <strong>address</strong> and <strong>exact BTC amount</strong> below</span></div>
+      <div class="co-binance-step"><b>1</b><span>Complete your delivery details, then continue to the <strong>secure BTCPay invoice</strong>.</span></div>
+      <div class="co-binance-step"><b>2</b><span>In Binance, open <strong>Withdraw → BTC</strong> and select the <strong>Bitcoin (BTC)</strong> network, not another network.</span></div>
+      <div class="co-binance-step"><b>3</b><span>Use the invoice's <strong>exact BTC address and amount</strong>, check fees and confirmations, then send.</span></div>
     </div>
-    <div class="co-binance-invoice" id="binanceInvoiceBox">
-      <div class="co-binance-wait"><span class="co-spinner"></span><div><strong>Secure Bitcoin invoice</strong><small>Click “Pay with Binance” to open BTCPay, where your secure BTC address and exact amount will appear.</small></div></div>
-      <div class="co-binance-ready" id="binanceReady">
-        <label>Bitcoin address</label><div class="co-copy-row"><code id="binanceAddress">—</code><button type="button" data-copy-target="binanceAddress">Copy</button></div>
-        <label>Exact amount</label><div class="co-copy-row"><code id="binanceAmount">—</code><button type="button" data-copy-target="binanceAmount">Copy</button></div>
-        <a id="binanceInvoiceLink" class="co-open-invoice" href="#" target="_blank" rel="noopener">Open secure BTCPay invoice</a>
-      </div>
-    </div>
-    <div class="co-binance-note">Pay only using the BTC address on your unique BTCPay invoice. Your order is confirmed after payment settlement.</div>
+    <div class="co-binance-invoice"><div class="co-binance-wait"><div><strong>Real payment details appear in BTCPay</strong><small>No wallet address or payment QR is shown before a unique invoice is generated. This checkout is not yet published.</small></div></div></div>
+    <div class="co-binance-note">Binance withdrawal availability and fees depend on your account. The order is confirmed only after BTCPay verifies payment settlement.</div>
   </div>
-
-  <p class="co-payment-sub" style="margin:18px 0">Bitcoin payment is currently the only enabled method. Other payment methods are not available yet.</p>
+  <p class="co-payment-sub" style="margin:18px 0">Bitcoin is the only payment network planned for this checkout. You can use a BTC wallet or send BTC from Binance; Binance Pay is not integrated.</p>
 
   <p role="status" class="co-shipping-note" id="checkoutReadinessNotice">Purchases are disabled until the final review and publication are authorized. No Bitcoin invoice will be created while checkout is inactive.</p><button class="co-pay-now co-pay-crypto" id="payNow" disabled aria-disabled="true"><span class="co-cta-btc">₿</span><span id="payNowLabel">Checkout not published yet</span><span class="co-cta-arrow">→</span></button>
 </div><div class="co-footer-links"><a href="#">Refund policy</a><a href="#">Privacy policy</a><a href="#">Terms of service</a><a href="#">Cancellations</a></div>
