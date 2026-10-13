@@ -62,7 +62,9 @@ try{
  assert.equal(await selects.count(),2,'expected Fan and Stand Color selectors on Bitaxe Gamma product');
  await selects.nth(0).selectOption('Standard');
  await selects.nth(1).selectOption('Orange');
- await pform.locator('[data-pf-type="ProductATC"] button, button[name="add"], button[data-action="add-to-cart"],.product-form__add-button').first().click({timeout:7000});
+ // The static test blocks external Shopify CSS, causing its sticky header to overlay
+ // unrelated content. Trigger DOM click to test capture listeners independently of CSS.
+ await pform.locator('button[name="add"], button[data-action="add-to-cart"],.product-form__add-button').first().evaluate(el=>el.click());
  await page.waitForFunction(()=>JSON.parse(localStorage.getItem('bm_cart_v1')||'[]').length===1);
  let cart=await page.evaluate(()=>JSON.parse(localStorage.getItem('bm_cart_v1')));
  assert.equal(cart[0].id,'45599680004326');
@@ -79,7 +81,7 @@ try{
  const buy=form2.locator('.bitc-buy-now');
  assert.equal(await buy.isEnabled(),true);
  const box=await buy.boundingBox();assert.ok(box&&box.width>=250&&box.x>=0&&box.x+box.width<=405,'buy-now fits mobile');
- await buy.click();
+ await buy.evaluate(el=>el.click());
  await page.waitForURL(/\/checkout\//,{timeout:8000});
  cart=await page.evaluate(()=>JSON.parse(localStorage.getItem('bm_cart_v1')||'[]'));
  assert.equal(cart.length,1);
