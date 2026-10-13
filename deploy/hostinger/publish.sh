@@ -63,9 +63,9 @@ count=0
 for file in root.rglob('*.html'):
     html=file.read_text(encoding='utf-8')
     if 'src="/assets/bitc-tracking.js"' in html:continue
-    match=re.search(r'</head\\s*>',html,flags=re.IGNORECASE)
+    match=re.search(r'</head\s*>',html,flags=re.IGNORECASE)
     if not match:continue
-    html=html[:match.start()]+tag+'\\n'+html[match.start():]
+    html=html[:match.start()]+tag+'\n'+html[match.start():]
     file.write_text(html,encoding='utf-8')
     count+=1
 print('BITC tracking bootstrap added to',count,'static pages')
