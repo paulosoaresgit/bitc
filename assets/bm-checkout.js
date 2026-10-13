@@ -5,12 +5,87 @@ function renderSummary(){cart=load();const wrap=document.getElementById('coItems
 function toast(msg){const t=document.getElementById('coToast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
 function addReco(type){const p=type==='cards'?{id:'reco-cards',title:'Bitcoin Merch® - Cardsmiths Crypto Currency Collectible Trading Cards - Win Real Crypto!',price:18,image:'',variant:'1 Pack',qty:1,url:'/collections/best-selling-merch'}:{id:'reco-gold-nugget',title:'Bitcoin Merch® - Gold Nugget Lottery Miner',price:36,image:'',variant:'',qty:Number(document.getElementById('goldQty')?.value||1),url:'/collections/beginner-miners'};if(!Number.isSafeInteger(p.qty)||p.qty<1||p.qty>10){toast('Quantity must be between 1 and 10');return}const ex=cart.find(x=>x.id===p.id);if(ex){if(ex.qty+p.qty>10){toast('Maximum 10 of this item');return}ex.qty+=p.qty}else cart.push(p);localStorage.setItem(KEY,JSON.stringify(cart));renderSummary();toast('Added to order')}
 let selectedMethod='bitcoin';let storefrontReady=false;const CRYPTO_DISCOUNT=0.20,SHIPPING_PRICES={dhl:0,fedex:24.99,ups:29.99};let selectedShipping=localStorage.getItem('bm_shipping_method')||'dhl';
+let binanceSession=null,binancePoll=null;
 function hydrateBinanceInvoice(){ /* Payment addresses must come ONLY from authenticated BTCPay invoices. */ }
 function updatePaymentTotals(){const base=subtotal(),shipping=SHIPPING_PRICES[selectedShipping]??0,isCrypto=selectedMethod==='bitcoin'||selectedMethod==='binance',discount=isCrypto?base*CRYPTO_DISCOUNT:0,final=base-discount+shipping;const row=document.getElementById('coCryptoDiscountRow'),discountEl=document.getElementById('coCryptoDiscount'),original=document.getElementById('coOriginalTotal'),totalEl=document.getElementById('coTotal'),shippingEl=document.getElementById('coShipping');if(row)row.classList.toggle('show',isCrypto);if(discountEl)discountEl.textContent='-'+money(discount);if(original){original.textContent=money(base+shipping);original.classList.toggle('show',isCrypto)}if(shippingEl){shippingEl.textContent=shipping===0?'FREE':money(shipping);shippingEl.style.color='#344054'}if(totalEl)totalEl.textContent=money(final);const mobileTotal=document.getElementById('summaryToggleTotal');if(mobileTotal)mobileTotal.textContent=money(final)}
-function updatePayButton(){const btn=document.getElementById('payNow'),label=document.getElementById('payNowLabel');if(!btn||!label)return;btn.setAttribute('aria-disabled',String(!storefrontReady));if(!storefrontReady){btn.disabled=true;label.textContent='Checkout not published yet';return}btn.disabled=false;btn.classList.toggle('alt-selected',!['bitcoin','binance'].includes(selectedMethod));if(selectedMethod==='bitcoin'){label.textContent='Pay with Bitcoin — Save 20%';btn.querySelector('.co-cta-btc').textContent='₿'}else if(selectedMethod==='binance'){label.textContent='Pay BTC from Binance — Save 20%';btn.querySelector('.co-cta-btc').textContent='₿'}else if(selectedMethod==='card'){label.textContent='Pay with Credit Card'}else if(selectedMethod==='paypal'){label.textContent='Continue with PayPal'}else if(selectedMethod==='afterpay'){label.textContent='Continue with Afterpay'}else if(selectedMethod==='cash'){label.textContent='Continue with Cash App'}}
+function updatePayButton(){const btn=document.getElementById('payNow'),label=document.getElementById('payNowLabel');if(!btn||!label)return;btn.setAttribute('aria-disabled',String(!storefrontReady||(selectedMethod==='binance'&&!!binanceSession)));if(!storefrontReady){btn.disabled=true;label.textContent='Checkout not published yet';return}btn.disabled=selectedMethod==='binance'&&!!binanceSession;
+if(btn.disabled){label.textContent='Binance BTC invoice created';return}btn.classList.toggle('alt-selected',!['bitcoin','binance'].includes(selectedMethod));if(selectedMethod==='bitcoin'){label.textContent='Pay with Bitcoin — Save 20%';btn.querySelector('.co-cta-btc').textContent='₿'}else if(selectedMethod==='binance'){label.textContent='Pay BTC from Binance — Save 20%';btn.querySelector('.co-cta-btc').textContent='₿'}else if(selectedMethod==='card'){label.textContent='Pay with Credit Card'}else if(selectedMethod==='paypal'){label.textContent='Continue with PayPal'}else if(selectedMethod==='afterpay'){label.textContent='Continue with Afterpay'}else if(selectedMethod==='cash'){label.textContent='Continue with Cash App'}}
 function selectPayment(name){selectedMethod=name;document.querySelectorAll('[data-method]').forEach(r=>r.classList.toggle('selected',r.dataset.method===name));const cardForm=document.getElementById('cardForm');if(cardForm)cardForm.style.display=name==='card'?'grid':'none';const guide=document.getElementById('binanceGuide');if(guide)guide.classList.toggle('show',name==='binance');const binanceToggle=document.querySelector('[data-method="binance"]');if(binanceToggle)binanceToggle.setAttribute('aria-expanded',String(name==='binance'));if(!['bitcoin','binance'].includes(name)){document.getElementById('otherMethods')?.classList.add('show');document.getElementById('otherMethodsToggle')?.classList.add('open')}hydrateBinanceInvoice();updatePaymentTotals();updatePayButton()}
 
 const paymentApi=()=>String(document.querySelector('meta[name="bitc-payment-api"]')?.content||window.BITC_PAYMENT_API_URL||'').trim().replace(/\/+$/,'');
+
+function showBinanceStatus(text,state='waiting'){
+ const el=document.getElementById('binancePaymentStatus');
+ if(el){el.textContent=text;el.dataset.state=state}
+}
+function stopBinancePolling(){if(binancePoll){clearInterval(binancePoll);binancePoll=null}}
+async function checkBinancePayment(){
+ const session=binanceSession;
+ if(!session?.accessToken)return;
+ try{
+  const url=paymentApi()+'/api/invoice-status?invoiceId='+encodeURIComponent(session.invoiceId)+'&token='+encodeURIComponent(session.accessToken);
+  const resp=await fetch(url,{cache:'no-store',signal:AbortSignal.timeout(9000)});
+  if(!resp.ok)throw Error('status_unavailable');
+  const info=await resp.json();
+  if(binanceSession!==session)return;
+  if(info.state==='settled'){
+   showBinanceStatus('Payment confirmed by BTCPay. You can safely close this page.','settled');
+   stopBinancePolling();
+  }else if(info.state==='processing'){
+   showBinanceStatus('Payment detected. Waiting for network confirmations.','processing');
+  }else if(info.state==='review'){
+   showBinanceStatus('Payment needs manual review. Contact the store before resending.','review');
+   stopBinancePolling();
+  }else if(info.state==='expired'){
+   showBinanceStatus('Invoice expired. Do not send BTC to this address. Open BTCPay for details.','expired');
+   stopBinancePolling();
+   document.querySelectorAll('#binanceReady [data-copy-target]').forEach(b=>b.disabled=true);
+  }else if(session.expiresAt&&Date.now()>=session.expiresAt*1000){
+   showBinanceStatus('Invoice time elapsed. Check BTCPay before sending.','expired');
+   stopBinancePolling();
+   document.querySelectorAll('#binanceReady [data-copy-target]').forEach(b=>b.disabled=true);
+  }else{
+   showBinanceStatus('Awaiting BTC payment. Use only the Bitcoin network.','waiting');
+  }
+ }catch{
+  if(binanceSession===session)showBinanceStatus('Live status unavailable. Check your secure BTCPay invoice.','unknown');
+ }
+}
+function displayBinanceInvoice(invoice){
+ const guide=document.getElementById('binanceGuide');
+ guide?.classList.add('show');
+ const fallback=document.getElementById('binanceFallback');
+ const ready=document.getElementById('binanceReady');
+ const waiting=document.getElementById('binanceInvoiceWait');
+ const link=invoice.checkoutLink;
+ const open=document.getElementById('binanceInvoiceLink');
+ const fallbackLink=document.getElementById('binanceFallbackLink');
+ if(open)open.href=link;
+ if(fallbackLink)fallbackLink.href=link;
+ const payment=invoice.binancePayment;
+ const valid=payment?.network==='Bitcoin (BTC)' &&
+  /^(?:[13][a-km-zA-HJ-NP-Z1-9]{25,34}|bc1[ac-hj-np-z02-9]{11,87})$/.test(payment.address||'') &&
+  /^(?:0|[1-9]\d{0,7})\.\d{1,8}$/.test(payment.amountBTC||'') &&
+  /^[a-f0-9]{64}$/.test(payment.accessToken||'');
+ binanceSession={invoiceId:invoice.id,accessToken:valid?payment.accessToken:null,
+    expiresAt:valid?payment.expiresAt:null,amountUSD:invoice.amountUSD};
+ if(waiting)waiting.style.display='none';
+ if(ready)ready.classList.toggle('show',!!valid);
+ if(fallback)fallback.hidden=!!valid;
+ if(valid){
+  document.getElementById('binanceAddress').textContent=payment.address;
+  document.getElementById('binanceAmount').textContent=payment.amountBTC;
+  showBinanceStatus('Awaiting BTC payment. Use only the Bitcoin network.','waiting');
+  stopBinancePolling();
+  void checkBinancePayment();
+  binancePoll=setInterval(()=>void checkBinancePayment(),15000);
+ }else{
+  stopBinancePolling();
+ }
+ updatePayButton();
+ guide?.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
 function updateShippingPreview(){document.querySelectorAll('.co-shipping-option').forEach(option=>{const name=option.dataset.shipping;const el=option.querySelector('.co-ship-price');if(el)el.textContent=SHIPPING_PRICES[name]===0?'FREE':money(SHIPPING_PRICES[name]);});const n=document.querySelector('.co-shipping-note');if(n)n.textContent=storefrontReady?'Confirmed fixed shipping price per order for destinations we serve. Check your address and final amount before paying.':'Confirmed flat-rate shipping for served destinations. Checkout remains disabled until you can place orders.';}
 async function checkReadiness(){const btn=document.getElementById('payNow');if(btn)btn.disabled=true;storefrontReady=false;try{const r=await fetch(paymentApi()+'/api/health',{signal:AbortSignal.timeout(8000),cache:'no-store'});const data=await r.json();storefrontReady=Boolean(r.ok&&data.salesEnabled===true&&data.btcpayConfigured===true&&data.orderEncryptionConfigured===true);}catch{storefrontReady=false}updateShippingPreview();updatePaymentTotals();updatePayButton();}
 function field(name){return document.querySelector('[name="'+name+'"]')?.value?.trim()||''}
@@ -45,7 +120,8 @@ async function createPayment(){
       if(!accepted)return;
     }
     label.textContent='Creating secure BTCPay invoice…';
-    const payload={...cartPayload,customer:buyer,expectedAmountCents:quote.amountCents};
+    const payload={...cartPayload,customer:buyer,expectedAmountCents:quote.amountCents,
+      paymentFlow:selectedMethod==='binance'?'binance_btc':'bitcoin'};
     const response=await fetch(paymentApi()+'/api/create-btcpay-invoice',{
       method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),
       signal:AbortSignal.timeout(25000)
@@ -54,7 +130,8 @@ async function createPayment(){
     if(!response.ok)throw new Error(invoice.error||'invoice_creation_failed');
     if(!invoice.checkoutLink||!invoice.id)throw new Error('invoice_creation_failed');
     if(Math.abs(Number(invoice.amountUSD)-verifiedTotal)>0.011)throw new Error('quote_expired');
-    // The invoice checkout URL is supplied by our backend, which validates the BTCPay host.
+    // Wallet is shown only after BTCPay generates and verifies an invoice.
+    if(selectedMethod==='binance'){displayBinanceInvoice(invoice);return}
     window.location.assign(invoice.checkoutLink);
   }catch(err){
     const messages={
