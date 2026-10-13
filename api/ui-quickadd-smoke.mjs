@@ -27,6 +27,15 @@ const server=http.createServer(async(req,res)=>{
   let data=await fs.readFile(filename);
   if(filename.endsWith('.html')&&(pathname==='/'||pathname.startsWith('/collections/'))){
    let html=data.toString('utf8');
+   // Recreate the publisher's verified, page-specific inline variant data.
+   // This must make add-to-cart work on the very first click without a fetch.
+   const subset={};
+   for(const [route,product] of Object.entries(map)){
+    if(html.includes('data-productid="'+product.productId+'"'))subset[product.productId]={...product,route};
+   }
+   assert.ok(Object.keys(subset).length>=3,'verified PageFly cards are embedded');
+   const json=JSON.stringify(subset).replace(/</g,'\\u003c');
+   html=html.replace(/<\/head\s*>/i,'<script type="application/json" id="bitc-quickadd-data">'+json+'</script></head>');
    html=html.replace(/<\/head\s*>/i,'<script defer src="/assets/bitc-collection-quickadd.js"></script></head>');
    if(!html.includes('src="/assets/bm-cart.js"'))html=html.replace(/<\/head\s*>/i,'<script defer src="/assets/bm-cart.js"></script></head>');
    data=Buffer.from(html);
@@ -57,14 +66,18 @@ try{
  for(const entry of buttons){
   const locator=page.locator('form.pf-product-form[data-productid="'+entry.product+'"] button[name="add"][data-product-id="'+entry.product+'"]').first();
   assert.ok(await locator.count(),'PageFly product card available '+entry.product);
-  await locator.evaluate(el=>el.click());
-  await page.waitForFunction(sku=>JSON.parse(localStorage.getItem('bm_cart_v1')||'[]').some(p=>p.id===sku),entry.sku,{timeout:8000});
-  const actual=await page.evaluate(sku=>JSON.parse(localStorage.getItem('bm_cart_v1')||'[]').find(p=>p.id===sku),entry.sku);
+  const afterClick=await locator.evaluate(el=>{
+   el.click();
+   return JSON.parse(localStorage.getItem('bm_cart_v1')||'[]');
+  });
+  assert.ok(afterClick.some(p=>p.id===entry.sku),'first click adds synchronously');
+  const actual=afterClick.find(p=>p.id===entry.sku);
   assert.equal(actual.price,entry.price,'price must match server catalog');
   assert.equal(actual.qty,1,'must add only one item');
   assert.ok(!(await locator.textContent()).toLowerCase().startsWith('adding'),'not stuck in Adding...');
  }
  assert.equal(seen.filter(x=>/\/cart\/add(?:\.js)?/.test(x)).length,0,'never POST old Shopify add endpoint');
+ assert.equal(seen.filter(x=>x==='/assets/bitc-variant-map.json').length,0,'inline preloaded cards never fetch catalog');
  assert.equal(await page.locator('#bmCartBadge').textContent(),'3','first-party cart updated immediately');
  assert.equal(await page.locator('.bm-cart-drawer.is-open').count(),1,'open BITC drawer immediately');
  console.log('BITC_HOME_QUICK_ADD_OK='+JSON.stringify({added:buttons.length,prices:buttons.map(b=>b.price),oldShopifyCartCalls:0,externalDependenciesBlocked:external}));
