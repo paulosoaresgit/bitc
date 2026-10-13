@@ -162,9 +162,9 @@ function invoiceAccessToken(invoiceId, orderId, secret=ORDER_ENCRYPTION_KEY) {
   return crypto.createHmac('sha256',keyBytes(secret)).update('BITC-INVOICE-V1:').update(String(invoiceId))
     .update(':').update(String(orderId)).digest('hex');
 }
-function authorizeInvoiceAccess(invoiceId, orderId, token) {
+function authorizeInvoiceAccess(invoiceId, orderId, token, secret=ORDER_ENCRYPTION_KEY) {
   if (!/^[a-f0-9]{64}$/.test(String(token||''))) return false;
-  const expected = invoiceAccessToken(invoiceId,orderId);
+  const expected = invoiceAccessToken(invoiceId,orderId,secret);
   return crypto.timingSafeEqual(Buffer.from(expected,'hex'),Buffer.from(token,'hex'));
 }
 function publicInvoiceState(invoice) {
