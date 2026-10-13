@@ -103,6 +103,10 @@ for file in root.rglob('*.html'):
     product=relative.parts[0]=='products'
     collection=file==root/'index.html' or relative.parts[0]=='collections'
     inject='' if 'src="/assets/bitc-tracking.js"' in html else tag
+    # Load cart CSS before the JS and with a versioned URL to avoid stale styles.
+    if product or collection:
+        if 'id="bm-cart-styles"' not in html:
+            inject='<link id="bm-cart-styles" rel="stylesheet" href="/assets/bm-cart.css?v=20261013-layout2">'+inject
     if product:
         if 'bm-cart.js' not in html:
             inject+='<script defer src="/assets/bm-cart.js"></script>'
