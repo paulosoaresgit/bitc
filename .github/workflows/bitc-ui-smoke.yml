@@ -7,6 +7,8 @@ on:
       - api/ui-smoke.mjs
       - api/ui-purchase-smoke.mjs
       - api/ui-cart-smoke.mjs
+      - api/ui-quickadd-smoke.mjs
+      - assets/bitc-collection-quickadd.js
       - api/audit-collection-cards.mjs
       - assets/bm-cart.css
       - assets/bitc-product-purchase.js
@@ -42,3 +44,4 @@ jobs:
           node api/ui-smoke.mjs
           node api/ui-purchase-smoke.mjs
           node api/ui-cart-smoke.mjs
+          node api/ui-quickadd-smoke.mjs
