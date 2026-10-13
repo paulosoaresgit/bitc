@@ -18,7 +18,7 @@ try{
   const pathname=new URL(req.url,'http://127.0.0.1').pathname;
   if(pathname==='/'){
    res.writeHead(200,{'Content-Type':'text/html'});
-   res.end('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/assets/bm-cart.css"></head><body><p>BITC checkout UI test</p><button id="openCart" onclick="BMCart.open()">Open cart</button><div id="tidio-chat" style="position:fixed;bottom:0;left:0;z-index:2147483647">Chat overlay</div><script src="/assets/bm-cart.js"></script></body></html>');
+   res.end('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/assets/bm-cart.css"><style>svg{width:260px!important;height:260px!important}.bm-shipping-options{display:block!important}button{font-size:26px!important;height:74px!important}</style></head><body><p>BITC checkout UI test</p><button id="openCart" onclick="BMCart.open()">Open cart</button><div id="tidio-chat" style="position:fixed;bottom:0;left:0;z-index:2147483647">Chat overlay</div><script src="/assets/bm-cart.js"></script></body></html>');
    return;
   }
   if(pathname==='/checkout/'){
@@ -44,7 +44,11 @@ try{
   const result=await page.evaluate(()=>{
    const pick=sel=>{const el=document.querySelector(sel);if(!el)return null;const rect=el.getBoundingClientRect();const style=getComputedStyle(el);return {x:rect.x,y:rect.y,w:rect.width,h:rect.height,right:rect.right,css:style.display,visibility:style.visibility}};
    const items=[...document.querySelectorAll('.bm-cart-item')].map(el=>{const row=el.getBoundingClientRect();const qty=el.querySelector('.bm-cart-qty').getBoundingClientRect();const price=el.querySelector('.bm-cart-price').getBoundingClientRect();return {rowW:row.width,qtyX:qty.x,qtyRight:qty.right,priceRight:price.right,infoRight:el.querySelector('.bm-cart-info').getBoundingClientRect().right}});
-   return {viewport:innerWidth,drawer:pick('.bm-cart-drawer'),body:pick('.bm-cart-body'),footer:pick('.bm-cart-footer'),shipping:pick('.bm-shipping-compact'),button:pick('.bm-cart-checkout'),chat:pick('#tidio-chat'),items,subtotal:document.querySelector('.bm-subtotal')?.textContent?.trim(),count:document.querySelector('#bmCartBadge')?.textContent};
+   return {viewport:innerWidth,drawer:pick('.bm-cart-drawer'),body:pick('.bm-cart-body'),footer:pick('.bm-cart-footer'),shipping:pick('.bm-shipping-compact'),button:pick('.bm-cart-checkout'),chat:pick('#tidio-chat'),items,subtotal:document.querySelector('.bm-subtotal')?.textContent?.trim(),count:document.querySelector('#bmCartBadge')?.textContent,
+    rates:[...document.querySelectorAll('.bm-shipping-method')].map(el=>({width:el.getBoundingClientRect().width,height:el.getBoundingClientRect().height,display:getComputedStyle(el).display})),
+    shippingIcons:document.querySelectorAll('.bm-ship-progress svg,.bm-shipping-compact svg').length,
+    removeIcon:pick('.bm-cart-remove svg'),cartStyle:!!document.getElementById('bm-cart-styles'),
+    qtyHeight:pick('.bm-cart-qty')?.h,closeHeight:pick('.bm-cart-close')?.h};
   });
   assert.equal(result.count,'7');
   assert.ok(result.drawer.w<=width+1,'drawer does not overflow viewport');
@@ -55,6 +59,12 @@ try{
   assert.ok(result.chat.visibility==='hidden','chat overlay hidden while cart is open');
   assert.ok(result.items.every(x=>x.qtyRight<=result.drawer.right+1&&x.priceRight<=result.drawer.right+1),'item controls fit inside drawer');
   assert.ok(result.shipping.w>=result.drawer.w-60,'shipping information remains wide enough');
+  assert.ok(result.cartStyle,'standalone cart stylesheet is loaded');
+  assert.equal(result.shippingIcons,0,'no giant inherited shipping svg');
+  assert.equal(result.rates.length,3,'three compact shipping methods');
+  assert.ok(result.rates.every(x=>x.width>55&&x.height<=65&&x.display==='flex'),'rates stay compact despite hostile legacy CSS');
+  assert.ok(result.removeIcon.w<=18&&result.removeIcon.h<=18,'trash icon never inherits giant SVG sizing');
+  assert.ok(result.qtyHeight<=38&&result.closeHeight<=42,'buttons are not stretched by merchant CSS');
   assert.ok(result.subtotal.includes('$2,799.93'),'line item subtotal remains unchanged');
   assert.deepEqual(errors,[],'no JavaScript exceptions');
   await page.locator('.bm-cart-item').first().locator('[data-act="plus"]').click();
