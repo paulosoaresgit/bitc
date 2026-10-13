@@ -4,7 +4,7 @@ const API='/api/tracking-config';
 let vendors=[],ready=false,selected=false;
 const cleanId=id=>String(id||'');
 function allowed(){return localStorage.getItem(STORAGE)==='granted'}
-function save(choice){localStorage.setItem(STORAGE,choice);document.getElementById('bitc-consent-banner')?.remove();if(choice==='granted')activate()}
+function save(choice){localStorage.setItem(STORAGE,choice);document.getElementById('bitc-consent-banner')?.remove();if(choice==='granted')activate();else if(selected)location.reload()}
 function css(){
  if(document.getElementById('bitc-consent-style'))return;
  const style=document.createElement('style');style.id='bitc-consent-style';
