@@ -85,8 +85,9 @@ async function addToCart({button,form,box}){
  button.dataset.bitcPending='1';
  setLabel(button,'Adding…');
  try{
-  let map=await catalog();
   const productId=String(form.dataset.productid||button.dataset.productId||box.dataset.productId||'');
+  // Stay entirely synchronous on the verified, embedded fast path.
+  let map=entries?.has(productId)?entries:await catalog();
   let p=map.get(productId);
   // Cards inserted after initial HTML may be absent from the embedded subset.
   if(!p&&!remoteLoaded){map=await catalog(true);p=map.get(productId)}
