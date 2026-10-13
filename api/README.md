@@ -12,6 +12,19 @@ This branch replaces the old Supabase order integration. **BTCPay is the sole in
 
 **Important:** There is no automatic shipping, email confirmation or order management panel yet. The operator must verify `Settled` with no exceptional additionalStatus in the private CLI before fulfilling orders. Partial, late, invalid, expired and overpaid invoices must not auto-fulfill.
 
+## Binance BTC withdrawal option
+
+The checkout has **two presentations of the same BTCPay Bitcoin payment rail**:
+
+- **Pay with Bitcoin** creates an approved, server-priced BTCPay invoice and opens its secure checkout page.
+- **Pay BTC from Binance** creates the same kind of invoice, then retrieves its unique **BTC-OnChain** destination and precise BTC amount from BTCPay's Greenfield `GET /api/v1/stores/{storeId}/invoices/{invoiceId}/payment-methods`. The browser displays copy buttons and a secure invoice link. This is **not Binance Pay**, Binance Pay ID, Binance Smart Chain, BNB or BEP-20.
+
+The BTC destination is derived from the wallet configured on the merchant's BTCPay store. **Never substitute a static merchant address.** If the endpoint cannot provide a validated on-chain BTC address and precise amount, the client links to the official BTCPay invoice instead of showing guessed values. The existing sales activation gates, encrypted order metadata, quoted prices, expiration and shipping checks remain in place.
+
+The optional read-only `GET /api/invoice-status?invoiceId=…&token=…` returns only `awaiting`, `processing`, `settled`, `review` or `expired`. A per-invoice HMAC token binds this status read to the invoice and private order ID; no buyer PII or merchant secret is returned. The checkout polls every 15 seconds while the invoice is open. **Only `Settled` with no exceptional additional status confirms payment**, and actual order fulfillment remains manual.
+
+Before enabling production sales, confirm a valid Bitcoin mainnet on-chain wallet is configured in BTCPay, that the scoped API key can *create* and *view* invoices and read the payment-methods endpoint, and complete one real end-to-end invoice/address/payment/settlement test. Do not enable Binance Pay or use a separate wallet address without integrating its payment confirmations into the order system.
+
 ## Configuration
 
 Hostinger private file: `/etc/bitc/bitc.env` (root-owned, mode `600`):
