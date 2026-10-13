@@ -15,17 +15,97 @@ function addStyle(){
  [data-pf-type="ProductDynamicCheckout"],.shopify-payment-button__more-options,
  .additional-checkout-buttons,.dynamic-checkout__content,.payment-list,
  iframe[title*="PayPal"],iframe[title*="Shop Pay"] {display:none!important}
- .bitc-buy-now{display:flex;align-items:center;justify-content:center;width:100%;max-width:100%;
-  padding:16px 18px;min-height:58px;margin-top:12px;line-height:1.2;
-  background:#f5a623;color:#161a20;border:0;border-radius:12px;
-  font:800 17px/1.25 system-ui,-apple-system,sans-serif;cursor:pointer;
-  box-shadow:0 6px 18px rgba(222,137,18,.15)}
- .bitc-buy-now:hover{background:#ffb745}
- .bitc-buy-now:disabled{opacity:.55;cursor:not-allowed}
- .bitc-option-price{font:600 13px/1.5 system-ui,-apple-system,sans-serif;
-  color:#2d4155;margin:9px 0 0}
- .bitc-purchase-note{font:500 12px/1.4 system-ui,-apple-system,sans-serif;color:#4f5c6d;margin:7px 0 0}
- @media(max-width:767px){.bitc-buy-now{min-height:58px;font-size:17px;margin-top:10px}}
+ .bitc-purchase-layout{
+    display:grid!important;
+    grid-template-columns:minmax(105px,125px) minmax(0,1fr)!important;
+    grid-auto-flow:row!important;
+    column-gap:12px!important;
+    row-gap:10px!important;
+    align-items:center!important;
+    justify-content:stretch!important;
+    width:100%!important;
+    max-width:100%!important;
+    box-sizing:border-box!important;
+    min-height:0!important;
+    margin:14px 0 0!important;
+    padding:0!important;
+    overflow:visible!important;
+ }
+ .bitc-purchase-layout > [data-pf-type="ProductQuantity"],
+ .bitc-purchase-layout > .bitc-native-qty {
+    grid-column:1!important;
+    grid-row:1!important;
+    min-width:0!important;
+    max-width:125px!important;
+    width:100%!important;
+    margin:0!important;
+    align-self:center!important;
+ }
+ .bitc-purchase-layout > .bitc-native-add{
+    grid-column:2!important;
+    grid-row:1!important;
+    min-height:54px!important;
+    width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+    padding:12px 16px!important;
+    box-sizing:border-box!important;
+    font:700 16px/1.2 system-ui,-apple-system,sans-serif!important;
+    white-space:normal!important;
+    overflow-wrap:normal!important;
+    word-break:normal!important;
+    text-align:center!important;
+    border-radius:12px!important;
+    cursor:pointer!important;
+ }
+ .bitc-purchase-layout > .bitc-buy-now{
+    grid-column:1/-1!important;
+    grid-row:2!important;
+    display:flex!important;
+    justify-content:center!important;
+    align-items:center!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    min-height:56px!important;
+    padding:15px!important;
+    margin:0!important;
+    box-sizing:border-box!important;
+    color:#171923!important;
+    background:#f5a623!important;
+    border:0!important;
+    border-radius:12px!important;
+    font:800 17px/1.25 system-ui,-apple-system,sans-serif!important;
+    white-space:normal!important;
+    text-align:center!important;
+    box-shadow:0 5px 14px rgba(222,137,18,.14);
+    cursor:pointer!important;
+ }
+ .bitc-purchase-layout > .bitc-buy-now:hover{background:#ffb745!important}
+ .bitc-purchase-layout > .bitc-buy-now:disabled{opacity:.55;cursor:not-allowed!important}
+ .bitc-purchase-layout > .bitc-option-price{
+    grid-column:1/-1!important;
+    grid-row:3!important;
+    display:block!important;
+    min-width:0!important;
+    width:100%!important;
+    box-sizing:border-box!important;
+    font:500 12px/1.45 system-ui,-apple-system,sans-serif!important;
+    color:#485569!important;
+    margin:0!important;
+    padding:0 2px!important;
+    white-space:normal!important;
+    overflow-wrap:break-word!important;
+    text-align:left!important;
+ }
+ .bitc-purchase-layout > .bitc-purchase-note{
+    display:none!important;
+ }
+ @media(max-width:420px){
+   .bitc-purchase-layout{grid-template-columns:minmax(100px,118px) minmax(0,1fr)!important;gap:10px!important}
+   .bitc-purchase-layout > .bitc-native-add{font-size:15px!important;padding:10px 12px!important}
+   .bitc-purchase-layout > .bitc-buy-now{font-size:16px!important}
+ }
  `;
  document.head.append(css);
 }
@@ -109,8 +189,17 @@ function install(){
   if(!target)continue;
   const parent=target.closest('[data-pf-type="ProductATC"]')||target;
   const button=document.createElement('button');
-  button.type='button';button.className='bitc-buy-now';button.dataset.bitcBuyNow='1';button.textContent='Buy Now — Bitcoin Checkout';
+  button.type='button';button.className='bitc-buy-now';button.dataset.bitcBuyNow='1';button.textContent='Buy Now — Bitcoin';
   parent.insertAdjacentElement('afterend',button);
+  // PageFly renders quantity and cart in a single non-wrapping flex line.
+  // Give that line its own two-column grid to prevent narrow side-by-side buttons.
+  const group=parent.parentElement;
+  if(group && group.matches('[data-pf-type="FlexBlock"]')){
+    group.classList.add('bitc-purchase-layout');
+    parent.classList.add('bitc-native-add');
+    const legacyQty=group.querySelector(':scope > [data-pf-type="ProductQuantity"]');
+    if(legacyQty)legacyQty.classList.add('bitc-native-qty');
+  }
   const price=document.createElement('div');price.className='bitc-option-price';
   button.insertAdjacentElement('afterend',price);
   const tip=document.createElement('p');tip.className='bitc-purchase-note';
