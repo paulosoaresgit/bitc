@@ -41,6 +41,8 @@ services:
       - ${BITC_PUBLIC_DIR:-/opt/bitc/public}:/usr/share/nginx/html:ro
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     environment:
+      # The installed BTCPay nginx-gen template requires a unique upstream name.
+      VIRTUAL_HOST_NAME: "bitcstore"
       VIRTUAL_HOST: "bitcmining.tech,www.bitcmining.tech"
       LETSENCRYPT_HOST: "bitcmining.tech,www.bitcmining.tech"
       LETSENCRYPT_EMAIL: "${LETSENCRYPT_EMAIL:?LETSENCRYPT_EMAIL is required}"
