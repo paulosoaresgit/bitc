@@ -9,7 +9,7 @@ function txt(el){return String(el?.textContent||'').replace(/\s+/g,' ').trim()}
 function findProduct(el){const root=el.closest('product-form,.product-form,.card,.product-card,.grid-product,.product,.product__info-container,.product-single,.product-block')||document;const title=txt(root.querySelector('h1,h2,h3,.card__heading,.product__title,.product-single__title,[class*="title"]'))||txt(document.querySelector('h1'))||document.title.split('|')[0].trim();const p=txt(root.querySelector('.price,.price-item,.money,[class*="price"]'))||txt(root);const img=root.querySelector('img');const variant=txt(root.querySelector('select option:checked,.product-form__input input:checked+label,[class*="variant"]'))||'';return{title,price:parsePrice(p),image:img?.currentSrc||img?.src||'',url:location.href,variant}}
 function count(){return cart.reduce((s,x)=>s+(Number(x.qty)||1),0)}function productSubtotal(){return cart.reduce((s,x)=>s+(Number(x.price)||0)*(Number(x.qty)||1),0)}function total(){return productSubtotal()}
 function add(p,options={}){const id=String(p.variantId||p.id||'');const qty=Number(p.qty||1);
-if(!/^(\\d{8,17}|reco-cards|reco-gold-nugget)$/.test(id)||!Number.isSafeInteger(qty)||qty<1||qty>10){window.alert('Select a valid product option before adding to the cart.');return false}
+if(!/^(\d{8,17}|reco-cards|reco-gold-nugget)$/.test(id)||!Number.isSafeInteger(qty)||qty<1||qty>10){window.alert('Select a valid product option before adding to the cart.');return false}
 const ex=cart.find(x=>x.id===id);
 if(ex){if(ex.qty+qty>10){window.alert('Maximum 10 units per product.');return false}ex.qty+=qty;}
 else cart.push({id,title:p.title||'Product',price:Number(p.price)||0,image:p.image||'',url:p.url||'',variant:p.variant||'',qty});
