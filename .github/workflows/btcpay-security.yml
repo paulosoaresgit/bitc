@@ -68,6 +68,8 @@ jobs:
               assert 'bitc-tracking.js' not in (tmp/'admin'/'pixels'/'index.html').read_text()
           print('PIXEL_BOOTSTRAP_AND_ADMIN_ISOLATION=OK')
           PY
+      - name: Audit inherited tags before enabling marketing
+        run: node api/audit-legacy-trackers.mjs
       - name: Verify prices and checkout security
         run: cd api && npm test
       - name: Inspect storefront catalog markup
