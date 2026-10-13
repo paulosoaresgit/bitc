@@ -41,7 +41,7 @@ Sem cadastro, `activeIDs` será 0. O acesso `GET /api/admin/pixels` sem sessão 
 
 ## Limites e pendências
 
-- Não configure IDs do pixel de outra loja: a implementação atual pode haver scripts legados no HTML capturado e requer auditoria de terceiros antes de campanhas.
+- **Auditoria de scripts antigos:** 12 páginas originais contêm GTM/Google Ads legados do site capturado. O deploy agora remove os scripts diretos do GTM `GTM-W22X2BFR` e Google Ads `AW-807906555` das **cópias temporárias publicadas**, preservando os arquivos-fonte no GitHub. As páginas também contêm metadados Shopify com IDs antigos (incluindo GA4): é necessário conferir no navegador/Network se algum aplicativo remoto ainda dispara tags antigas antes de liberar anúncios. Nunca reutilize esses IDs.
 - A loja ainda precisa publicar políticas reais de privacidade, consentimento/cookies e reembolso antes de campanhas com tracking. Não invente documentos ou empresas.
 - Não há painel de vendas nem webhook BTCPay nesta entrega, e **o sistema não afirma registrar Purchase** até a integração de liquidação ser testada em produção.
 - Não use Meta Conversion API access token, Google Measurement Protocol API secret ou a chave privada BTCPay em campos do painel. Eles devem ficar somente em variáveis privadas do servidor quando a integração de compras for concluída.
