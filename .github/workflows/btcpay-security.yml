@@ -28,12 +28,16 @@ jobs:
           node --check api/server.js
           node --check api/order-utils.js
           node --check api/order-read.js
+          node --check api/pixel-manager.js
+          node --check assets/bitc-tracking.js
+          node --check assets/bm-cart.js
           node --check assets/bm-checkout.js
       - name: Check Hostinger deployment scripts
         run: |
           bash -n deploy/hostinger/preflight.sh
           bash -n deploy/hostinger/publish.sh
           bash -n deploy/hostinger/check-prod.sh
+          bash -n deploy/hostinger/setup-pixel-panel.sh
       - name: Validate Hostinger Docker Compose configuration
         shell: bash
         run: |
@@ -41,6 +45,29 @@ jobs:
           printf 'BTCPAY_URL=https://pay.bitcmining.tech\nBTCPAY_API_KEY=CI_PLACEHOLDER\nBTCPAY_STORE_ID=CI_PLACEHOLDER\nBTCPAY_WEBHOOK_SECRET=CI_PLACEHOLDER\nBITC_SUPABASE_URL=https://example.supabase.co\nBITC_SUPABASE_SERVICE_KEY=CI_PLACEHOLDER\nBITC_CATALOG_JSON={}\n' | sudo tee /etc/bitc/bitc.env >/dev/null
           sudo chmod 600 /etc/bitc/bitc.env
           sudo env BTCPAY_PROXY_NETWORK=ci-proxy LETSENCRYPT_EMAIL=ci@example.com docker compose -f deploy/hostinger/docker-compose.yml config --quiet
+      - name: Verify static tracking injection and admin isolation
+        run: |
+          python3 - <<'PY'
+          import pathlib, subprocess, tempfile, sys
+          s=pathlib.Path('deploy/hostinger/publish.sh').read_text()
+          marker='python3 - "$stage" <<\'PY\'\n'
+          assert marker in s
+          source=s.split(marker,1)[1].split('\nPY\n',1)[0]
+          compile(source,'tracking-injection','exec')
+          with tempfile.TemporaryDirectory() as folder:
+              tmp=pathlib.Path(folder)
+              (tmp/'checkout').mkdir()
+              (tmp/'admin'/'pixels').mkdir(parents=True)
+              (tmp/'index.html').write_text('<html><HEAD><title>Shop</title></HEAD><body>Demo</body></html>')
+              (tmp/'checkout'/'index.html').write_text('<html><head></head><body>Pay</body></html>')
+              (tmp/'admin'/'pixels'/'index.html').write_text('<html><head></head><body>Admin</body></html>')
+              for _ in range(2):
+                  subprocess.run([sys.executable,'-c',source,str(tmp)],check=True)
+              assert (tmp/'index.html').read_text().count('src="/assets/bitc-tracking.js"')==1
+              assert (tmp/'checkout'/'index.html').read_text().count('src="/assets/bitc-tracking.js"')==1
+              assert 'bitc-tracking.js' not in (tmp/'admin'/'pixels'/'index.html').read_text()
+          print('PIXEL_BOOTSTRAP_AND_ADMIN_ISOLATION=OK')
+          PY
       - name: Verify prices and checkout security
         run: cd api && npm test
       - name: Inspect storefront catalog markup
