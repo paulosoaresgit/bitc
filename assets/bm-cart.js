@@ -1,4 +1,12 @@
 (()=>{const KEY='bm_cart_v1';
+const CART_STYLE='/assets/bm-cart.css?v=20261013-layout2';
+function ensureStyle(){
+ if(!document.head||document.getElementById('bm-cart-styles'))return;
+ const style=document.createElement('link');
+ style.id='bm-cart-styles';style.rel='stylesheet';style.href=CART_STYLE;
+ document.head.appendChild(style);
+}
+ensureStyle();
 const usd=new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'});
 const money=n=>usd.format(Number(n)||0);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -18,13 +26,13 @@ save();window.BITCTracking?.event?.('AddToCart',{id,qty});if(options.open!==fals
 function change(id,d){const x=cart.find(i=>i.id===id);if(!x)return;x.qty=(Number(x.qty)||1)+d;if(x.qty<=0)cart=cart.filter(i=>i.id!==id);else x.qty=Math.min(x.qty,10);save()}
 function remove(id){cart=cart.filter(i=>i.id!==id);save()}
 function icon(){return '<svg class="bm-protection-icon" viewBox="0 0 70 60" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 17 31 6l23 11v27L31 55 8 44V17Z" stroke="#252525" stroke-width="3"/><path d="M8 17l23 11 23-11M31 28v27" stroke="#252525" stroke-width="3"/><path d="M45 34c7 0 12-4 12-4s5 4 12 4v9c0 9-12 15-12 15S45 52 45 43v-9Z" fill="#069879"/><path d="m51 43 4 4 7-9" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'}
-function shell(){if(document.getElementById('bmCartDrawer'))return;document.body.insertAdjacentHTML('beforeend',`<div class="bm-cart-backdrop" id="bmCartBackdrop"></div><aside class="bm-cart-drawer" id="bmCartDrawer" aria-hidden="true"><div class="bm-cart-head"><h2>Cart</h2><span class="bm-cart-badge" id="bmCartBadge">0</span><button class="bm-cart-close" id="bmCartClose" aria-label="Close">×</button></div><div class="bm-cart-body" id="bmCartBody"></div><div class="bm-cart-footer" id="bmCartFooter"></div></aside>`);document.getElementById('bmCartClose').onclick=close;document.getElementById('bmCartBackdrop').onclick=close}
+function shell(){ensureStyle();if(document.getElementById('bmCartDrawer'))return;document.body.insertAdjacentHTML('beforeend',`<div class="bm-cart-backdrop" id="bmCartBackdrop"></div><aside class="bm-cart-drawer" id="bmCartDrawer" role="dialog" aria-modal="true" aria-labelledby="bmCartHeading" aria-hidden="true"><div class="bm-cart-head"><h2 id="bmCartHeading">Your cart</h2><span class="bm-cart-badge" id="bmCartBadge">0</span><button type="button" class="bm-cart-close" id="bmCartClose" aria-label="Close cart">×</button></div><div class="bm-cart-body" id="bmCartBody"></div><div class="bm-cart-footer" id="bmCartFooter"></div></aside>`);document.getElementById('bmCartClose').onclick=close;document.getElementById('bmCartBackdrop').onclick=close}
 
 function render(){
  shell();cart=load();const c=count(),grand=total();
  document.getElementById('bmCartBadge').textContent=c;
  const body=document.getElementById('bmCartBody');
- let html='<div class="bm-ship-progress"><div class="bm-progress-copy"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h11v12H3zM14 9h4l3 4v4h-7z"/><circle cx="7.5" cy="18" r="2"/><circle cx="17.5" cy="18" r="2"/></svg><span>Free DHL shipping · More options at checkout</span></div></div>';
+ let html='<div class="bm-ship-progress"><div class="bm-progress-copy"><span class="bm-shipping-check" aria-hidden="true">✓</span><span><b>FREE DHL shipping</b><small>Other shipping choices at checkout</small></span></div></div>';
  if(!cart.length){
    html+='<div class="bm-cart-empty"><b>Your cart is empty</b>Explore our products and add your favorites.</div>';
  }else{
@@ -60,15 +68,17 @@ function render(){
    });
  });
  const footer=document.getElementById('bmCartFooter');
- const shippingIcon='<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 5h11v12H3zM14 9h4l3 4v4h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg>';
  footer.innerHTML=`<div class="bm-shipping-compact">
-   <div class="bm-shipping-title">${shippingIcon} Shipping options</div>
-   <div class="bm-shipping-options"><span>DHL <b>FREE</b></span><span>FedEx $24.99</span><span>UPS $29.99</span></div>
-   <div class="bm-shipping-note">Flat rate per order for serviced regions.</div>
+   <div class="bm-shipping-title">Shipping options <span>Calculated at checkout</span></div>
+   <div class="bm-shipping-options" aria-label="Shipping options">
+     <span class="bm-shipping-method"><b>DHL</b><em>FREE</em></span>
+     <span class="bm-shipping-method"><b>FedEx</b><em>$24.99</em></span>
+     <span class="bm-shipping-method"><b>UPS</b><em>$29.99</em></span>
+   </div>
  </div>
- <div class="bm-subtotal"><span>Items subtotal (${c})</span><strong>${money(grand)}</strong></div>
- ${c?'<a class="bm-cart-checkout" href="/checkout/">Review your order &nbsp; →</a>':'<span class="bm-cart-checkout is-disabled" aria-disabled="true">Your cart is empty</span>'}
- <div class="bm-cart-footnote">Shipping and discounts shown at checkout.</div>`;
+ <div class="bm-subtotal"><span>Subtotal <small>(${c} items)</small></span><strong>${money(grand)}</strong></div>
+ ${c?'<a class="bm-cart-checkout" href="/checkout/">Review your order <span aria-hidden="true">→</span></a>':'<span class="bm-cart-checkout is-disabled" aria-disabled="true">Your cart is empty</span>'}
+ <div class="bm-cart-footnote">Shipping and taxes are confirmed at checkout.</div>`;
 }
 function open(alreadyRendered=false){shell();if(!alreadyRendered)render();document.body.classList.add('bm-cart-lock');document.getElementById('bmCartDrawer').classList.add('is-open');document.getElementById('bmCartBackdrop').classList.add('is-open');document.getElementById('bmCartDrawer').setAttribute('aria-hidden','false')}
 function close(){document.body.classList.remove('bm-cart-lock');document.getElementById('bmCartDrawer')?.classList.remove('is-open');document.getElementById('bmCartBackdrop')?.classList.remove('is-open');document.getElementById('bmCartDrawer')?.setAttribute('aria-hidden','true')}
