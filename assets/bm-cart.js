@@ -1,5 +1,6 @@
 (()=>{const KEY='bm_cart_v1';
-const money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(Number(n)||0);
+const usd=new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'});
+const money=n=>usd.format(Number(n)||0);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const load=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch{return[]}};
 let cart=load();
@@ -13,7 +14,7 @@ if(!/^(\d{8,17}|reco-cards|reco-gold-nugget)$/.test(id)||!Number.isSafeInteger(q
 const ex=cart.find(x=>x.id===id);
 if(ex){if(ex.qty+qty>10){window.alert('Maximum 10 units per product.');return false}ex.qty+=qty;}
 else cart.push({id,title:p.title||'Product',price:Number(p.price)||0,image:p.image||'',url:p.url||'',variant:p.variant||'',qty});
-save();window.BITCTracking?.event?.('AddToCart',{id,qty});if(options.open!==false)open();return true;}
+save();window.BITCTracking?.event?.('AddToCart',{id,qty});if(options.open!==false)open(true);return true;}
 function change(id,d){const x=cart.find(i=>i.id===id);if(!x)return;x.qty=(Number(x.qty)||1)+d;if(x.qty<=0)cart=cart.filter(i=>i.id!==id);else x.qty=Math.min(x.qty,10);save()}
 function remove(id){cart=cart.filter(i=>i.id!==id);save()}
 function icon(){return '<svg class="bm-protection-icon" viewBox="0 0 70 60" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 17 31 6l23 11v27L31 55 8 44V17Z" stroke="#252525" stroke-width="3"/><path d="M8 17l23 11 23-11M31 28v27" stroke="#252525" stroke-width="3"/><path d="M45 34c7 0 12-4 12-4s5 4 12 4v9c0 9-12 15-12 15S45 52 45 43v-9Z" fill="#069879"/><path d="m51 43 4 4 7-9" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'}
@@ -69,7 +70,7 @@ function render(){
  ${c?'<a class="bm-cart-checkout" href="/checkout/">Review your order &nbsp; →</a>':'<span class="bm-cart-checkout is-disabled" aria-disabled="true">Your cart is empty</span>'}
  <div class="bm-cart-footnote">Shipping and discounts shown at checkout.</div>`;
 }
-function open(){shell();render();document.body.classList.add('bm-cart-lock');document.getElementById('bmCartDrawer').classList.add('is-open');document.getElementById('bmCartBackdrop').classList.add('is-open');document.getElementById('bmCartDrawer').setAttribute('aria-hidden','false')}
+function open(alreadyRendered=false){shell();if(!alreadyRendered)render();document.body.classList.add('bm-cart-lock');document.getElementById('bmCartDrawer').classList.add('is-open');document.getElementById('bmCartBackdrop').classList.add('is-open');document.getElementById('bmCartDrawer').setAttribute('aria-hidden','false')}
 function close(){document.body.classList.remove('bm-cart-lock');document.getElementById('bmCartDrawer')?.classList.remove('is-open');document.getElementById('bmCartBackdrop')?.classList.remove('is-open');document.getElementById('bmCartDrawer')?.setAttribute('aria-hidden','true')}
 function bind(){shell();render();document.addEventListener('click',e=>{const a=e.target.closest('a[href="/cart"],a[href$="/cart"],a[href*="/cart?"]');if(a){e.preventDefault();open()}});document.addEventListener('submit',e=>{const f=e.target;if(!(f instanceof HTMLFormElement)||!String(f.action).includes('/cart/add'))return;e.preventDefault();const fd=new FormData(f),p=findProduct(f);p.variantId=fd.get('id')||'';p.qty=Number(fd.get('quantity')||1);const sel=f.querySelector('select[name="id"]');const selected=sel?.selectedOptions?.[0];if(selected?.disabled){window.alert('This option is not available.');return}const exact=selected?.dataset?.cents;if(exact!==undefined){const cents=Number(exact);if(!Number.isSafeInteger(cents)||cents<50){window.alert('Unable to verify this option price.');return}p.price=cents/100;p.variant=selected.textContent.split(' — ')[0].trim();}add(p)});document.addEventListener('click',e=>{const b=e.target.closest('button[name="add"],button[type="submit"][name="add"],.quick-add__submit,[data-add-to-cart]');if(!b)return;const f=b.closest('form');if(f&&String(f.action).includes('/cart/add'))return;const p=findProduct(b);if(p.title&&p.price){e.preventDefault();p.variantId=f?.querySelector('input[name="id"],select[name="id"]')?.value||'';add(p)}})}
 window.BMCart={get:()=>load(),add,open,total};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind);else bind()})();
