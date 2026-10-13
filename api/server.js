@@ -190,7 +190,8 @@ const server = http.createServer(async (req, res) => {
       orderStorage: 'encrypted_btcpay_invoice_metadata', orderEncryptionConfigured: /^[a-fA-F0-9]{64}$/.test(ORDER_ENCRYPTION_KEY), salesEnabled: salesReady() }, origin);
   }
   if (pathname === '/api/invoice-status' && req.method === 'GET') {
-    if (!ALLOWED.has(origin)) return respond(res,403,{error:'origin_not_allowed'},origin);
+    // Same-origin GET navigation often omits Origin; authorization uses a scoped HMAC token.
+    if (origin && !ALLOWED.has(origin)) return respond(res,403,{error:'origin_not_allowed'},origin);
     if (!API_KEY || !STORE_ID || !/^[a-fA-F0-9]{64}$/.test(ORDER_ENCRYPTION_KEY))
       return respond(res,503,{error:'checkout_not_configured'},origin);
     const url=new URL(req.url,'http://localhost');
