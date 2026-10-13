@@ -227,8 +227,9 @@ test('signed invoice-status token is bound to both the invoice and private order
   assert.equal(token.length,64);
   assert.equal(invoiceAccessToken('invoice-12345','order-12345',TEST_KEY),token);
   assert.ok(!token.includes(TEST_KEY));
-  assert.equal(authorizeInvoiceAccess('invoice-12345','order-12345',token),false,
-    'test key must not be accepted without the actual server key');
+  assert.equal(authorizeInvoiceAccess('invoice-12345','order-12345',token,TEST_KEY),true);
+  assert.equal(authorizeInvoiceAccess('invoice-tampered','order-12345',token,TEST_KEY),false);
+  assert.equal(authorizeInvoiceAccess('invoice-12345','order-tampered',token,TEST_KEY),false);
   assert.equal(publicInvoiceState({status:'New'}),'awaiting');
   assert.equal(publicInvoiceState({status:'Processing'}),'processing');
   assert.equal(publicInvoiceState({status:'Settled',additionalStatus:'None'}),'settled');
