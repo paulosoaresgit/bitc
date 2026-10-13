@@ -56,6 +56,26 @@ done
 # Existing originals remain unchanged; sanitized copies are published.
 python3 "$source_dir/deploy/hostinger/remove-legacy-tracking.py" "$stage"
 
+# Publish only verified product names, SKU IDs, prices and availability; no secrets.
+python3 - "$source_dir/api/live-products.json" "$source_dir/api/catalog.json" "$stage/assets/bitc-variant-map.json" <<'PY'
+import json,sys,pathlib
+live=json.loads(pathlib.Path(sys.argv[1]).read_text(encoding='utf-8'))
+catalog=json.loads(pathlib.Path(sys.argv[2]).read_text(encoding='utf-8'))
+out={}
+for route,product in live.items():
+    safe=[]
+    for row in product.get('variants',[]):
+        id=str(row['id']);cents=int(row['cents'])
+        eligible=bool(row.get('available')) and id in catalog and catalog[id]['cents']==cents
+        safe.append({'id':id,'title':row['title'],'cents':cents,'available':eligible})
+    out[route]={'title':product['title'],'image':product.get('image',''),
+                'productId':str(product.get('productId','')),
+                'checkoutEnabledForReview':bool(product.get('checkoutEnabledForReview')),
+                'variants':safe}
+pathlib.Path(sys.argv[3]).write_text(json.dumps(out,ensure_ascii=False,separators=(',',':')),encoding='utf-8')
+print('BITC purchase variant map:',len(out),'products; generated from server-approved catalog')
+PY
+
 # Install only a first-party bootstrap on every existing static HTML page so new
 # pixels appear on all product and collection pages without editing 152 files.
 # Trackers themselves load only after an explicit opt-in from the visitor.
@@ -70,7 +90,13 @@ for file in root.rglob('*.html'):
     if 'src="/assets/bitc-tracking.js"' in html:continue
     match=re.search(r'</head\s*>',html,flags=re.IGNORECASE)
     if not match:continue
-    html=html[:match.start()]+tag+'\n'+html[match.start():]
+    inject=tag
+    if file.relative_to(root).parts[0]=='products':
+        if 'bm-cart.js' not in html:
+            inject+='<script defer src="/assets/bm-cart.js"></script>'
+        if 'bitc-product-purchase.js' not in html:
+            inject+='<script defer src="/assets/bitc-product-purchase.js"></script>'
+    html=html[:match.start()]+inject+'\n'+html[match.start():]
     file.write_text(html,encoding='utf-8')
     count+=1
 print('BITC tracking bootstrap added to',count,'static pages')
