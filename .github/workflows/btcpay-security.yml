@@ -58,6 +58,8 @@ jobs:
               tmp=pathlib.Path(folder)
               (tmp/'checkout').mkdir()
               (tmp/'admin'/'pixels').mkdir(parents=True)
+              (tmp/'products'/'sample').mkdir(parents=True)
+              (tmp/'products'/'sample'/'index.html').write_text('<html><head></head><body><form method="post" action="/cart/add"><button name="add">Add To Cart</button></form></body></html>')
               (tmp/'index.html').write_text('<html><HEAD><title>Shop</title></HEAD><body>Demo</body></html>')
               (tmp/'checkout'/'index.html').write_text('<html><head></head><body>Pay</body></html>')
               (tmp/'admin'/'pixels'/'index.html').write_text('<html><head></head><body>Admin</body></html>')
@@ -66,6 +68,9 @@ jobs:
               assert (tmp/'index.html').read_text().count('src="/assets/bitc-tracking.js"')==1
               assert (tmp/'checkout'/'index.html').read_text().count('src="/assets/bitc-tracking.js"')==1
               assert 'bitc-tracking.js' not in (tmp/'admin'/'pixels'/'index.html').read_text()
+              product=(tmp/'products'/'sample'/'index.html').read_text()
+              assert product.count('src="/assets/bitc-product-purchase.js"')==1
+              assert product.count('src="/assets/bm-cart.js"')==1
           print('PIXEL_BOOTSTRAP_AND_ADMIN_ISOLATION=OK')
           PY
       - name: Verify legacy tag stripping does not remove storefront pages
