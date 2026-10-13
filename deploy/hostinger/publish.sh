@@ -95,6 +95,11 @@ for file in root.rglob('*.html'):
             inject+='<script defer src="/assets/bm-cart.js"></script>'
         if 'bitc-product-purchase.js' not in html:
             inject+='<script defer src="/assets/bitc-product-purchase.js"></script>'
+    if file==root/'index.html' or file.relative_to(root).parts[0]=='collections':
+        if 'bm-cart.js' not in html:
+            inject+='<script defer src="/assets/bm-cart.js"></script>'
+        if 'bitc-collection-quickadd.js' not in html:
+            inject+='<script defer src="/assets/bitc-collection-quickadd.js"></script>'
     if not inject:continue
     html=html[:match.start()]+inject+'\n'+html[match.start():]
     file.write_text(html,encoding='utf-8')
