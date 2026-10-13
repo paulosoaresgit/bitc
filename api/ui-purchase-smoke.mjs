@@ -19,7 +19,9 @@ const server=http.createServer(async(req,res)=>{
  const pathname=decodeURIComponent(new URL(req.url,'http://127.0.0.1').pathname);
  if(pathname==='/assets/bitc-variant-map.json'){res.writeHead(200,{'Content-Type':'application/json'});res.end(JSON.stringify(map));return}
  if(pathname.startsWith('/api/')){
-  btcCalls++;res.writeHead(503,{'Content-Type':'application/json'});res.end(JSON.stringify({ok:true,btcpayConfigured:true,orderEncryptionConfigured:true,salesEnabled:false}));return
+  if(pathname==='/api/create-btcpay-invoice')btcCalls++;
+  if(pathname==='/api/health'){res.writeHead(200,{'Content-Type':'application/json'});res.end(JSON.stringify({ok:true,btcpayConfigured:true,orderEncryptionConfigured:true,salesEnabled:false}));return}
+  res.writeHead(503,{'Content-Type':'application/json'});res.end(JSON.stringify({error:'checkout_not_ready'}));return
  }
  const local=path.join(root,pathname,pathname.endsWith('/')?'index.html':'');
  if(!local.startsWith(root)){res.writeHead(403);res.end();return}
