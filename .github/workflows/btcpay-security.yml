@@ -57,6 +57,8 @@ jobs:
           with tempfile.TemporaryDirectory() as folder:
               tmp=pathlib.Path(folder)
               (tmp/'checkout').mkdir()
+              (tmp/'assets').mkdir()
+              (tmp/'assets'/'bitc-variant-map.json').write_text('{}')
               (tmp/'admin'/'pixels').mkdir(parents=True)
               (tmp/'products'/'sample').mkdir(parents=True)
               (tmp/'products'/'sample'/'index.html').write_text('<html><head></head><body><form method="post" action="/cart/add"><button name="add">Add To Cart</button></form></body></html>')
