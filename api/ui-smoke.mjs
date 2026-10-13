@@ -45,6 +45,16 @@ try{
   await page.goto(origin+'/checkout/',{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>document.querySelector('#payNowLabel')?.textContent?.includes('not published'));
   assert.equal(await page.locator('#payNow').isDisabled(),true,'payment must be disabled until approved');
+  const binance=page.locator('[data-method="binance"]');
+  assert.equal(await binance.isDisabled(),false,'Binance BTC instructions must be selectable');
+  await binance.click();
+  assert.equal(await binance.getAttribute('aria-expanded'),'true','Binance instructions must expand');
+  assert.equal(await page.locator('#binanceGuide').isVisible(),true,'Binance BTC guide must become visible');
+  assert.equal(await page.locator('#payNow').isDisabled(),true,'Binance must never bypass launch payment gate');
+  assert.equal(await page.locator('#payNowLabel').innerText(),'Checkout not published yet');
+  await page.locator('[data-method="bitcoin"]').click();
+  assert.equal(await page.locator('#binanceGuide').isVisible(),false,'Bitcoin wallet mode hides Binance guide');
+  assert.equal(await binance.getAttribute('aria-expanded'),'false');
   assert.ok((await page.locator('.co-shipping-note').first().innerText()).toLowerCase().includes('flat-rate'));
   assert.equal(await page.locator('.co-shipping-option[data-shipping="dhl"] .co-ship-price').innerText(),'FREE');
   assert.equal(await page.locator('.co-shipping-option[data-shipping="fedex"] .co-ship-price').innerText(),'$24.99');
