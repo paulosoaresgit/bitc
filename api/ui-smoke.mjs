@@ -50,6 +50,10 @@ try{
   await binance.click();
   assert.equal(await binance.getAttribute('aria-expanded'),'true','Binance instructions must expand');
   assert.equal(await page.locator('#binanceGuide').isVisible(),true,'Binance BTC guide must become visible');
+  assert.equal(await page.locator('#binanceInvoiceWait').isVisible(),true,'wallet remains awaiting a real unique BTCPay invoice');
+  assert.equal(await page.locator('#binanceReady').isVisible(),false,'never show a hardcoded wallet before invoice creation');
+  assert.equal(await page.locator('#binanceAddress').textContent(),'—','wallet address must not be invented');
+
   assert.equal(await page.locator('#payNow').isDisabled(),true,'Binance must never bypass launch payment gate');
   assert.equal(await page.locator('#payNowLabel').innerText(),'Checkout not published yet');
   await page.locator('[data-method="bitcoin"]').click();
