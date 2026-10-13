@@ -46,11 +46,32 @@ done < <(docker ps --format '{{.Names}}')
 install -d -m 755 /opt/bitc/public
 stage="$(mktemp -d /opt/bitc/site.stage.XXXXXXXX)"
 trap 'rm -rf "$stage"' EXIT
-for item in index.html assets checkout collections products pages blogs; do
+for item in index.html assets checkout collections products pages blogs admin; do
   if [[ -e "$source_dir/$item" ]]; then
     cp -a "$source_dir/$item" "$stage/"
   fi
 done
+
+# Install only a first-party bootstrap on every existing static HTML page so new
+# pixels appear on all product and collection pages without editing 152 files.
+# Trackers themselves load only after an explicit opt-in from the visitor.
+python3 - "$stage" <<'PY'
+import pathlib,re,sys
+root=pathlib.Path(sys.argv[1])
+tag='<script defer src="/assets/bitc-tracking.js"></script>'
+count=0
+for file in root.rglob('*.html'):
+    html=file.read_text(encoding='utf-8')
+    if 'src="/assets/bitc-tracking.js"' in html:continue
+    match=re.search(r'</head\\s*>',html,flags=re.IGNORECASE)
+    if not match:continue
+    html=html[:match.start()]+tag+'\\n'+html[match.start():]
+    file.write_text(html,encoding='utf-8')
+    count+=1
+print('BITC tracking bootstrap added to',count,'static pages')
+PY
+# Private writable pixel settings store; never expose this directory through Nginx.
+install -d -o 1000 -g 1000 -m 700 /opt/bitc/pixels
 cp -a "$stage/." /opt/bitc/public/
 # Archived storefront folders can carry root-only modes (0700/0750).
 # Nginx runs as an unprivileged worker and must traverse each directory.
