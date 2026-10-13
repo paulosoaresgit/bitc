@@ -80,31 +80,54 @@ PY
 # pixels appear on all product and collection pages without editing 152 files.
 # Trackers themselves load only after an explicit opt-in from the visitor.
 python3 - "$stage" <<'PY'
-import pathlib,re,sys
+import pathlib,re,sys,json
 root=pathlib.Path(sys.argv[1])
 tag='<script defer src="/assets/bitc-tracking.js"></script>'
+# Each published page carries its own exact approved product records. The buyer
+# can add to the local cart without waiting for a catalog fetch.
+variant_map=json.loads((root/'assets/bitc-variant-map.json').read_text(encoding='utf-8'))
+by_product={}
+for route,p in variant_map.items():
+    pid=str(p.get('productId') or '')
+    if pid and route.startswith('/products/'):
+        by_product[pid]={**p,'route':route}
+def safe_json(data):
+    return json.dumps(data,ensure_ascii=False,separators=(',',':')).replace('<','\\u003c').replace('>','\\u003e').replace('&','\\u0026')
 count=0
 for file in root.rglob('*.html'):
-    if 'admin' in file.relative_to(root).parts:continue
+    relative=file.relative_to(root)
+    if 'admin' in relative.parts:continue
     html=file.read_text(encoding='utf-8')
     match=re.search(r'</head\s*>',html,flags=re.IGNORECASE)
     if not match:continue
+    product=relative.parts[0]=='products'
+    collection=file==root/'index.html' or relative.parts[0]=='collections'
     inject='' if 'src="/assets/bitc-tracking.js"' in html else tag
-    if file.relative_to(root).parts[0]=='products':
+    if product:
         if 'bm-cart.js' not in html:
             inject+='<script defer src="/assets/bm-cart.js"></script>'
         if 'bitc-product-purchase.js' not in html:
             inject+='<script defer src="/assets/bitc-product-purchase.js"></script>'
-    if file==root/'index.html' or file.relative_to(root).parts[0]=='collections':
+        route='/'+'/'.join(relative.parts[:-1])
+        entry=variant_map.get(route)
+        if entry and 'id="bitc-product-data"' not in html:
+            record={'route':route,'entry':entry}
+            inject+='<script type="application/json" id="bitc-product-data">'+safe_json(record)+'</script>'
+    if collection:
         if 'bm-cart.js' not in html:
             inject+='<script defer src="/assets/bm-cart.js"></script>'
         if 'bitc-collection-quickadd.js' not in html:
             inject+='<script defer src="/assets/bitc-collection-quickadd.js"></script>'
+        if 'id="bitc-quickadd-data"' not in html:
+            ids=set(re.findall(r'data-product(?:-)?id\s*=\s*["\'](\d{8,17})["\']',html,flags=re.IGNORECASE))
+            subset={pid:by_product[pid] for pid in sorted(ids) if pid in by_product}
+            if subset:
+                inject+='<script type="application/json" id="bitc-quickadd-data">'+safe_json(subset)+'</script>'
     if not inject:continue
     html=html[:match.start()]+inject+'\n'+html[match.start():]
     file.write_text(html,encoding='utf-8')
     count+=1
-print('BITC tracking bootstrap added to',count,'static pages')
+print('BITC first-party cart and tracking bootstraps:',count,'static pages')
 PY
 # Private writable pixel settings store; never expose this directory through Nginx.
 install -d -o 1000 -g 1000 -m 700 /opt/bitc/pixels
