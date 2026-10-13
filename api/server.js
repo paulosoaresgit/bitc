@@ -2,6 +2,7 @@ import http from 'node:http';
 import { readFileSync } from 'node:fs';
 import crypto from 'node:crypto';
 import { keyBytes, encryptOrder, decryptOrder, paymentState } from './order-utils.js';
+import { handlePixelRequest } from './pixel-manager.js';
 
 const PORT = Number(process.env.PORT || 10000);
 const BTCPAY_URL = (process.env.BTCPAY_URL || 'https://pay.bitcmining.tech').replace(/\/+$/, '');
@@ -152,6 +153,10 @@ const server = http.createServer(async (req, res) => {
   if ((pathname === '/health' || pathname === '/api/health') && req.method === 'GET') {
     return respond(res, 200, { ok: true, btcpayConfigured: Boolean(API_KEY && STORE_ID),
       orderStorage: 'encrypted_btcpay_invoice_metadata', orderEncryptionConfigured: /^[a-fA-F0-9]{64}$/.test(ORDER_ENCRYPTION_KEY), salesEnabled: salesReady() }, origin);
+  }
+  if (pathname === '/api/tracking-config' || pathname.startsWith('/api/admin/pixels')) {
+    await handlePixelRequest(req, res, pathname);
+    return;
   }
   if (pathname === '/api/quote' && req.method === 'POST') {
     if (!ALLOWED.has(origin)) return respond(res, 403, { error: 'origin_not_allowed' }, origin);
