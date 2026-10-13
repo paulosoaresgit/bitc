@@ -276,9 +276,18 @@ async function init(){
  addStyle();
  observeLegacyLowPricePromotion();
  try{
-  const r=await fetch('/assets/bitc-variant-map.json',{cache:'no-store'});
-  if(!r.ok)throw Error('Unable to load product catalog');
-  const map=await r.json();entry=map[path]||null;
+  // The guarded publish embeds this product's verified variants in its HTML.
+  // Do not delay the purchase controls on a network call when they are present.
+  const inline=document.getElementById('bitc-product-data');
+  if(inline){
+   const record=JSON.parse(inline.textContent||'{}');
+   if(record?.route===path&&Array.isArray(record.entry?.variants))entry=record.entry;
+  }
+  if(!entry){
+   const r=await fetch('/assets/bitc-variant-map.json',{cache:'default'});
+   if(!r.ok)throw Error('Unable to load product catalog');
+   const map=await r.json();entry=map[path]||null;
+  }
   if(!entry)throw Error('Product not found in verified catalog');
   install();
   // Re-run after captured Shopify scripts render or replace product controls.
