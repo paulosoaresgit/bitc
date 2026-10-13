@@ -61,6 +61,7 @@ root=pathlib.Path(sys.argv[1])
 tag='<script defer src="/assets/bitc-tracking.js"></script>'
 count=0
 for file in root.rglob('*.html'):
+    if 'admin' in file.relative_to(root).parts:continue
     html=file.read_text(encoding='utf-8')
     if 'src="/assets/bitc-tracking.js"' in html:continue
     match=re.search(r'</head\s*>',html,flags=re.IGNORECASE)
