@@ -71,7 +71,24 @@ try{
    return {form:get(f),add:get(a),qty:get(q),buy:get(buy),selector:get(selects[0])};
  });
  console.log('BITC_PRODUCT_MOBILE_DOM='+JSON.stringify(domReport));
- assert.equal(await page.locator('.shopify-payment-button:visible').count(),0,'Shopify / PayPal payment widgets must be hidden');
+ assert.equal(await page.locator('.shopify-payment-button:visible').count(),0,'Shopify / PayPal payment widgets must be hidden'); 
+ const mobileLayout=await pform.evaluate(form=>{
+   const group=form.querySelector('.bitc-purchase-layout');
+   const quantity=group?.querySelector('[data-pf-type="ProductQuantity"]');
+   const add=group?.querySelector('.bitc-native-add');
+   const buy=group?.querySelector('.bitc-buy-now');
+   const selected=group?.querySelector('.bitc-option-price');
+   const box=x=>{if(!x)return null;const r=x.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,right:r.right}};
+   return {cols:group?getComputedStyle(group).gridTemplateColumns:null,qty:box(quantity),add:box(add),buy:box(buy),selected:box(selected),form:box(form)};
+ });
+ console.log('BITC_MOBILE_PURCHASE_GRID='+JSON.stringify(mobileLayout));
+ assert.ok(mobileLayout.qty&&mobileLayout.add&&mobileLayout.buy&&mobileLayout.selected,'purchase controls are present');
+ assert.ok(mobileLayout.add.width>130,'Add to Cart must be wide enough for readable text');
+ assert.ok(Math.abs(mobileLayout.qty.y-mobileLayout.add.y)<20,'quantity and cart share first row');
+ assert.ok(mobileLayout.buy.y>=mobileLayout.add.y+mobileLayout.add.height-2,'Buy Now must be below cart row');
+ assert.ok(mobileLayout.buy.width>250,'Buy Now must occupy the product panel width');
+ assert.ok(mobileLayout.selected.y>=mobileLayout.buy.y+mobileLayout.buy.height-2,'selected variant summary must be below Buy Now');
+ assert.ok(mobileLayout.buy.x>=0&&mobileLayout.buy.right<=395,'buy button must not overflow the mobile viewport');
  const selects=pform.locator('select.pf-variant-select');
  assert.equal(await selects.count(),2,'expected Fan and Stand Color selectors on Bitaxe Gamma product');
  await selects.nth(0).selectOption('Standard');
