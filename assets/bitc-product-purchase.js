@@ -109,6 +109,45 @@ function addStyle(){
  `;
  document.head.append(css);
 }
+function removeLegacyLowPricePromotion(root=document.body){
+ // Old merchant scripts inject a misleading \"As Low As $...\" subscription-style banner.
+ // Remove only a small self-contained banner, never the verified variant price.
+ if(!root)return;
+ const scope=root.nodeType===Node.TEXT_NODE?(root.parentElement||document.body):root;
+ const walker=document.createTreeWalker(scope,NodeFilter.SHOW_TEXT);
+ const candidates=[];
+ if(scope.nodeType===Node.ELEMENT_NODE&&scope.childNodes.length===1&&scope.firstChild?.nodeType===Node.TEXT_NODE)candidates.push(scope.firstChild);
+ while(walker.nextNode())candidates.push(walker.currentNode);
+ for(const textNode of candidates){
+  if(!/as\s+low\s+as/i.test(textNode.nodeValue||''))continue;
+  let el=textNode.parentElement;
+  let safe=null;
+  let levels=0;
+  while(el&&el!==document.body&&levels++<9){
+   // Limit to the promo's own content; never climb into the product form or page.
+   const label=(el.textContent||'').replace(/\s+/g,' ').trim();
+   if(label.length>120||!/as\s+low\s+as/i.test(label))break;
+   const rect=el.getBoundingClientRect();
+   if(rect.width>=120&&rect.height>0&&rect.height<=180)safe=el;
+   el=el.parentElement;
+  }
+  if(safe)safe.remove();
+ }
+}
+function observeLegacyLowPricePromotion(){
+ removeLegacyLowPricePromotion(document.body);
+ const observer=new MutationObserver(records=>{
+  for(const record of records){
+   const nodes=record.type==='characterData'?[record.target]:record.addedNodes;
+   for(const node of nodes){
+    // Inspect just added/changed content; avoid re-scanning the large Shopify page.
+    const text=node.textContent||node.nodeValue||'';
+    if(/as\s+low\s+as/i.test(text))removeLegacyLowPricePromotion(node);
+   }
+  }
+ });
+ observer.observe(document.body,{subtree:true,childList:true,characterData:true});
+}
 function stripOldWallets(){
  // Remove only accelerated payment areas from the captured merchant product HTML.
  // Never remove the first-party Add To Cart button, quantity selector or product options.
@@ -235,6 +274,7 @@ document.addEventListener('submit',e=>{
 },true);
 async function init(){
  addStyle();
+ observeLegacyLowPricePromotion();
  try{
   const r=await fetch('/assets/bitc-variant-map.json',{cache:'no-store'});
   if(!r.ok)throw Error('Unable to load product catalog');
