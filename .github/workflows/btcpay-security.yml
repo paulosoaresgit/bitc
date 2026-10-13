@@ -68,6 +68,24 @@ jobs:
               assert 'bitc-tracking.js' not in (tmp/'admin'/'pixels'/'index.html').read_text()
           print('PIXEL_BOOTSTRAP_AND_ADMIN_ISOLATION=OK')
           PY
+      - name: Verify legacy tag stripping does not remove storefront pages
+        run: |
+          python3 - <<'PY'
+          import pathlib,subprocess,tempfile,sys
+          with tempfile.TemporaryDirectory() as t:
+              stage=pathlib.Path(t)
+              for f in ['index.html','products/bitcoin-merch-bitaxe-601-gamma-power-supply-bitcoin-miner-1-5th-s/index.html']:
+                  file=stage/f
+                  file.parent.mkdir(parents=True,exist_ok=True)
+                  file.write_bytes(pathlib.Path(f).read_bytes())
+              subprocess.run([sys.executable,'deploy/hostinger/remove-legacy-tracking.py',str(stage)],check=True)
+              for f in stage.rglob('*.html'):
+                  text=f.read_text()
+                  assert '<html' in text.lower()
+                  assert 'GTM-W22X2BFR' not in text, 'legacy GTM remains in '+str(f)
+                  assert 'AW-807906555' not in text, 'legacy Ads remains in '+str(f)
+              print('LEGACY_TAGS_REMOVED_FROM_STAGE=OK')
+          PY
       - name: Audit inherited tags before enabling marketing
         run: node api/audit-legacy-trackers.mjs
       - name: Verify prices and checkout security
