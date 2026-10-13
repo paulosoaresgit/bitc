@@ -8,7 +8,8 @@ import path from 'node:path';
 process.env.NODE_ENV = 'test';
 process.env.BITC_PROTECTION_APPROVED = 'true';
 const { validatedOrder, validatedCustomer, ensureQuoteAccepted, paymentState,
-  encryptOrder, decryptOrder, keyBytes, getCatalog, verifiedFulfillment, SHIPPING_CENTS } = await import('./server.js');
+  encryptOrder, decryptOrder, keyBytes, getCatalog, verifiedFulfillment, SHIPPING_CENTS,
+  onchainDestination, invoiceAccessToken, authorizeInvoiceAccess, publicInvoiceState } = await import('./server.js');
 
 const base = { items: [{ id: 'reco-cards', qty: 1 }], shipping: 'dhl', shippingProtection: false };
 const TEST_KEY = crypto.randomBytes(32).toString('hex');
@@ -208,4 +209,29 @@ test('merchant-confirmed shipping policy matches API and client fixed rates', ()
     assert.match(checkoutHTML,new RegExp('data-shipping="'+carrier+'"'));
   }
   assert.match(checkoutHTML,/Checkout not published yet/);
+});
+
+
+test('only a BTCPay-issued onchain BTC destination may be displayed for Binance',()=>{
+  const valid={paymentMethodId:'BTC-OnChain',destination:'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',due:'0.00075342',activated:true};
+  assert.deepEqual(onchainDestination([valid]),{network:'Bitcoin (BTC)',address:valid.destination,amountBTC:valid.due});
+  assert.throws(()=>onchainDestination([{...valid,paymentMethodId:'BTC-LightningNetwork'}]),/onchain_not_available/);
+  assert.throws(()=>onchainDestination([{...valid,destination:'0xbadethereumwallet'}]),/invalid_payment_destination/);
+  assert.throws(()=>onchainDestination([{...valid,destination:'tb1qfakeaddress'}]),/invalid_payment_destination/);
+  assert.throws(()=>onchainDestination([{...valid,due:'0'}]),/invalid_payment_amount/);
+  assert.throws(()=>onchainDestination([{...valid,due:'0.000000001'}]),/invalid_payment_amount/);
+  assert.throws(()=>onchainDestination([{...valid,activated:false}]),/onchain_not_available/);
+});
+test('signed invoice-status token is bound to both the invoice and private order',()=>{
+  const token=invoiceAccessToken('invoice-12345','order-12345',TEST_KEY);
+  assert.equal(token.length,64);
+  assert.equal(invoiceAccessToken('invoice-12345','order-12345',TEST_KEY),token);
+  assert.ok(!token.includes(TEST_KEY));
+  assert.equal(authorizeInvoiceAccess('invoice-12345','order-12345',token),false,
+    'test key must not be accepted without the actual server key');
+  assert.equal(publicInvoiceState({status:'New'}),'awaiting');
+  assert.equal(publicInvoiceState({status:'Processing'}),'processing');
+  assert.equal(publicInvoiceState({status:'Settled',additionalStatus:'None'}),'settled');
+  assert.equal(publicInvoiceState({status:'Settled',additionalStatus:'PaidPartial'}),'review');
+  assert.equal(publicInvoiceState({status:'Expired'}),'expired');
 });
