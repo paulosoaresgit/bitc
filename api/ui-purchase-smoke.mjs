@@ -59,6 +59,17 @@ try{
  await page.locator('.bitc-buy-now:visible').first().waitFor({timeout:16000});
  const pform=page.locator('form.pf-product-form[data-productid="8840397619430"]:visible').first();
  assert.ok(await pform.count(),'canonical product form present on mobile');
+ // Simulate the old merchant injecting the black subscription banner after page load.
+ await page.evaluate(()=>{
+   const old=document.createElement('section');old.id='old-whale-promo-sample';
+   old.style.cssText='width:300px;min-height:55px;border:2px solid orange;background:black;color:white';
+   old.innerHTML='<div><span>👑 As Low As </span><b>$101.99</b></div>';
+   document.querySelector('form.pf-product-form[data-productid="8840397619430"]').append(old);
+ });
+ await page.waitForFunction(()=>!document.getElementById('old-whale-promo-sample'),{timeout:3000});
+ assert.equal(await page.locator('#old-whale-promo-sample').count(),0,'late-inserted legacy low-price banner must disappear');
+ assert.ok(await pform.locator('button[name="add"]').count(),'original Add to Cart remains available');
+
  const domReport=await pform.evaluate(f=>{
    const a=f.querySelector('button[name="add"]');
    const buy=f.querySelector('.bitc-buy-now');
