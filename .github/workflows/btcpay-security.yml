@@ -88,6 +88,8 @@ jobs:
                       print('REMAINING_OLD_ADS_CONTEXT='+repr(text[max(0,i-160):i+130]).replace('\\n',' '))
               print('LEGACY_TAGS_REMOVED_FROM_STAGE=OK')
           PY
+      - name: Inspect canonical purchase form structure
+        run: node api/audit-legacy-product-forms.mjs
       - name: Audit inherited tags before enabling marketing
         run: node api/audit-legacy-trackers.mjs
       - name: Verify prices and checkout security
