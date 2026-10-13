@@ -5,12 +5,27 @@
 (()=>{'use strict';
 if(!(location.pathname==='/'||location.pathname.startsWith('/collections/')))return;
 const MAP='/assets/bitc-variant-map.json';
-let entries=null,loading=null;
+let entries=null,loading=null,remoteLoaded=false;
 const norm=p=>decodeURIComponent(String(p||'')).replace(/\/$/,'');
-function catalog(){
- if(entries)return Promise.resolve(entries);
+// The deployment embeds just the verified products visible on this collection.
+// This eliminates the network wait on the first add-to-cart click.
+function inlineCatalog(){
+ const tag=document.getElementById('bitc-quickadd-data');
+ if(!tag)return null;
+ try{
+  const data=JSON.parse(tag.textContent||'{}');
+  const ready=new Map();
+  for(const [id,p] of Object.entries(data)){
+   if(p&&String(p.productId)===id&&p.route?.startsWith('/products/'))ready.set(id,p);
+  }
+  return ready.size?ready:null;
+ }catch(err){console.warn('BITC quick add preload invalid',err);return null}
+}
+entries=inlineCatalog();
+function catalog(forceRemote=false){
+ if(entries&&(!forceRemote||remoteLoaded))return Promise.resolve(entries);
  if(loading)return loading;
- loading=fetch(MAP,{cache:'no-store',credentials:'same-origin'})
+ loading=fetch(MAP,{cache:'default',credentials:'same-origin'})
   .then(r=>{if(!r.ok)throw Error('catalog_unavailable');return r.json()})
   .then(map=>{
     const byProduct=new Map();
@@ -19,6 +34,7 @@ function catalog(){
       byProduct.set(String(p.productId),{...p,route});
     }
     entries=byProduct;
+    remoteLoaded=true;
     return byProduct;
   }).finally(()=>{loading=null});
  return loading;
@@ -69,9 +85,11 @@ async function addToCart({button,form,box}){
  button.dataset.bitcPending='1';
  setLabel(button,'Adding…');
  try{
-  const map=await catalog();
+  let map=await catalog();
   const productId=String(form.dataset.productid||button.dataset.productId||box.dataset.productId||'');
-  const p=map.get(productId);
+  let p=map.get(productId);
+  // Cards inserted after initial HTML may be absent from the embedded subset.
+  if(!p&&!remoteLoaded){map=await catalog(true);p=map.get(productId)}
   if(!p||!p.checkoutEnabledForReview)throw Error('unavailable');
   const v=chosenVariant(form,box,p);
   if(!v)throw Error('select_options');
