@@ -52,6 +52,10 @@ for item in index.html assets checkout collections products pages blogs; do
   fi
 done
 cp -a "$stage/." /opt/bitc/public/
+# Archived storefront folders can carry root-only modes (0700/0750).
+# Nginx runs as an unprivileged worker and must traverse each directory.
+# Change only directories in the allowlisted PUBLIC static webroot.
+find /opt/bitc/public -type d -exec chmod 755 {} +
 cd "$source_dir/deploy/hostinger"
 docker compose config --quiet
 docker compose up -d --build --wait
