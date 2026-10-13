@@ -6,6 +6,8 @@ on:
     paths:
       - api/ui-smoke.mjs
       - api/ui-purchase-smoke.mjs
+      - api/ui-cart-smoke.mjs
+      - assets/bm-cart.css
       - assets/bitc-product-purchase.js
       - deploy/hostinger/publish.sh
       - checkout/index.html
@@ -37,3 +39,4 @@ jobs:
           ln -s /tmp/bitc-ui-playwright/node_modules ./node_modules
           node api/ui-smoke.mjs
           node api/ui-purchase-smoke.mjs
+          node api/ui-cart-smoke.mjs
