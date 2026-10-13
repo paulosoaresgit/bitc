@@ -23,3 +23,14 @@ function walk(f){
 }
 for(const root of roots)walk(root);
 console.log('LEGACY_TRACKING_AUDIT='+JSON.stringify({files:matches.length,samples:matches.slice(0,15),notice:'Any prior vendor tags or embedded tracking scripts require a manual consent and attribution audit; never reuse third-party IDs.'}));
+
+for (const filename of ['index.html','products/bitcoin-merch-bitaxe-601-gamma-power-supply-bitcoin-miner-1-5th-s/index.html']){
+ const source=fs.readFileSync(filename,'utf8');
+ for(const [kind,pattern] of Object.entries(patterns)){
+  const found=pattern.exec(source);
+  if(found){
+   const fragment=source.slice(Math.max(0,found.index-140),Math.min(source.length,found.index+180)).replace(/\s+/g,' ');
+   console.log('LEGACY_TAG_CONTEXT='+JSON.stringify({file:filename,type:kind,fragment}));
+  }
+ }
+}
