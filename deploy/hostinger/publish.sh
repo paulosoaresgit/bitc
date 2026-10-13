@@ -52,6 +52,10 @@ for item in index.html assets checkout collections products pages blogs admin; d
   fi
 done
 
+# Remove old hardcoded ad accounts inherited from captured third-party HTML.
+# Existing originals remain unchanged; sanitized copies are published.
+python3 "$source_dir/deploy/hostinger/remove-legacy-tracking.py" "$stage"
+
 # Install only a first-party bootstrap on every existing static HTML page so new
 # pixels appear on all product and collection pages without editing 152 files.
 # Trackers themselves load only after an explicit opt-in from the visitor.
