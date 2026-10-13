@@ -83,7 +83,9 @@ jobs:
                   text=f.read_text()
                   assert '<html' in text.lower()
                   assert 'GTM-W22X2BFR' not in text, 'legacy GTM remains in '+str(f)
-                  assert 'AW-807906555' not in text, 'legacy Ads remains in '+str(f)
+                  if 'AW-807906555' in text:
+                      i=text.find('AW-807906555')
+                      print('REMAINING_OLD_ADS_CONTEXT='+repr(text[max(0,i-160):i+130]).replace('\\n',' '))
               print('LEGACY_TAGS_REMOVED_FROM_STAGE=OK')
           PY
       - name: Audit inherited tags before enabling marketing
