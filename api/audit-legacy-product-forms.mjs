@@ -9,3 +9,11 @@ for(const file of paths){
  });
  console.log('BITC_LEGACY_PRODUCT_FORMS='+JSON.stringify({file,bytes:s.length,rows}));
 }
+
+for(const file of paths){
+ const html=fs.readFileSync(file,'utf8');
+ const rex=/As\\s+Low\\s+As|101\\.99|Whale\\s+Battle\\s+Pass/gi;
+ const m=[...html.matchAll(rex)];
+ const excerpts=m.slice(0,10).map(x=>({match:x[0],near:html.slice(Math.max(0,x.index-800),Math.min(html.length,x.index+600)).replace(/\\s+/g,' ').slice(0,1400)}));
+ console.log('BITC_LEGACY_PROMO_CONTEXT='+JSON.stringify({file,matches:m.length,excerpts}));
+}
