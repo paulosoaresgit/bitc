@@ -6,6 +6,8 @@ services:
     restart: unless-stopped
     env_file:
       - /etc/bitc/bitc.env
+    volumes:
+      - /opt/bitc/pixels:/data:rw
     environment:
       PORT: "10000"
       NODE_ENV: "production"
