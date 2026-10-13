@@ -13,7 +13,7 @@ function addStyle(){
  css.textContent=`
  .shopify-payment-button,shopify-accelerated-checkout,[data-shopify="payment-button"],
  [data-pf-type="ProductDynamicCheckout"],.shopify-payment-button__more-options,
- .additional-checkout-buttons,.dynamic-checkout__content,
+ .additional-checkout-buttons,.dynamic-checkout__content,.payment-list,
  iframe[title*="PayPal"],iframe[title*="Shop Pay"] {display:none!important}
  .bitc-buy-now{display:flex;align-items:center;justify-content:center;width:100%;max-width:100%;
   padding:16px 18px;min-height:58px;margin-top:12px;line-height:1.2;
@@ -28,6 +28,12 @@ function addStyle(){
  @media(max-width:767px){.bitc-buy-now{min-height:58px;font-size:17px;margin-top:10px}}
  `;
  document.head.append(css);
+}
+function stripOldWallets(){
+ // Remove only accelerated payment areas from the captured merchant product HTML.
+ // Never remove the first-party Add To Cart button, quantity selector or product options.
+ document.querySelectorAll('[data-shopify="payment-button"],.shopify-payment-button,[data-pf-type="ProductDynamicCheckout"]')
+  .forEach(el=>el.remove());
 }
 function relevantForms(){
  if(!entry)return [];
@@ -95,6 +101,7 @@ function add(form,direct){
 function install(){
  if(!entry)return;
  addStyle();
+ stripOldWallets();
  for(const form of relevantForms()){
   if(form.dataset.bitcPurchaseReady==='1')continue;
   form.dataset.bitcPurchaseReady='1';
@@ -147,7 +154,7 @@ async function init(){
   install();
   // Re-run after captured Shopify scripts render or replace product controls.
   const holder=document.querySelector('main')||document.body;
-  const obs=new MutationObserver(()=>{if(document.querySelector('form[action*="/cart/add"]:not([data-bitc-purchase-ready="1"])'))install()});
+  const obs=new MutationObserver(()=>{stripOldWallets();if(document.querySelector('form[action*="/cart/add"]:not([data-bitc-purchase-ready="1"])'))install()});
   obs.observe(holder,{childList:true,subtree:true});
  }catch(e){console.warn('BITC product checkout unavailable:',e.message)}
 }
