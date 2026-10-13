@@ -619,3 +619,31 @@
     border-radius:13px!important;
   }
 }
+
+/* Inline per-order BTC payment from Binance */
+.co-crypto-card[data-method="binance"]{cursor:pointer;opacity:1}
+.co-crypto-card[data-method="binance"]:focus-visible{outline:3px solid #f0b90b;outline-offset:3px}
+.co-crypto-card[data-method="binance"].selected{border-color:#e3ac16;background:#fffcf1;box-shadow:0 0 0 3px rgba(240,185,11,.12)}
+#binanceGuide{scroll-margin-top:22px}
+#binanceInvoiceBox{padding:14px;min-width:0;overflow-wrap:anywhere}
+#binanceReady.show{display:block}
+#binanceFallback[hidden]{display:none!important}
+#binanceFallback:not([hidden]){display:block;background:#fff9ea;padding:11px;border:1px solid #f5d188;border-radius:9px}
+#binanceFallback p{font-size:12px;line-height:1.5;color:#5e6470;margin:7px 0 12px}
+.co-binance-wallet-label{font-size:14px;font-weight:800;color:#19202d;margin:0 0 12px}
+#binanceReady label{font-size:12px;font-weight:700;color:#343d4b;margin:13px 0 5px}
+#binanceReady .co-copy-row{display:flex;align-items:stretch;gap:7px;max-width:100%;min-width:0}
+#binanceReady .co-copy-row code{display:block;flex:1 1 auto;min-width:0;margin:0;padding:12px 10px;background:#f8fafc;border:1px solid #e0e7ed;border-radius:8px;color:#1e293b;font:600 12px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;overflow-wrap:anywhere;user-select:all}
+#binanceReady .co-copy-row button{flex:0 0 auto;min-height:40px;max-width:125px;margin:0;padding:9px 11px;border:1px solid #d7b46d;border-radius:8px;background:#fff9e8;font-size:11px;font-weight:800;color:#4d3704;cursor:pointer}
+#binanceReady .co-copy-row button:disabled{opacity:.45;cursor:not-allowed}
+#binancePaymentStatus{margin:14px 0 12px;padding:11px 12px;border:1px solid #f4d69f;border-radius:9px;background:#fffbef;color:#855f18;font-size:12px;font-weight:700;line-height:1.4}
+#binancePaymentStatus[data-state="settled"]{background:#eefbf3;border-color:#a9e4c0;color:#17633d}
+#binancePaymentStatus[data-state="processing"]{background:#eef6ff;border-color:#b9d9fb;color:#225b8a}
+#binancePaymentStatus[data-state="expired"],#binancePaymentStatus[data-state="review"]{background:#fff0ef;border-color:#edb8ae;color:#9b342c}
+#binanceReady .co-open-invoice,#binanceFallbackLink{display:block;max-width:100%;text-align:center;padding:12px;border-radius:9px;background:#141a24;color:#fff;font-size:12px;font-weight:800;text-decoration:none}
+@media(max-width:390px){
+ #binanceInvoiceBox{padding:11px}
+ #binanceReady .co-copy-row{flex-wrap:wrap}
+ #binanceReady .co-copy-row code{flex-basis:100%;font-size:11px}
+ #binanceReady .co-copy-row button{flex-basis:100%;max-width:100%;min-height:39px}
+}
