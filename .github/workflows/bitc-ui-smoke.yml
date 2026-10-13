@@ -7,6 +7,7 @@ on:
       - api/ui-smoke.mjs
       - api/ui-purchase-smoke.mjs
       - api/ui-cart-smoke.mjs
+      - api/audit-collection-cards.mjs
       - assets/bm-cart.css
       - assets/bitc-product-purchase.js
       - deploy/hostinger/publish.sh
@@ -37,6 +38,7 @@ jobs:
       - name: Run storefront product-to-checkout browser tests
         run: |
           ln -s /tmp/bitc-ui-playwright/node_modules ./node_modules
+          node api/audit-collection-cards.mjs
           node api/ui-smoke.mjs
           node api/ui-purchase-smoke.mjs
           node api/ui-cart-smoke.mjs
