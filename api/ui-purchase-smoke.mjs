@@ -59,6 +59,18 @@ try{
  await page.locator('.bitc-buy-now:visible').first().waitFor({timeout:16000});
  const pform=page.locator('form.pf-product-form[data-productid="8840397619430"]:visible').first();
  assert.ok(await pform.count(),'canonical product form present on mobile');
+ const domReport=await pform.evaluate(f=>{
+   const a=f.querySelector('button[name="add"]');
+   const buy=f.querySelector('.bitc-buy-now');
+   const q=f.querySelector('input[name="quantity"]');
+   const selects=[...f.querySelectorAll('select.pf-variant-select')];
+   const get=(node)=>{const out=[];for(let i=0;i<7&&node&&node!==f;i++,node=node.parentElement){
+     const r=node.getBoundingClientRect(), cs=getComputedStyle(node);
+     out.push({tag:node.tagName,cls:String(node.className||'').slice(0,130),pf:node.getAttribute('data-pf-type'),w:Math.round(r.width),x:Math.round(r.x),disp:cs.display,flex:cs.flex,grid:cs.gridTemplateColumns});
+   }return out};
+   return {form:get(f),add:get(a),qty:get(q),buy:get(buy),selector:get(selects[0])};
+ });
+ console.log('BITC_PRODUCT_MOBILE_DOM='+JSON.stringify(domReport));
  assert.equal(await page.locator('.shopify-payment-button:visible').count(),0,'Shopify / PayPal payment widgets must be hidden');
  const selects=pform.locator('select.pf-variant-select');
  assert.equal(await selects.count(),2,'expected Fan and Stand Color selectors on Bitaxe Gamma product');
