@@ -140,6 +140,41 @@ async function btcpay(path, method = 'GET', payload) {
   }
   return JSON.parse(result);
 }
+// An invoice-specific BTC receiving address is assigned by BTCPay; never hardcode
+// a wallet address or assume that Binance Pay uses ordinary BTC withdrawals.
+function onchainDestination(methods) {
+  if (!Array.isArray(methods)) throw new Error('btcpay_payment_method_unavailable');
+  const method = methods.find(m => {
+    const id = String(m?.paymentMethodId || m?.paymentMethod || '');
+    return /^BTC[-_]OnChain$/i.test(id) || (/^BTC$/i.test(id) && String(m.cryptoCode || '').toUpperCase() === 'BTC');
+  });
+  if (!method || method.activated === false) throw new Error('btcpay_onchain_not_available');
+  const address = String(method.destination || '').trim();
+  // Bitcoin mainnet only; network and validation must match the BTCPay store.
+  const validBase58 = /^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/.test(address);
+  const validBech32 = /^bc1[ac-hj-np-z02-9]{11,87}$/.test(address) && (address === address.toLowerCase() || address === address.toUpperCase());
+  if (!validBase58 && !validBech32) throw new Error('btcpay_invalid_payment_destination');
+  const amountBTC = String(method.due ?? method.amount ?? '').trim();
+  if (!/^(?:0|[1-9]\d{0,7})\.\d{1,8}$/.test(amountBTC) || !(Number(amountBTC)>0)) throw new Error('btcpay_invalid_payment_amount');
+  return { network:'Bitcoin (BTC)', address, amountBTC };
+}
+function invoiceAccessToken(invoiceId, orderId, secret=ORDER_ENCRYPTION_KEY) {
+  return crypto.createHmac('sha256',keyBytes(secret)).update('BITC-INVOICE-V1:').update(String(invoiceId))
+    .update(':').update(String(orderId)).digest('hex');
+}
+function authorizeInvoiceAccess(invoiceId, orderId, token) {
+  if (!/^[a-f0-9]{64}$/.test(String(token||''))) return false;
+  const expected = invoiceAccessToken(invoiceId,orderId);
+  return crypto.timingSafeEqual(Buffer.from(expected,'hex'),Buffer.from(token,'hex'));
+}
+function publicInvoiceState(invoice) {
+  const state=paymentState(invoice);
+  if (state==='PAID') return 'settled';
+  if (state==='REVIEW') return 'review';
+  if (state==='NOT_PAID') return 'expired';
+  return String(invoice?.status||'')==='Processing'?'processing':'awaiting';
+}
+
 const server = http.createServer(async (req, res) => {
   const origin = req.headers.origin || '';
   const pathname = new URL(req.url, 'http://localhost').pathname;
@@ -153,6 +188,26 @@ const server = http.createServer(async (req, res) => {
   if ((pathname === '/health' || pathname === '/api/health') && req.method === 'GET') {
     return respond(res, 200, { ok: true, btcpayConfigured: Boolean(API_KEY && STORE_ID),
       orderStorage: 'encrypted_btcpay_invoice_metadata', orderEncryptionConfigured: /^[a-fA-F0-9]{64}$/.test(ORDER_ENCRYPTION_KEY), salesEnabled: salesReady() }, origin);
+  }
+  if (pathname === '/api/invoice-status' && req.method === 'GET') {
+    if (!ALLOWED.has(origin)) return respond(res,403,{error:'origin_not_allowed'},origin);
+    if (!API_KEY || !STORE_ID || !/^[a-fA-F0-9]{64}$/.test(ORDER_ENCRYPTION_KEY))
+      return respond(res,503,{error:'checkout_not_configured'},origin);
+    const url=new URL(req.url,'http://localhost');
+    const invoiceId=String(url.searchParams.get('invoiceId')||'');
+    const token=String(url.searchParams.get('token')||'');
+    if (!/^[A-Za-z0-9_-]{8,100}$/.test(invoiceId) || !/^[0-9a-f]{64}$/.test(token))
+      return respond(res,400,{error:'invalid_invoice_reference'},origin);
+    try {
+      const invoice=await btcpay('/invoices/'+encodeURIComponent(invoiceId));
+      if (invoice.id !== invoiceId || !invoice.metadata?.orderId ||
+          !authorizeInvoiceAccess(invoiceId,invoice.metadata.orderId,token))
+        return respond(res,403,{error:'invalid_invoice_reference'},origin);
+      return respond(res,200,{state:publicInvoiceState(invoice),
+        expiresAt:Number.isFinite(Number(invoice.expirationTime))?Number(invoice.expirationTime):null},origin);
+    } catch(e) {
+      return respond(res,503,{error:'invoice_status_unavailable'},origin);
+    }
   }
   if (pathname === '/api/tracking-config' || pathname.startsWith('/api/admin/pixels')) {
     await handlePixelRequest(req, res, pathname);
@@ -222,8 +277,26 @@ const server = http.createServer(async (req, res) => {
         Math.round(Number(persisted.amount) * 100) !== order.amountCents) {
       throw new Error('btcpay_order_record_not_persisted');
     }
+    // Binance uses ordinary BTC withdrawal to a unique on-chain BTCPay address,
+    // NOT Binance Pay and never a global/static merchant deposit address.
+    let binancePayment = null;
+    if (body.paymentFlow === 'binance_btc') {
+      try {
+        const methods = await btcpay('/invoices/' + encodeURIComponent(invoice.id) + '/payment-methods');
+        const payment = onchainDestination(methods);
+        binancePayment = {
+          ...payment,
+          expiresAt: Number.isFinite(Number(persisted.expirationTime)) ? Number(persisted.expirationTime) : null,
+          accessToken: invoiceAccessToken(invoice.id,id)
+        };
+      } catch(e) {
+        // Invoice exists; buyer can still pay through its trusted BTCPay checkout.
+        console.error('binance_wallet_display_unavailable', invoice.id, String(e?.message||'unknown'));
+      }
+    }
     return respond(res, 200, { orderId: id, id: invoice.id, checkoutLink: invoice.checkoutLink,
-      amountUSD: (order.amountCents / 100).toFixed(2), status: invoice.status }, origin);
+      amountUSD: (order.amountCents / 100).toFixed(2), status: invoice.status,
+      ...(body.paymentFlow === 'binance_btc' ? {binancePayment} : {}) }, origin);
   } catch (error) {
     console.error('checkout_failed', id || '', String(error?.message || 'unknown'));
     const clientErrors = new Set(['invalid_order','client_prices_not_allowed','invalid_items','catalog_item_unavailable',
@@ -234,4 +307,4 @@ const server = http.createServer(async (req, res) => {
   }
 });
 if (process.env.NODE_ENV !== 'test') server.listen(PORT, () => console.log('BITC payment API listening on ' + PORT));
-export { server, salesReady, validatedOrder, validatedCustomer, verifiedFulfillment, SHIPPING_CENTS, getCatalog, ensureQuoteAccepted, encryptOrder, decryptOrder, paymentState, keyBytes };
+export { server, onchainDestination, invoiceAccessToken, authorizeInvoiceAccess, publicInvoiceState, salesReady, validatedOrder, validatedCustomer, verifiedFulfillment, SHIPPING_CENTS, getCatalog, ensureQuoteAccepted, encryptOrder, decryptOrder, paymentState, keyBytes };
