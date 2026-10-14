@@ -60,6 +60,44 @@ The root API health must be real JSON from BITC, not a parked domain HTTP 200.
 - Test one controlled payment settlement and merchant private order lookup; check no unpaid/partial/late/overpaid orders are fulfilled.
 - Then explicitly authorize production payment activation and set the FOUR independent env flags only after all checks pass. Do not set them as part of phase 1 or the DNS change.
 
+## Checkout activation command — merchant-controlled
+
+The merchant confirmed possession of inventory on 2026-10-14. This does not
+establish destination coverage, published consumer policies, or a settled
+Bitcoin payment. Do not treat a generated invoice / QR as proof of received BTC.
+
+After pulling this branch on the Hostinger VPS, inspect the safe gate:
+
+```bash
+cd /opt/bitc/repo
+git pull --ff-only origin fix/btcpay-server-pricing-checkout
+bash deploy/hostinger/activate-sales.sh --check
+```
+
+The check refuses to approve live payments until:
+
+- The checkout's four policy links point to nonempty local published pages
+  (merchant is still responsible for the accuracy of the policy content);
+- `BITC_SHIP_TO_COUNTRIES` lists only countries where the merchant can fulfill;
+- BTCPay on-chain method and invoice read checks are OK; and
+- A merchant diagnostic BTC payment is `Settled` without exceptions.
+
+To actually enable payments **after those requirements and owner review**, export
+`BTCPAY_PROXY_NETWORK` and `LETSENCRYPT_EMAIL`, then deliberately execute:
+
+```bash
+bash deploy/hostinger/activate-sales.sh --activate
+```
+
+The tool backs up `/etc/bitc/bitc.env` privately (0600), changes only
+`BITC_SALES_ENABLED`, `BITC_SHIPPING_APPROVED`,
+`BITC_INVENTORY_APPROVED`, `BITC_TERMS_APPROVED`, recreates only the
+BITC API container, verifies the health response, and restores the backup
+if startup fails. It never restarts the BTCPay Server or touches wallet keys.
+Do not run `--activate` while the gate is blocked. After activation, conduct
+a tightly monitored first order and verify `Settled` and private order
+read-back before any fulfillment.
+
 ## Rollback
 
 If the storefront misbehaves, leave the existing `pay` hostname alone. Repoint `@` and `www` away from the new storefront only if needed, or disable the isolated `bitc-store` Compose project from `/opt/bitc/repo/deploy/hostinger`. Never run a global `docker compose down`, stop an unrelated container, or modify the BTCPay nginx configuration without a proper backup.
