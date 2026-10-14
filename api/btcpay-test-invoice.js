@@ -2,6 +2,8 @@
  * Private merchant-owned BTCPay payment test. NO web route, NO real order.
  * --create: explicitly create exactly one USD 5.00 mainnet test invoice.
  * --status INVOICE_ID: read the current payment status of that test invoice.
+ * --latest: find and inspect newest USD 5 private test invoice, without manual ID.
+ * --recent: list last few matching private test invoice IDs (no buyer details).
  * Requires VPS-only scoped BTCPay credentials. Does not change sales gates.
  */
 import crypto from 'node:crypto';
@@ -19,9 +21,11 @@ try {
 }catch{fail('BTCPAY_URL must be an HTTPS URL.');}
 if(!apiKey||!storeId)fail('BTCPay API key or store ID is missing.');
 if(process.exitCode)process.exit();
-if((mode!=='--create'||argv.length!==1)&&(mode!=='--status'||argv.length!==2)){
+if((mode!=='--create'||argv.length!==1)&&(mode!=='--status'||argv.length!==2)&&(mode!=='--latest'||argv.length!==1)&&(mode!=='--recent'||argv.length!==1)){
  console.log('Usage: node btcpay-test-invoice.js --create');
  console.log('       node btcpay-test-invoice.js --status INVOICE_ID');
+ console.log('       node btcpay-test-invoice.js --latest');
+ console.log('       node btcpay-test-invoice.js --recent');
  console.log('WARNING: --create creates ONE real USD 5.00 invoice. Sending BTC transfers actual funds and incurs network fees.');
  process.exit(1);
 }
@@ -46,6 +50,32 @@ function safeStatus(invoice){
  console.log('Payment settled without exceptions: '+(settled?'YES':'NO'));
  if(!settled)console.log('Do not treat as received or ship any goods. Check BTCPay confirmations.');
  return settled;
+}
+// Greenfield list endpoint needs only canviewinvoices. Never display another
+// customer invoice; only use unique private diagnostic metadata from this CLI.
+async function recentTestInvoices(){
+ const page=await request('/invoices?count=100&skip=0');
+ const invoices=Array.isArray(page)?page:Array.isArray(page?.invoices)?page.invoices:[];
+ if(!Array.isArray(invoices)||!invoices.length)return [];
+ return invoices.filter(invoice=>
+   invoice?.metadata?.bitcTestOnly===true &&
+   invoice?.currency==='USD' && Math.round(Number(invoice.amount)*100)===500 &&
+   safeId(String(invoice.id||'')))
+  .sort((a,b)=>Number(b.createdTime||0)-Number(a.createdTime||0));
+}
+async function checkedTestStatus(id){
+ let invoice;
+ try{invoice=await request('/invoices/'+encodeURIComponent(id));}
+ catch(err){
+  if(String(err.message).includes('HTTP 403'))
+   throw Error('HTTP 403 for this invoice ID. Compare with BTCPay store invoice list; verify exact ID and store-scoped View invoices permission. This is NOT proof of payment failure.');
+  throw err;
+ }
+ if(invoice.id!==id||invoice.metadata?.bitcTestOnly!==true||
+   invoice.currency!=='USD'||Math.round(Number(invoice.amount)*100)!==500)
+   throw Error('The invoice is not a verified USD 5 BITC diagnostic. No payment status can be confirmed.');
+ console.log('Verified diagnostic invoice ID: '+id);
+ safeStatus(invoice);
 }
 async function main(){
  console.log('BITC PRIVATE PAYMENT TEST — public checkout remains '+(process.env.BITC_SALES_ENABLED==='true'?'configured by VPS flags':'LOCKED'));
@@ -80,13 +110,22 @@ async function main(){
   console.log('PRIVATE TEST PAYMENT URL: '+link.href);
   console.log('Open the BTCPay link, verify the BTC address/QR and send the exact BTC amount only if you intend a real USD 5.00 test transfer.');
   console.log('After sending, allow confirmations. Then use: node btcpay-test-invoice.js --status '+invoice.id);
- }else{
+ }else if(mode==='--status'){
   const id=String(argv[1]||'');
-  if(!safeId(id))throw Error('Invalid invoice ID.');
-  const invoice=await request('/invoices/'+encodeURIComponent(id));
-  if(invoice.id!==id||invoice.metadata?.bitcTestOnly!==true)throw Error('Not a BITC private test invoice. Refusing to classify.');
-  console.log('Private diagnostic invoice ID: '+id);
-  safeStatus(invoice);
+  if(!safeId(id))throw Error('Invalid invoice ID. Use --recent to verify it or --latest to avoid typing.');
+  await checkedTestStatus(id);
+ }else{
+  const matches=await recentTestInvoices();
+  if(!matches.length)throw Error('No USD 5 test invoice found in the latest 100 store invoices. Open your BTCPay dashboard and verify store and invoice ID; do not create a new invoice yet.');
+  if(mode==='--recent'){
+   console.log('Recent private USD 5 test invoices (newest first):');
+   for(const invoice of matches.slice(0,5))
+    console.log('Test invoice ID: '+invoice.id+' — status: '+String(invoice.status||'Unknown'));
+   console.log('Use --latest to check the newest invoice automatically.');
+  }else{
+   console.log('Newest private USD 5 test invoice found in BTCPay store list.');
+   await checkedTestStatus(String(matches[0].id));
+  }
  }
  console.log('Public sales flags unchanged. No storefront customer order was created.');
 }
