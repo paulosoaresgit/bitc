@@ -73,7 +73,7 @@ async function main(){
    const address=String(btc?.destination||'');
    const btcDue=String(btc?.due??btc?.amount??'');
    const mainnet=/^(?:[13][a-km-zA-HJ-NP-Z1-9]{25,34}|bc1[ac-hj-np-z02-9]{11,87})$/.test(address);
-   const positive=/^(?:0|[1-9]\\d{0,7})\\.\\d{1,8}$/.test(btcDue)&&Number(btcDue)>0;
+   const positive=/^(?:0|[1-9]\d{0,7})\.\d{1,8}$/.test(btcDue)&&Number(btcDue)>0;
    console.log(mainnet&&positive?'[OK] Invoice has a BTCPay BTC on-chain address and positive BTC amount.':
      '[CHECK] BTC destination/amount not verified through API; inspect the BTCPay invoice before payment.');
   }catch(err){console.log('[CHECK] Could not verify invoice BTC method: '+err.message);}
