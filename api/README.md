@@ -39,7 +39,7 @@ BITC_ORDER_ENCRYPTION_KEY=64_HEX_CHARACTERS_FROM_OPENSSL_RAND_HEX_32
 
 Generate a private **new 32-byte encryption key** securely on the VPS using `openssl rand -hex 32` and paste it only into the root-owned environment file. Do not publish, print, commit, transmit or photograph it. **Make a secure offline backup** of this key: losing it makes shipping data for existing invoices unrecoverable. Do not replace/rotate the key while you still need to read old orders without implementing key versioning first.
 
-`api/catalog.json` is the bundled, server-owned catalog. It contains **553 fixed SKU prices** from 570 inspected product variants (including two checkout add-ons). **152 local product pages** now exist. The public-feed snapshots verified 151 products; 144 have prices consistent with the captured cards and are candidates for merchant preview. Seven are marked unavailable; one product feed was not found. Those eight are blocked. The five formerly discrepant prices were explicitly approved and synchronized into collection cards, local product pages, and server catalog on 2026-10-11. See `api/PRELAUNCH_AUDIT.md` and `api/approved-price-fixes.json`. Never trust a browser-supplied price; unavailable or unknown SKUs are rejected. Inventory ownership, sourcing, delivery promises and licensing must still be checked before accepting payments.\n\n**Shipping prices confirmed by the owner on 2026-10-12:** DHL **free**, FedEx **USD 24.99**, and UPS **USD 29.99** per order, flat for all regions actually served by the store. The confirmation is recorded in `api/approved-shipping-policy.json` and tested against both API and browser. Carrier coverage, destination restrictions, delivery timing and customs obligations still require operational validation. Separately, the 20% BTC discount and USD 16.50 optional protection need launch review; optional protection is disabled by default.
+`api/catalog.json` is the bundled, server-owned catalog. It contains **551 fixed SKU prices** from the audited captured variants; the two discontinued checkout accessories were removed. **152 local product pages** now exist. The public-feed snapshots verified 151 products; 144 have prices consistent with the captured cards and are candidates for merchant preview. Seven are marked unavailable; one product feed was not found. Those eight are blocked. The five formerly discrepant prices were explicitly approved and synchronized into collection cards, local product pages, and server catalog on 2026-10-11. See `api/PRELAUNCH_AUDIT.md` and `api/approved-price-fixes.json`. Never trust a browser-supplied price; unavailable or unknown SKUs are rejected. Inventory ownership, sourcing, delivery promises and licensing must still be checked before accepting payments.\n\n**Shipping prices confirmed by the owner on 2026-10-12:** DHL **free**, FedEx **USD 24.99**, and UPS **USD 29.99** per order, flat for all regions actually served by the store. The confirmation is recorded in `api/approved-shipping-policy.json` and tested against both API and browser. Carrier coverage, destination restrictions, delivery timing and customs obligations still require operational validation. Separately, the 20% BTC discount and USD 16.50 optional protection need launch review; optional protection is disabled by default.
 
 The public invoice metadata includes only a generated order ID, product summary and encrypted order record. It intentionally does **not** include plaintext shipping addresses or customer contact information. The details needed for fulfillment must be decrypted on your own VPS.
 
@@ -54,6 +54,32 @@ docker compose exec -T api node order-read.js INVOICE_ID_FROM_BTCPAY
 The command retrieves the invoice via the scoped BTCPay API, checks that the ID, currency and amount match the encrypted record, and prints the shipping address and order details locally. **Do not share that output in screenshots or logs**. It refuses to approve fulfillment unless BTCPay reports `Settled` with no exceptional payment status. No additional database is involved.
 
 Dashboard for invoices: `https://pay.bitcmining.tech` → BITC Mining → Invoices.
+
+## Controlled go-live audit (no changes, no invoices)
+
+Once the current branch is published on the merchant Hostinger VPS, run:
+
+```bash
+cd /opt/bitc/repo/deploy/hostinger
+docker compose exec -T api node launch-readiness.js
+```
+
+The command checks configured checkout approvals, API invoice-read access,
+BTC-OnChain store payment method, encryption configuration and whether
+published checkout policy links are still placeholders. It prints only
+checks and HTTP codes, not API tokens, wallet addresses or customer records.
+**It does not create an invoice or enable sales.**
+
+A positive read-only result **does not** prove invoice-creation permission,
+Bitcoin Core/NBXplorer sync, wallet backup, real BTC settlement or order
+fulfillment. Validate these separately with a controlled merchant-owned
+invoice and a settled small test transfer, then use `node order-read.js` privately
+to reconcile amount, settled status and customer delivery data.
+Ensure support contact, legal policy text, stock ownership, shipping coverage,
+returns and accurate content before enabling the four approval flags:
+`BITC_SALES_ENABLED`, `BITC_SHIPPING_APPROVED`,
+`BITC_INVENTORY_APPROVED`, `BITC_TERMS_APPROVED`.
+The flags stay OFF during prelaunch validation.
 
 ## Tests and release
 
