@@ -29,6 +29,7 @@ jobs:
           node --check api/order-utils.js
           node --check api/order-read.js
           node --check api/launch-readiness.js
+          node --check api/btcpay-test-invoice.js
           node --check api/pixel-manager.js
           node --check assets/bitc-tracking.js
           node --check assets/bm-cart.js
