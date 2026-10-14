@@ -197,4 +197,18 @@ find /opt/bitc/public -type d -exec chmod 755 {} +
 cd "$source_dir/deploy/hostinger"
 docker compose config --quiet
 docker compose up -d --build --wait
+# nginx.conf is bind-mounted; Docker may keep the existing running container
+# rather than restarting it when only the contents of the config file change.
+docker compose exec -T storefront nginx -t
+docker compose exec -T storefront nginx -s reload
+# Test the served HTML, not only the GitHub source: every checkout must have
+# zero deprecated optional offers before announcing publication success.
+docker compose exec -T storefront sh -c '
+  wget -q -O /tmp/bitc-checkout-served.html http://127.0.0.1/checkout/ || exit 1
+  if grep -E -q "recosToggle|recosPanel|Optional accessories \(availability must be verified\)" /tmp/bitc-checkout-served.html; then
+    echo "ERROR: stale accessory block still in HTTP checkout response" >&2
+    exit 1
+  fi
+  echo "BITC checkout HTML clean: no optional accessory offers"
+'
 echo "BITC containers started; verify proxy, HTTPS, approved prices, invoice QR and encrypted order before accepting sales."
