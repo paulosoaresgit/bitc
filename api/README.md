@@ -101,6 +101,23 @@ docker compose up -d --no-deps --build api
 docker compose exec -T api node btcpay-test-invoice.js --create
 ```
 
+If the invoice ID was copied incorrectly or a status lookup returns HTTP 403,
+first find the actual store test invoice without generating another one:
+
+```bash
+docker compose exec -T api node btcpay-test-invoice.js --recent
+docker compose exec -T api node btcpay-test-invoice.js --latest
+```
+
+`--recent` lists only merchant-created USD 5 diagnostic invoice IDs found in
+recent BTCPay records, without displaying customer invoices. `--latest` finds
+the newest such test and verifies its payment status. A 403 on a manually typed
+ID can mean the ID is incorrect or access to that particular invoice is denied;
+it does **not** by itself mean a BTC payment failed. If the exact invoice
+from the store list still returns 403, inspect the store scope and the
+merchant BTCPay invoice dashboard, and do not send funds until resolved.
+
+
 **Only** the explicit `--create` command creates one real BTC-payable BTCPay
 invoice of USD 5.00. It reads the invoice back, verifies test-only metadata,
 inspects the on-chain destination and prints the genuine BTCPay invoice link.
