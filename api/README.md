@@ -83,6 +83,52 @@ returns and accurate content before enabling the four approval flags:
 `BITC_INVENTORY_APPROVED`, `BITC_TERMS_APPROVED`.
 The flags stay OFF during prelaunch validation.
 
+## Live BTC smoke test (private VPS only, USD 5.00)
+
+This diagnostic deliberately **does not enable production sales** and does not
+create a storefront customer order. It must be run only by the merchant with
+control of the receiving BTC wallet and sufficient balance for a small test.
+
+After pulling this branch on the VPS, rebuild only the API service to install
+`btcpay-test-invoice.js`:
+
+```bash
+cd /opt/bitc/repo/deploy/hostinger
+export BTCPAY_PROXY_NETWORK=generated_default
+read -r -p "SSL certificate email: " LETSENCRYPT_EMAIL
+export LETSENCRYPT_EMAIL
+docker compose up -d --no-deps --build api
+docker compose exec -T api node btcpay-test-invoice.js --create
+```
+
+**Only** the explicit `--create` command creates one real BTC-payable BTCPay
+invoice of USD 5.00. It reads the invoice back, verifies test-only metadata,
+inspects the on-chain destination and prints the genuine BTCPay invoice link.
+The merchant should compare the invoice amount and BTC address/QR **on the
+BTCPay invoice** and make one *intentional* mainnet BTC test transfer from a
+separate wallet or via Binance **BTC withdrawal on the Bitcoin network**, not
+Binance Pay or BNB/BEP20. Real BTC payments are irreversible and incur fees.
+Do not send twice or to any pasted/static address. The test invoice is a
+non-fulfillable diagnostic, not a customer order.
+
+Later, using only the resulting diagnostic invoice ID:
+
+```bash
+docker compose exec -T api node btcpay-test-invoice.js --status YOUR_TEST_INVOICE_ID
+```
+
+The script considers payment verified only when BTCPay reports
+`Settled` and no exceptional `additionalStatus`. Never fulfill anything
+from this diagnostic invoice.
+
+**Public activation is independent.** After a verified settlement, production
+still requires valid store/customer terms, working policy links, ability to
+fulfill listed inventory and shipping destinations, tested order read-back
+and recovery backups, plus explicit merchant approval of the four flags:
+`BITC_SALES_ENABLED`, `BITC_SHIPPING_APPROVED`,
+`BITC_INVENTORY_APPROVED`, and `BITC_TERMS_APPROVED`.
+Never use this diagnostic as a reason to bypass those gates.
+
 ## Tests and release
 
 `cd api && npm test`
