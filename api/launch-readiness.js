@@ -40,13 +40,13 @@ async function main(){
     Array.isArray(methods.data?.paymentMethods)?methods.data.paymentMethods:[];
    wallet=list.some(x=>{
     const method=String(x?.paymentMethodId||x?.paymentMethod||x?.id||'');
-    return (/^BTC[-_]OnChain$/i.test(method)||/^BTC-OnChain$/i.test(method)) &&
+    return /^BTC[-_](?:CHAIN|ONCHAIN|BITCOINLIKE|BTCLIKE)$/i.test(method) &&
       x?.enabled!==false&&x?.activated!==false;
    });
   }
   requireCheck('BTC on-chain payment method',wallet,
    wallet?'enabled for this store (wallet ownership/sync not yet proven)':
-   methods.ok?'No enabled BTC-OnChain method was returned':'Payment-method API returned '+methods.status);
+   methods.ok?'No enabled BTC-CHAIN (on-chain Bitcoin) method was returned':methods.status===403?'HTTP 403 — API key needs btcpay.store.canviewstoresettings for this store':'Payment-method API returned '+methods.status);
   status('BTCPay invoice CREATE permission','CHECK','requires a controlled test invoice; never inferred from read access');
   status('Wallet sync, backup and settlement','CHECK','must be verified in merchant BTCPay and with a test payment');
  }
