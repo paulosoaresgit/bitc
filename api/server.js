@@ -146,7 +146,8 @@ function onchainDestination(methods) {
   if (!Array.isArray(methods)) throw new Error('btcpay_payment_method_unavailable');
   const method = methods.find(m => {
     const id = String(m?.paymentMethodId || m?.paymentMethod || '');
-    return /^BTC[-_]OnChain$/i.test(id) || (/^BTC$/i.test(id) && String(m.cryptoCode || '').toUpperCase() === 'BTC');
+    // BTCPay 2.x returns BTC-CHAIN; older instances may use BTC-OnChain.
+    return /^BTC[-_](?:CHAIN|ONCHAIN|BITCOINLIKE|BTCLIKE)$/i.test(id) || (/^BTC$/i.test(id) && String(m.cryptoCode || m.currency || '').toUpperCase() === 'BTC');
   });
   if (!method || method.activated === false) throw new Error('btcpay_onchain_not_available');
   const address = String(method.destination || '').trim();
