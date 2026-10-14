@@ -75,6 +75,14 @@ function chosenVariant(form,box,p){
  }
  return eligible.length===1?eligible[0]:null;
 }
+async function waitForCart(){
+ if(window.BMCart?.add)return window.BMCart;
+ for(let i=0;i<120;i++){
+  await new Promise(resolve=>setTimeout(resolve,50));
+  if(window.BMCart?.add)return window.BMCart;
+ }
+ throw Error('cart_not_ready');
+}
 function safeImage(box,p){
  const img=box.querySelector('img');
  // Only catalog image or original card's own image; never use arbitrary HTML in cart.
@@ -94,8 +102,10 @@ async function addToCart({button,form,box}){
   if(!p||!p.checkoutEnabledForReview)throw Error('unavailable');
   const v=chosenVariant(form,box,p);
   if(!v)throw Error('select_options');
-  if(!window.BMCart?.add)throw Error('cart_not_ready');
-  const success=window.BMCart.add({
+  // Async first-party scripts may finish in either order. Preserve the
+  // buyer's first click while the small cart bundle becomes ready.
+  const cart=window.BMCart?.add?window.BMCart:await waitForCart();
+  const success=cart.add({
    variantId:String(v.id),qty:1,price:v.cents/100,
    title:p.title,variant:v.title==='Default Title'?'':v.title,
    image:safeImage(box,p),url:p.route+'/'
@@ -144,4 +154,5 @@ function resetOldButtons(){
  }
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',resetOldButtons,{once:true});else resetOldButtons();
+window.BITCEarlyCart?.activate(item=>{void addToCart(item)});
 })();
