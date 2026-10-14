@@ -12,6 +12,15 @@ echo "$raw" | grep -q '"btcpayConfigured":true' || { echo "BTCPay configuration 
 echo "$raw" | grep -q '"orderEncryptionConfigured":true' || { echo "Order encryption missing"; exit 1; }
 echo "Checking storefront serves checkout locally..."
 docker compose exec -T storefront wget -q -O /dev/null http://127.0.0.1/checkout/
+echo "Checking all published checkout pages for retired optional accessories..."
+docker compose exec -T storefront sh -c '
+  if grep -R -E -q "recosToggle|recosPanel|Optional accessories" /usr/share/nginx/html/checkout --include="*.html"; then
+    echo "ERROR: obsolete optional accessories still in checkout" >&2
+    exit 1
+  fi
+  echo "Published checkout is clean: 0 obsolete accessory offers"
+'
+
 echo "Checking public DNS..."
 for host in bitcmining.tech www.bitcmining.tech pay.bitcmining.tech; do
   ip="$(getent ahostsv4 "$host" | awk 'NR==1{print $1}')" || true
