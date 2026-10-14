@@ -93,23 +93,21 @@ for route,p in variant_map.items():
         by_product[pid]={**p,'route':route}
 def safe_json(data):
     return json.dumps(data,ensure_ascii=False,separators=(',',':')).replace('<','\\u003c').replace('>','\\u003e').replace('&','\\u0026')
+early_guard=(root/'assets/bitc-early-cart.js').read_text(encoding='utf-8').replace('</script','<\\/script')
 count=0
 for file in root.rglob('*.html'):
     relative=file.relative_to(root)
     if 'admin' in relative.parts:continue
     html=file.read_text(encoding='utf-8')
-    match=re.search(r'</head\s*>',html,flags=re.IGNORECASE)
-    if not match:continue
+    if not re.search(r'</head\s*>',html,flags=re.IGNORECASE):continue
     product=relative.parts[0]=='products'
     collection=file==root/'index.html' or relative.parts[0]=='collections'
     inject='' if 'src="/assets/bitc-tracking.js"' in html else tag
-    # Load cart CSS before the JS and with a versioned URL to avoid stale styles.
-    if product or collection:
-        if 'id="bm-cart-styles"' not in html:
-            inject='<link id="bm-cart-styles" rel="stylesheet" href="/assets/bm-cart.css?v=20261013-layout2">'+inject
     if product:
+        if 'id="bm-cart-styles"' not in html:
+            inject='<link id="bm-cart-styles" rel="stylesheet" href="/assets/bm-cart.css?v=20261014-fast-cart1">'+inject
         if 'bm-cart.js' not in html:
-            inject+='<script defer src="/assets/bm-cart.js"></script>'
+            inject+='<script defer src="/assets/bm-cart.js?v=20261014-fast-cart1"></script>'
         if 'bitc-product-purchase.js' not in html:
             inject+='<script defer src="/assets/bitc-product-purchase.js"></script>'
         route='/'+'/'.join(relative.parts[:-1])
@@ -118,19 +116,32 @@ for file in root.rglob('*.html'):
             record={'route':route,'entry':entry}
             inject+='<script type="application/json" id="bitc-product-data">'+safe_json(record)+'</script>'
     if collection:
-        if 'bm-cart.js' not in html:
-            inject+='<script defer src="/assets/bm-cart.js"></script>'
-        if 'bitc-collection-quickadd.js' not in html:
-            inject+='<script defer src="/assets/bitc-collection-quickadd.js"></script>'
-        if 'id="bitc-quickadd-data"' not in html:
-            ids=set(re.findall(r'data-product(?:-)?id\s*=\s*["\'](\d{8,17})["\']',html,flags=re.IGNORECASE))
-            subset={pid:by_product[pid] for pid in sorted(ids) if pid in by_product}
-            if subset:
-                inject+='<script type="application/json" id="bitc-quickadd-data">'+safe_json(subset)+'</script>'
-    if not inject:continue
-    html=html[:match.start()]+inject+'\n'+html[match.start():]
-    file.write_text(html,encoding='utf-8')
-    count+=1
+        # The captured merchant/page-builder head can contain long, blocking scripts.
+        # Bind the first-click guard at the very beginning of HEAD, before those
+        # scripts and before the body has finished streaming to the browser.
+        ids=set(re.findall(r'data-product(?:-)?id\s*=\s*["\'](\d{8,17})["\']',html,flags=re.IGNORECASE))
+        subset={pid:by_product[pid] for pid in sorted(ids) if pid in by_product}
+        # Avoid duplicate legacy first-party bootstraps on re-publication.
+        html=re.sub(r'<script\b[^>]*\bsrc=["\']/assets/(?:bm-cart|bitc-collection-quickadd)\.js(?:\?[^"\']*)?["\'][^>]*>\s*</script\s*>','',html,flags=re.IGNORECASE)
+        html=re.sub(r'<script\b[^>]*\bid=["\']bitc-quickadd-data["\'][^>]*>.*?</script\s*>','',html,flags=re.IGNORECASE|re.DOTALL)
+        html=re.sub(r'<link\b[^>]*\bid=["\']bm-cart-styles["\'][^>]*>','',html,flags=re.IGNORECASE)
+        head_open=re.search(r'<head\b[^>]*>',html,flags=re.IGNORECASE)
+        if not head_open:continue
+        early='<script>'+early_guard+'</script>'
+        if subset:
+            early+='<script type="application/json" id="bitc-quickadd-data">'+safe_json(subset)+'</script>'
+        early+='<link id="bm-cart-styles" rel="stylesheet" href="/assets/bm-cart.css?v=20261014-fast-cart1">'
+        # Async scripts load during page parsing instead of waiting for all 1MB+
+        # of product cards and third-party theme scripts to finish parsing.
+        early+='<script async src="/assets/bm-cart.js?v=20261014-fast-cart1"></script>'
+        early+='<script async src="/assets/bitc-collection-quickadd.js?v=20261014-fast-cart1"></script>'
+        html=html[:head_open.end()]+early+html[head_open.end():]
+    if inject:
+        match=re.search(r'</head\s*>',html,flags=re.IGNORECASE)
+        html=html[:match.start()]+inject+'\n'+html[match.start():]
+    if inject or collection:
+        file.write_text(html,encoding='utf-8')
+        count+=1
 print('BITC first-party cart and tracking bootstraps:',count,'static pages')
 PY
 # Private writable pixel settings store; never expose this directory through Nginx.
