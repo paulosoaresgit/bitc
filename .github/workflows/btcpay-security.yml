@@ -28,6 +28,7 @@ jobs:
           node --check api/server.js
           node --check api/order-utils.js
           node --check api/order-read.js
+          node --check api/launch-readiness.js
           node --check api/pixel-manager.js
           node --check assets/bitc-tracking.js
           node --check assets/bm-cart.js
@@ -52,13 +53,14 @@ jobs:
           s=pathlib.Path('deploy/hostinger/publish.sh').read_text()
           marker='python3 - "$stage" <<\'PY\'\n'
           assert marker in s
-          source=s.split(marker,1)[1].split('\nPY\n',1)[0]
+          source=s.rsplit(marker,1)[1].split('\nPY\n',1)[0]
           compile(source,'tracking-injection','exec')
           with tempfile.TemporaryDirectory() as folder:
               tmp=pathlib.Path(folder)
               (tmp/'checkout').mkdir()
               (tmp/'assets').mkdir()
               (tmp/'assets'/'bitc-variant-map.json').write_text('{}')
+              (tmp/'assets'/'bitc-early-cart.js').write_text(pathlib.Path('assets/bitc-early-cart.js').read_text())
               (tmp/'admin'/'pixels').mkdir(parents=True)
               (tmp/'products'/'sample').mkdir(parents=True)
               (tmp/'products'/'sample'/'index.html').write_text('<html><head></head><body><form method="post" action="/cart/add"><button name="add">Add To Cart</button></form></body></html>')
@@ -72,7 +74,7 @@ jobs:
               assert 'bitc-tracking.js' not in (tmp/'admin'/'pixels'/'index.html').read_text()
               product=(tmp/'products'/'sample'/'index.html').read_text()
               assert product.count('src="/assets/bitc-product-purchase.js"')==1
-              assert product.count('src="/assets/bm-cart.js"')==1
+              assert product.count('src="/assets/bm-cart.js')==1
           print('PIXEL_BOOTSTRAP_AND_ADMIN_ISOLATION=OK')
           PY
       - name: Verify legacy tag stripping does not remove storefront pages
