@@ -57,6 +57,8 @@ Dashboard for invoices: `https://pay.bitcmining.tech` → BITC Mining → Invoic
 
 ## Controlled go-live audit (no changes, no invoices)
 
+**BTCPay API 403 on store payment methods:** \`GET /api/v1/stores/{storeId}/payment-methods\` requires the store-scoped \`btcpay.store.canviewstoresettings\` permission. Use a new least-privilege BTCPay API key with \`btcpay.store.canviewinvoices\`, \`btcpay.store.cancreateinvoice\`, and \`btcpay.store.canviewstoresettings\`. Store only the private key in \`/etc/bitc/bitc.env\`; never commit, log or share it. BTCPay 2.x uses \`BTC-CHAIN\` instead of older \`BTC-OnChain\`, and both are supported by this integration. A successful read-only check does not prove the key can create invoices or that a BTC deposit will settle.\n\n
+
 Once the current branch is published on the merchant Hostinger VPS, run:
 
 ```bash
