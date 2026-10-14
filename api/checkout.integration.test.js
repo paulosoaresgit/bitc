@@ -53,7 +53,7 @@ test('full API-to-mocked-BTCPay contract: payment lock, quotes, price, invoice, 
       assert.match(url.toString(),/\/api\/v1\/stores\/INTEGRATION_FAKE_STORE\/invoices/);
       assert.equal(options.headers.Authorization,'token INTEGRATION_FAKE_KEY');
       if(url.toString().endsWith('/payment-methods'))return response([
-        {paymentMethodId:'BTC-OnChain',destination:'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
+        {paymentMethodId:'BTC-CHAIN',destination:'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
          due:'0.00075342',activated:true},
         {paymentMethodId:'BTC-LightningNetwork',destination:'lnbc123fake',due:'0.00075342'}
       ]);
