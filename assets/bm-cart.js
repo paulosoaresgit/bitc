@@ -10,7 +10,7 @@ function visibleCatalogVariants(){
    const products=name==='bitc-product-data'?[parsed.entry]:Object.values(parsed);
    for(const p of products){
     if(!p||!p.checkoutEnabledForReview||!Array.isArray(p.variants))continue;
-    for(const v of p.variants)if(v.available&&/^\\d{8,17}$/.test(String(v.id))&&Number.isSafeInteger(v.cents)){
+    for(const v of p.variants)if(v.available&&/^\d{8,17}$/.test(String(v.id))&&Number.isSafeInteger(v.cents)){
      result.push([String(v.id),v.cents,p.title+' — '+v.title]);
     }
    }
