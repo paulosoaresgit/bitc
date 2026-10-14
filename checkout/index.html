@@ -103,7 +103,7 @@
   </div>
 
   <div class="co-crypto-methods">
-    <button type="button" class="co-crypto-card selected" data-method="bitcoin">
+    <button type="button" class="co-crypto-card selected" data-method="bitcoin" aria-pressed="true">
       <span class="co-radio co-radio-lg"></span>
       <span class="co-crypto-icon co-btc-icon">₿</span>
       <span class="co-crypto-copy">
@@ -117,12 +117,12 @@
       <span class="co-chevron">›</span>
     </button>
 
-    <button type="button" class="co-crypto-card" data-method="binance" aria-controls="binanceGuide" aria-expanded="false" title="Learn how to send Bitcoin from your Binance balance">
+    <button type="button" class="co-crypto-card" data-method="binance" aria-pressed="false" aria-controls="binanceGuide" aria-expanded="false" title="Select Binance BTC withdrawal as your payment flow">
       <span class="co-radio co-radio-lg"></span>
       <span class="co-crypto-icon co-binance-icon"><img src="/assets/binance-bnb.svg" alt="Binance"></span>
       <span class="co-crypto-copy">
-        <b>Pay BTC from Binance</b>
-        <small>Bitcoin network · Opens payment instructions</small>
+        <b>Pay with Binance (BTC)</b>
+        <small>Select to see your BTC payment instructions</small>
       </span>
       <span class="co-crypto-card-side">
         <span class="co-save-badge-lg">SAVE 20%</span>
@@ -159,7 +159,7 @@
     </div>
     <div class="co-binance-note">Binance withdrawal availability and fees depend on your account. The order is confirmed only after BTCPay verifies payment settlement.</div>
   </div>
-  <p class="co-payment-sub" style="margin:18px 0">Bitcoin is the only payment network planned for this checkout. You can use a BTC wallet or send BTC from Binance; Binance Pay is not integrated.</p>
+  <p class="co-payment-sub" id="selectedCryptoNotice" role="status" aria-live="polite" style="margin:18px 0">Bitcoin wallet selected. You can also select Binance to transfer BTC using the Bitcoin network. Binance Pay is not integrated.</p>
 
   <p role="status" class="co-shipping-note" id="checkoutReadinessNotice">Purchases are disabled until the final review and publication are authorized. No Bitcoin invoice will be created while checkout is inactive.</p><button class="co-pay-now co-pay-crypto" id="payNow" disabled aria-disabled="true"><span class="co-cta-btc">₿</span><span id="payNowLabel">Checkout not published yet</span><span class="co-cta-arrow">→</span></button>
 </div><div class="co-footer-links"><a href="#">Refund policy</a><a href="#">Privacy policy</a><a href="#">Terms of service</a><a href="#">Cancellations</a></div>
