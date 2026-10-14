@@ -14,7 +14,7 @@ echo "Checking storefront serves checkout locally..."
 docker compose exec -T storefront wget -q -O /dev/null http://127.0.0.1/checkout/
 echo "Checking all published checkout pages for retired optional accessories..."
 docker compose exec -T storefront sh -c '
-  if grep -R -E -q "recosToggle|recosPanel|Optional accessories" /usr/share/nginx/html/checkout --include="*.html"; then
+  if grep -R -E -q "recosToggle|recosPanel|Optional accessories" /usr/share/nginx/html/checkout; then
     echo "ERROR: obsolete optional accessories still in checkout" >&2
     exit 1
   fi
