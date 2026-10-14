@@ -35,9 +35,13 @@ const server=http.createServer(async(req,res)=>{
    }
    assert.ok(Object.keys(subset).length>=3,'verified PageFly cards are embedded');
    const json=JSON.stringify(subset).replace(/</g,'\\u003c');
-   html=html.replace(/<\/head\s*>/i,'<script type="application/json" id="bitc-quickadd-data">'+json+'</script></head>');
-   html=html.replace(/<\/head\s*>/i,'<script defer src="/assets/bitc-collection-quickadd.js"></script></head>');
-   if(!html.includes('src="/assets/bm-cart.js"'))html=html.replace(/<\/head\s*>/i,'<script defer src="/assets/bm-cart.js"></script></head>');
+   const guard=await fs.readFile(path.join(root,'assets/bitc-early-cart.js'),'utf8');
+   const preloaded='<script>'+guard+'</script>'+
+    '<script type="application/json" id="bitc-quickadd-data">'+json+'</script>'+
+    '<link id="bm-cart-styles" rel="stylesheet" href="/assets/bm-cart.css?v=20261014-fast-cart1">'+
+    '<script async src="/assets/bm-cart.js?v=20261014-fast-cart1"></script>'+
+    '<script async src="/assets/bitc-collection-quickadd.js?v=20261014-fast-cart1"></script>';
+   html=html.replace(/<head\b[^>]*>/i,tag=>tag+preloaded);
    data=Buffer.from(html);
   }
   res.writeHead(200,{'Content-Type':filename.endsWith('.js')?'application/javascript':filename.endsWith('.html')?'text/html':filename.endsWith('.css')?'text/css':'application/octet-stream'});
@@ -57,7 +61,7 @@ try{
   external++;return route.abort();
  });
  await page.goto('http://127.0.0.1:'+server.address().port+'/',{waitUntil:'domcontentloaded',timeout:45000});
- await page.waitForFunction(()=>!!window.BMCart?.get,{timeout:15000});
+ await page.waitForFunction(()=>!!window.BMCart?.get&&!!window.BITCQuickAddReady,{timeout:15000});
  const buttons=[
   {product:'8840397619430',sku:'45599680004326',price:119.99},
   {product:'9403792752870',sku:'47333103665382',price:399.99},
@@ -81,6 +85,36 @@ try{
  assert.equal(await page.locator('#bmCartBadge').textContent(),'3','first-party cart updated immediately');
  assert.equal(await page.locator('.bm-cart-drawer.is-open').count(),1,'open BITC drawer immediately');
  console.log('BITC_HOME_QUICK_ADD_OK='+JSON.stringify({added:buttons.length,prices:buttons.map(b=>b.price),oldShopifyCartCalls:0,externalDependenciesBlocked:external}));
+ // Regression: a customer clicks before either asynchronous script arrives.
+ // The small inline head guard must hold the click and fulfill it exactly once.
+ const pendingContext=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+ const pendingPage=await pendingContext.newPage();
+ const base='http://127.0.0.1:'+server.address().port;
+ await pendingPage.route('**/*',route=>
+  route.request().url().startsWith(base)?route.continue():route.abort());
+ let unblock;
+ const gate=new Promise(resolve=>{unblock=resolve});
+ await pendingPage.route('**/assets/bm-cart.js*',async route=>{await gate;await route.continue()});
+ await pendingPage.route('**/assets/bitc-collection-quickadd.js*',async route=>{await gate;await route.continue()});
+ try{
+  await pendingPage.goto(base+'/',{waitUntil:'domcontentloaded',timeout:45000});
+  const earlyButton=pendingPage.locator('form.pf-product-form[data-productid="8840397619430"] button[name="add"][data-product-id="8840397619430"]').first();
+  assert.ok(await earlyButton.count(),'first-click test card exists');
+  await earlyButton.evaluate(button=>button.click());
+  assert.match((await earlyButton.textContent())||'',/Preparing cart/i,'first click is handled immediately');
+  assert.equal(await pendingPage.evaluate(()=>JSON.parse(localStorage.getItem('bm_cart_v1')||'[]').length),0,'pending script has not inserted unverified items');
+  unblock();
+  await pendingPage.waitForFunction(()=>window.BITCQuickAddReady&&
+   window.BMCart?.get().some(item=>item.id==='45599680004326'),{timeout:20000});
+  const quantity=await pendingPage.evaluate(()=>
+   window.BMCart.get().find(item=>item.id==='45599680004326')?.qty);
+  assert.equal(quantity,1,'queued click is fulfilled exactly once');
+  assert.equal(await pendingPage.locator('.bm-cart-drawer.is-open').count(),1,'queued click opens cart');
+ }finally{
+  unblock();
+  await pendingContext.close();
+ }
+ console.log('BITC_EARLY_CLICK_QUEUE_OK');
  await ctx.close();
 }finally{
  if(browser)await browser.close();
