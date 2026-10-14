@@ -11,28 +11,32 @@ const { validatedOrder, validatedCustomer, ensureQuoteAccepted, paymentState,
   encryptOrder, decryptOrder, keyBytes, getCatalog, verifiedFulfillment, SHIPPING_CENTS,
   onchainDestination, invoiceAccessToken, authorizeInvoiceAccess, publicInvoiceState } = await import('./server.js');
 
-const base = { items: [{ id: 'reco-cards', qty: 1 }], shipping: 'dhl', shippingProtection: false };
+const base = { items: [{ id: '45599680004326', qty: 1 }], shipping: 'dhl', shippingProtection: false };
 const TEST_KEY = crypto.randomBytes(32).toString('hex');
 
 test('invoice amounts are calculated from server catalog, not browser prices', () => {
   const order = validatedOrder(base);
-  assert.equal(order.subtotalCents, 1800);
-  assert.equal(order.discountCents, 360);
-  assert.equal(order.amountCents, 1440);
+  assert.equal(order.subtotalCents, 11999);
+  assert.equal(order.discountCents, 2400);
+  assert.equal(order.amountCents, 9599);
 });
 test('shipping costs and optional protection remain server-owned', () => {
   const order = validatedOrder({ ...base, shipping: 'fedex', shippingProtection: true });
-  assert.equal(order.amountCents, 2760 + 2499);
+  assert.equal(order.amountCents, 10919 + 2499);
+});
+test('removed optional accessories must never be charged', () => {
+  for (const id of ['reco-cards','reco-gold-nugget'])
+    assert.throws(() => validatedOrder({...base,items:[{id,qty:1}]}), /catalog_item_unavailable/);
 });
 test('tampered browser prices, shipping and unknown SKUs are blocked', () => {
   assert.throws(() => validatedOrder({ ...base, amount: 0.01 }), /client_prices_not_allowed/);
-  assert.throws(() => validatedOrder({ ...base, items: [{id:'reco-cards',qty:1,price:0.01}] }), /client_prices_not_allowed/);
+  assert.throws(() => validatedOrder({ ...base, items: [{id:'45599680004326',qty:1,price:0.01}] }), /client_prices_not_allowed/);
   assert.throws(() => validatedOrder({ ...base, items: [{id:'fake-product',qty:1}] }), /catalog_item_unavailable/);
   assert.throws(() => validatedOrder({ ...base, shipping:'unknown' }), /invalid_shipping/);
 });
 test('duplicate items cannot bypass quantity limits', () => {
-  assert.throws(() => validatedOrder({ ...base, items:[{id:'reco-cards',qty:10},{id:'reco-cards',qty:1}] }), /invalid_quantity/);
-  assert.throws(() => validatedOrder({ ...base, items:[{id:'reco-cards',qty:0}] }), /invalid_quantity/);
+  assert.throws(() => validatedOrder({ ...base, items:[{id:'45599680004326',qty:10},{id:'45599680004326',qty:1}] }), /invalid_quantity/);
+  assert.throws(() => validatedOrder({ ...base, items:[{id:'45599680004326',qty:0}] }), /invalid_quantity/);
 });
 test('customer shipping details are validated', () => {
   const customer = { email:'buyer@example.com', firstName:'Jo', lastName:'Doe',
@@ -45,13 +49,13 @@ test('checkout requires exact server quote before creating invoice', () => {
   const order=validatedOrder(base);
   assert.doesNotThrow(() => ensureQuoteAccepted({expectedAmountCents:order.amountCents},order));
   assert.throws(() => ensureQuoteAccepted({expectedAmountCents:1},order), /quote_expired/);
-  assert.throws(() => ensureQuoteAccepted({expectedAmountCents:'1440'},order), /quote_expired/);
+  assert.throws(() => ensureQuoteAccepted({expectedAmountCents:'9599'},order), /quote_expired/);
   assert.throws(() => ensureQuoteAccepted({},order), /quote_expired/);
 });
 test('private order metadata round trips through authenticated encryption', () => {
   const orderId=crypto.randomUUID();
   const record={orderId, customer:{name:'Jo', email:'buyer@example.com', street:'Secret address'},
-    amountCents:1440, items:[{id:'reco-cards',qty:1}]};
+    amountCents:9599, items:[{id:'45599680004326',qty:1}]};
   const token=encryptOrder(orderId,record,TEST_KEY);
   assert.equal(token.split('.').length,4);
   assert.ok(!token.includes('buyer@example.com'));
@@ -159,7 +163,7 @@ test('flat shipping prices do not depend on delivery country', () => {
   for(const [service,fee] of Object.entries(SHIPPING_CENTS)){
     const quote=validatedOrder({...base,shipping:service});
     assert.equal(quote.shippingCents,fee,service);
-    assert.equal(quote.amountCents,1440+fee,service);
+    assert.equal(quote.amountCents,9599+fee,service);
   }
 });
 test('optional inventory and country exclusions still block selected SKUs or destinations', () => {
@@ -171,13 +175,13 @@ test('optional inventory and country exclusions still block selected SKUs or des
   try {
     delete process.env.BITC_FULFILLABLE_SKUS;
     delete process.env.BITC_SHIP_TO_COUNTRIES;
-    process.env.BITC_BLOCKED_SKUS='reco-cards';
+    process.env.BITC_BLOCKED_SKUS='45599680004326';
     assert.throws(()=>verifiedFulfillment(o,{country:'Brazil'}),/inventory_not_verified/);
     delete process.env.BITC_BLOCKED_SKUS;
     process.env.BITC_BLOCKED_SHIP_TO_COUNTRIES='Brazil';
     assert.throws(()=>verifiedFulfillment(o,{country:'brazil'}),/delivery_country_unavailable/);
     delete process.env.BITC_BLOCKED_SHIP_TO_COUNTRIES;
-    process.env.BITC_FULFILLABLE_SKUS='45599680004326';
+    process.env.BITC_FULFILLABLE_SKUS='47340173164774';
     assert.throws(()=>verifiedFulfillment(o,{country:'France'}),/inventory_not_verified/);
     delete process.env.BITC_FULFILLABLE_SKUS;
     process.env.BITC_SHIP_TO_COUNTRIES='Canada';
