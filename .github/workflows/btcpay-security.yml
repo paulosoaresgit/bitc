@@ -39,6 +39,7 @@ jobs:
           bash -n deploy/hostinger/preflight.sh
           bash -n deploy/hostinger/publish.sh
           bash -n deploy/hostinger/check-prod.sh
+          bash -n deploy/hostinger/activate-sales.sh
           bash -n deploy/hostinger/setup-pixel-panel.sh
       - name: Validate Hostinger Docker Compose configuration
         shell: bash
