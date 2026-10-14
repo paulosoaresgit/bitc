@@ -8,10 +8,8 @@ const productPaths=[
  'products/bitcoin-merch-bitaxe-601-gamma-power-supply-bitcoin-miner-1-5th-s/index.html',
  'products/bitcoin-merch-x-node-mini-bitcoin-full-node/index.html'
 ];
-const catalog={
- 'reco-cards':{title:'Cardsmiths Crypto Currency Collectible Cards - 1 Pack',cents:1800},
- 'reco-gold-nugget':{title:'Gold Nugget Lottery Miner',cents:3600}
-};
+// Checkout upsell accessories were removed permanently; never regenerate them.
+const catalog={};
 function readArray(s,start){
  let depth=0,quoted=false,escaped=false;
  for(let i=start;i<s.length;i++){
