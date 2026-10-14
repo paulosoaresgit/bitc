@@ -219,6 +219,7 @@ test('merchant-confirmed shipping policy matches API and client fixed rates', ()
 test('only a BTCPay-issued onchain BTC destination may be displayed for Binance',()=>{
   const valid={paymentMethodId:'BTC-OnChain',destination:'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',due:'0.00075342',activated:true};
   assert.deepEqual(onchainDestination([valid]),{network:'Bitcoin (BTC)',address:valid.destination,amountBTC:valid.due});
+  assert.deepEqual(onchainDestination([{...valid,paymentMethodId:'BTC-CHAIN'}]),{network:'Bitcoin (BTC)',address:valid.destination,amountBTC:valid.due});
   assert.throws(()=>onchainDestination([{...valid,paymentMethodId:'BTC-LightningNetwork'}]),/onchain_not_available/);
   assert.throws(()=>onchainDestination([{...valid,destination:'0xbadethereumwallet'}]),/invalid_payment_destination/);
   assert.throws(()=>onchainDestination([{...valid,destination:'tb1qfakeaddress'}]),/invalid_payment_destination/);
