@@ -47,6 +47,21 @@ async function main(){
   requireCheck('BTC on-chain payment method',wallet,
    wallet?'enabled for this store (wallet ownership/sync not yet proven)':
    methods.ok?'No enabled BTC-CHAIN (on-chain Bitcoin) method was returned':methods.status===403?'HTTP 403 — API key needs btcpay.store.canviewstoresettings for this store':'Payment-method API returned '+methods.status);
+  // Read only the latest store invoices; never display customer invoice details.
+  try {
+    const listing=await inspect('/invoices?count=100&skip=0');
+    const invoices=Array.isArray(listing.data)?listing.data:
+      Array.isArray(listing.data?.invoices)?listing.data.invoices:[];
+    const settled=invoices.some(invoice=>
+      invoice?.metadata?.bitcTestOnly===true && invoice?.status==='Settled' &&
+      ['None','',undefined,null].includes(invoice?.additionalStatus) &&
+      invoice?.currency==='USD' && Math.round(Number(invoice?.amount)*100)===500);
+    requireCheck('Live BTC settlement test',settled,
+      settled?'merchant test invoice settled without exceptions':
+      'no settled USD 5 diagnostic found in last 100 invoices; generated QR is not proof of received payment');
+  }catch{
+    requireCheck('Live BTC settlement test',false,'could not verify settlement with read-only BTCPay API');
+  }
   status('BTCPay invoice CREATE permission','CHECK','requires a controlled test invoice; never inferred from read access');
   status('Wallet sync, backup and settlement','CHECK','must be verified in merchant BTCPay and with a test payment');
  }
@@ -62,6 +77,7 @@ async function main(){
    !page.ok?'storefront HTML unreachable':invalid.length?invalid.join(', ')+' have placeholder links':'no placeholder footer links found; content still needs legal review');
  }catch{requireCheck('Published customer policies',false,'could not verify checkout footer');}
  status('Inventory, shipping and consumer commitments','CHECK','owner must verify stock, supported destinations, returns and fulfillment');
+ status('Storefront activation','CHECK','leave sales gates disabled until policies, stock, fulfillment, and settlement are verified');
  console.log('Technical blocks found: '+blocked);
  console.log('Sales gates unchanged. NO invoice created. NO payment accepted by this diagnostic.');
  if(blocked)process.exitCode=2;
