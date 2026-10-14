@@ -52,6 +52,43 @@ for item in index.html assets checkout collections products pages blogs admin; d
   fi
 done
 
+# Strip obsolete checkout upsells from any copied checkout template, not only
+# from the checked-in source. Preserve the payment block immediately after it.
+python3 - "$stage" <<'PY'
+from pathlib import Path
+import re, sys
+root = Path(sys.argv[1])
+pattern = re.compile(
+    r'<button\b(?=[^>]*\bid=["\x27]recosToggle["\x27])[^>]*>[\s\S]*?'
+    r'<div\b(?=[^>]*\bclass=["\x27][^"\x27]*\bco-payment-section\b)[^>]*>',
+    re.I
+)
+changed = 0
+for path in root.rglob('*.html'):
+    raw = path.read_text(encoding='utf-8')
+    if 'recosToggle' not in raw and 'recosPanel' not in raw:
+        continue
+    if not path.relative_to(root).parts[0] == 'checkout':
+        # Never remove legitimate product listings on unrelated pages.
+        raise RuntimeError(f"Obsolete checkout extras unexpectedly found outside checkout: {path}")
+    newer, count = pattern.subn(lambda m: re.search(
+        r'<div\b(?=[^>]*\bclass=["\x27][^"\x27]*\bco-payment-section\b)[^>]*>',
+        m.group(0), re.I).group(0), raw)
+    if count != 1 or 'recosToggle' in newer or 'recosPanel' in newer:
+        raise RuntimeError(f"Refusing partial extra removal in {path}")
+    path.write_text(newer, encoding='utf-8')
+    changed += 1
+for path in (root/'checkout').rglob('*.html'):
+    raw = path.read_text(encoding='utf-8')
+    if any(token in raw for token in (
+        'recosToggle', 'recosPanel', 'Optional accessories (availability must be verified)',
+        'Bitcoin Merch® - Gold Nugget Lottery Miner',
+        'Cardsmiths Crypto Currency Collectible Trading Cards'
+    )):
+        raise RuntimeError(f"Retired checkout accessory still present in {path}")
+print(f"BITC retired checkout accessories: {changed} stale templates cleaned; no upsells remain")
+PY
+
 # Remove old hardcoded ad accounts inherited from captured third-party HTML.
 # Existing originals remain unchanged; sanitized copies are published.
 python3 "$source_dir/deploy/hostinger/remove-legacy-tracking.py" "$stage"
@@ -147,6 +184,12 @@ PY
 # Private writable pixel settings store; never expose this directory through Nginx.
 install -d -o 1000 -g 1000 -m 700 /opt/bitc/pixels
 cp -a "$stage/." /opt/bitc/public/
+# Ensure the actual Nginx volume cannot still serve the retired block.
+if grep -R -E 'recosToggle|recosPanel|Optional accessories \(availability must be verified\)' /opt/bitc/public/checkout --include='*.html' -q; then
+  echo "ERROR: obsolete checkout accessories remain in the public webroot." >&2
+  exit 1
+fi
+
 # Archived storefront folders can carry root-only modes (0700/0750).
 # Nginx runs as an unprivileged worker and must traverse each directory.
 # Change only directories in the allowlisted PUBLIC static webroot.
