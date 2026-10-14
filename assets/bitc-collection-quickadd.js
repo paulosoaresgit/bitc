@@ -154,5 +154,6 @@ function resetOldButtons(){
  }
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',resetOldButtons,{once:true});else resetOldButtons();
+window.BITCQuickAddReady=true;
 window.BITCEarlyCart?.activate(item=>{void addToCart(item)});
 })();
