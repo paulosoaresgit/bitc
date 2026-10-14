@@ -1,0 +1,41 @@
+name: BITC Hostinger public endpoint audit
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - fix/btcpay-server-pricing-checkout
+    paths:
+      - .github/workflows/hostinger-live-check.yml
+permissions:
+  contents: read
+jobs:
+  public-endpoint-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Diagnose public DNS and TLS without modifying the VPS
+        shell: bash
+        run: |
+          set -uo pipefail
+          for hostname in bitcmining.tech www.bitcmining.tech pay.bitcmining.tech; do
+            echo "=== DNS: $hostname ==="
+            getent ahostsv4 "$hostname" | awk '!seen[$1]++ { print $1 }' || true
+          done
+          for u in https://bitcmining.tech/ https://bitcmining.tech/checkout/ https://bitcmining.tech/api/health https://pay.bitcmining.tech/; do
+            echo "=== URL: $u ==="
+            rm -f /tmp/bitc-headers /tmp/bitc-body
+            curl --location --compressed --connect-timeout 7 --max-time 16 --silent --show-error \
+              --dump-header /tmp/bitc-headers --output /tmp/bitc-body \
+              --write-out 'http=%{http_code} ssl=%{ssl_verify_result} remote_ip=%{remote_ip} final=%{url_effective}\n' "$u" || true
+            if [ -f /tmp/bitc-headers ]; then
+              grep -Ei '^(HTTP/|server:|location:|content-type:)' /tmp/bitc-headers | tail -n 10 || true
+            fi
+            if [ -f /tmp/bitc-body ]; then
+              grep -ioE '<title[^>]*>[^<]{0,160}</title>' /tmp/bitc-body | head -n 1 || true
+              if [[ "$u" == */api/health ]]; then
+                head -c 500 /tmp/bitc-body || true
+                echo
+              fi
+            fi
+          done
+          echo 'Read-only public endpoint audit finished.'

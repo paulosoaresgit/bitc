@@ -1,0 +1,58 @@
+name: Verify and prepare full BITC catalog
+on:
+  push:
+    branches:
+      - fix/btcpay-server-pricing-checkout
+    paths:
+      - api/sync-live-products.py
+      - .github/workflows/sync-live-catalog.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: bitc-live-catalog-sync
+  cancel-in-progress: false
+jobs:
+  sync:
+    if: github.ref == 'refs/heads/fix/btcpay-server-pricing-checkout'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Fetch and validate all public product options (read-only)
+        run: python api/sync-live-products.py
+      - name: Verify captured canonical price anchors
+        run: node api/generate-catalog.mjs --check
+      - name: Validate price data, payment API and all product links
+        run: |
+          cd api && npm test
+          cd ..
+          node api/audit-site-links.mjs | tee /tmp/link-check
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          x=json.loads(next(s.partition('=')[2] for s in Path('/tmp/link-check').read_text().splitlines() if s.startswith('SITE_LINK_AUDIT=')))
+          assert x['brokenProductLinks']==0,x['brokenProductLinks']
+          catalog=json.loads(Path('api/catalog.json').read_text())
+          audit=json.loads(Path('api/live-product-audit.json').read_text())
+          assert len(catalog)>=33
+          assert audit['resolved']>0
+          print('PRODUCTS_READY_FOR_MERCHANT_REVIEW',audit['purchaseEligibleListings'])
+          PY
+      - name: Commit verified catalog and review-safe product pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add api/catalog.json api/live-products.json api/live-product-audit.json assets/bitc-product.css assets/bitc-product.js products
+          if git diff --cached --quiet; then
+            echo "No catalog changes"
+          else
+            git commit -m "feat(catalog): pin live product variants and enable reviewed options in preview"
+            git push origin HEAD:fix/btcpay-server-pricing-checkout
+          fi

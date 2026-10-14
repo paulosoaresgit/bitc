@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>Gerenciador de Pixels — BITC Mining</title>
+<style>
+:root{font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:#f2f5f7;background:#0b121b}
+*{box-sizing:border-box}body{margin:0;min-height:100vh}button,input,select{font:inherit}
+header{border-bottom:1px solid #283341;background:#111c28}
+.top{max-width:1140px;margin:auto;padding:20px;display:flex;justify-content:space-between;align-items:center;gap:16px}
+.brand{font-weight:900;letter-spacing:-.5px}.brand span{color:#ffa521;font-size:24px}
+small,.muted{color:#9caab9}main{max-width:1140px;margin:32px auto;padding:0 20px 60px}
+h1{font-size:clamp(25px,3.7vw,37px);letter-spacing:-1px;margin:8px 0}h2{font-size:19px;margin:0}
+p{line-height:1.6}.panel{border:1px solid #32404d;background:#14202d;border-radius:17px;padding:24px;margin:22px 0;box-shadow:0 10px 35px #030b1566}
+.intro{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+label{display:block;color:#c9d3de;font-size:13px;font-weight:700;margin:12px 0 6px}
+input,select{width:100%;min-height:45px;border:1px solid #405265;border-radius:9px;background:#0b1520;color:white;padding:11px}
+input:focus,select:focus{outline:2px solid #eda122;outline-offset:2px}
+button{border:0;border-radius:9px;padding:12px 18px;font-weight:800;cursor:pointer}
+.primary{background:#ffa521;color:#121921}.secondary{background:#2c3c4d;color:white}
+.danger{background:#552c32;color:#ffe2e5}.quiet{background:transparent;color:#bcd1e2;border:1px solid #526476}
+button:hover{filter:brightness(1.07)}button:disabled{opacity:.45;cursor:not-allowed}
+.actions{display:flex;gap:9px;flex-wrap:wrap}
+.headline{font-size:12px;font-weight:800;letter-spacing:1.3px;color:#ffa521}
+.row{display:grid;grid-template-columns:1.1fr 1.2fr 1.2fr auto auto;gap:10px;align-items:end;margin-top:10px;padding:15px 0;border-bottom:1px solid #2b3a49}
+.row label{margin:0 0 5px}.row .checkline{display:flex;align-items:center;gap:8px;white-space:nowrap;min-height:46px}.row .checkline input{width:18px;min-height:18px;accent-color:#ffac32}
+.tag{display:inline-block;padding:5px 10px;border-radius:30px;background:#3a3e36;color:#ffd296;font-size:11px;font-weight:800}
+.banner{font-size:13px;border-radius:10px;padding:13px;background:#122638;border:1px solid #3d586b}
+.warn{background:#30271b;border-color:#756333;color:#ffdfa5}
+#message{min-height:22px;color:#facc79;font-size:14px}
+.hidden{display:none!important}a{color:#ffc46f}
+@media(max-width:760px){main{margin:20px auto}.panel{padding:16px}.grid{grid-template-columns:1fr}.row{grid-template-columns:1fr 1fr;align-items:center}.row .wide{grid-column:1/-1}.row .checkline{min-height:36px}.row button{width:100%}}
+</style></head><body>
+<header><div class="top"><div class="brand"><span>₿</span> BITC MINING <small> / ADMIN</small></div><a href="/">Voltar à loja ↗</a></div></header>
+<main>
+<div class="headline">MARKETING • GERENCIAMENTO</div>
+<h1>Painel de Pixels</h1>
+<p class="muted">Gerencie várias contas da Meta, Google Analytics 4 e Google Ads. Ative ou pause qualquer ID sem editar as páginas da loja.</p>
+<div id="status" class="banner">Verificando acesso administrativo…</div>
+<section id="login" class="panel hidden" style="max-width:490px">
+<h2>Acesso protegido</h2><p class="muted">Digite a senha definida no servidor Hostinger. Ela não fica salva no navegador.</p>
+<form id="loginForm"><label for="password">Senha de administrador</label>
+<input type="password" id="password" autocomplete="current-password" required minlength="12">
+<div class="actions" style="margin-top:16px"><button class="primary" type="submit">Entrar no painel</button></div></form>
+</section>
+<div id="workspace" class="hidden">
+<div class="panel">
+<div class="intro"><div><h2>Pixels cadastrados <span class="tag" id="total">0</span></h2><small>Somente IDs ativos são carregados no site, após consentimento.</small></div>
+<div class="actions"><button id="add" class="primary">+ Adicionar pixel</button><button id="logout" class="quiet">Sair</button></div></div>
+<div id="pixels"></div>
+<p id="empty" class="muted">Nenhum pixel cadastrado. Clique em “Adicionar pixel”.</p>
+<div class="actions" style="margin-top:20px"><button class="primary" id="save">Salvar alterações</button><button class="secondary" id="reload">Descartar alterações</button></div>
+</div>
+<div class="panel"><h2>Como os eventos funcionam</h2>
+<p>Os pixels ativos poderão receber <b>PageView</b>, <b>ViewContent</b>, <b>AddToCart</b> e <b>InitiateCheckout</b> após o consentimento do visitante.</p>
+<div class="banner warn"><b>Purchase ainda não está ativado.</b> Para registrar compras pagas com segurança, será necessário configurar o webhook assinado do BTCPay e as credenciais privadas das APIs. Criar um QR Code não contará como venda.</div>
+<p class="muted">Este painel armazena apenas IDs públicos. Tokens privados da Meta e segredos de conversões Google não são cadastrados por aqui. Evite colocar dados pessoais nos nomes dos pixels.</p></div>
+</div>
+<p id="message" role="status" aria-live="polite"></p>
+</main>
+<script>
+(()=>{'use strict';
+const $=s=>document.querySelector(s);
+const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+let items=[];
+function message(text){$('#message').textContent=text}
+async function api(url,opts={}){
+ const res=await fetch(url,{credentials:'same-origin',cache:'no-store',...opts,
+   headers:{...(opts.body?{'Content-Type':'application/json'}:{}),...(opts.headers||{})}});
+ let json={};try{json=await res.json()}catch{}
+ if(!res.ok){const e=new Error(json.error||'Falha de comunicação ('+res.status+')');e.status=res.status;throw e}
+ return json;
+}
+function showLogin(){ $('#login').classList.remove('hidden');$('#workspace').classList.add('hidden');$('#status').textContent='Acesso administrativo requerido.' }
+function showWorkspace(){ $('#login').classList.add('hidden');$('#workspace').classList.remove('hidden');$('#status').textContent='Conectado • Configurações privadas no servidor';render() }
+function render(){
+ $('#pixels').innerHTML=items.map((item,i)=>'<div class="row" data-i="'+i+'">'+
+ '<div class="wide"><label>Plataforma</label><select data-field="type">'+
+ ['meta','ga4','google_ads'].map(x=>'<option value="'+x+'"'+(item.type===x?' selected':'')+'>'+({meta:'Meta / Facebook',ga4:'Google Analytics 4',google_ads:'Google Ads'}[x])+'</option>').join('')+
+ '</select></div><div class="wide"><label>ID do pixel</label><input data-field="id" autocomplete="off" spellcheck="false" value="'+esc(item.id)+'" placeholder="ID da plataforma" required></div>'+
+ '<div class="wide"><label>Nome interno</label><input data-field="label" maxlength="80" value="'+esc(item.label)+'" placeholder="Ex.: campanha principal"></div>'+
+ '<label class="checkline"><input data-field="active" type="checkbox"'+(item.active?' checked':'')+'> Ativo</label>'+
+ '<button class="danger" data-remove="'+i+'" aria-label="Remover pixel">Excluir</button></div>').join('');
+ $('#total').textContent=items.length;
+ $('#empty').classList.toggle('hidden',items.length>0);
+}
+function readFields(){
+ return [...document.querySelectorAll('#pixels .row')].map(row=>{
+ const x={};for(const el of row.querySelectorAll('[data-field]'))x[el.dataset.field]=el.type==='checkbox'?el.checked:el.value.trim();return x;
+ });
+}
+async function load(){const data=await api('/api/admin/pixels');items=data.pixels;showWorkspace();message('')}
+$('#loginForm').addEventListener('submit',async e=>{e.preventDefault();try{
+ await api('/api/admin/pixels/login',{method:'POST',body:JSON.stringify({password:$('#password').value})});
+ $('#password').value='';await load();
+}catch(err){message('Login: '+err.message)}});
+$('#add').addEventListener('click',()=>{items=readFields();if(items.length>=50)return message('Limite de 50 identificadores.');items.push({type:'meta',id:'',label:'',active:false});render();message('Preencha os dados e clique em salvar.');});
+$('#pixels').addEventListener('click',e=>{const button=e.target.closest('[data-remove]');if(!button)return;items=readFields();items.splice(Number(button.dataset.remove),1);render();});
+$('#save').addEventListener('click',async()=>{try{
+ items=readFields();const r=await api('/api/admin/pixels',{method:'PUT',body:JSON.stringify({pixels:items})});items=r.pixels;render();message('Alterações salvas no servidor.');
+}catch(err){message('Não foi possível salvar: '+err.message)}});
+$('#reload').addEventListener('click',()=>load().catch(err=>message(err.message)));
+$('#logout').addEventListener('click',async()=>{try{await api('/api/admin/pixels/logout',{method:'POST'})}catch{}items=[];showLogin();message('Sessão encerrada.')});
+load().catch(err=>{showLogin();if(err.status===503){$('#status').textContent='Administração ainda não configurada. Defina a senha no VPS antes de entrar.'}});
+})();
+</script></body></html>

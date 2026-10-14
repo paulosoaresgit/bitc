@@ -1,0 +1,61 @@
+name: Apply five approved BITC prices (GitHub draft only)
+on:
+  push:
+    branches:
+      - fix/btcpay-server-pricing-checkout
+    paths:
+      - api/approved-price-fixes.json
+      - api/apply-approved-price-fixes.py
+      - .github/workflows/apply-approved-prices.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: bitc-approved-prices
+  cancel-in-progress: false
+jobs:
+  apply:
+    if: github.ref == 'refs/heads/fix/btcpay-server-pricing-checkout'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install HTML verifier
+        run: python -m pip install -q beautifulsoup4
+      - name: Apply five approved card prices only
+        run: python api/apply-approved-price-fixes.py
+      - name: Regenerate exact products and server catalog entirely offline
+        env:
+          BITC_CATALOG_OFFLINE: "1"
+        run: python api/sync-live-products.py
+      - name: Validate approved prices, catalog, blocking and all routes
+        run: |
+          python api/verify-approved-price-fixes.py
+          node api/generate-catalog.mjs --check
+          cd api && npm test
+          cd ..
+          node api/audit-site-links.mjs | tee /tmp/links.log
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          s=next(x for x in Path('/tmp/links.log').read_text().splitlines() if x.startswith('SITE_LINK_AUDIT='))
+          assert json.loads(s.partition('=')[2])['brokenProductLinks']==0
+          print('BROKEN_PRODUCT_LINKS=0')
+          PY
+      - name: Commit to feature branch only; never deploy
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html collections products api/catalog.json api/live-products.json api/live-product-audit.json api/product-page-report.json assets/bitc-product.css assets/bitc-product.js
+          if git diff --cached --quiet; then
+            echo "Already synchronized"
+          else
+            git commit -m "fix(store): use merchant-approved current prices across cards, detail and BTCPay catalog"
+            git push origin HEAD:fix/btcpay-server-pricing-checkout
+          fi

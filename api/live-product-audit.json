@@ -1,0 +1,13 @@
+{
+  "requested": 152,
+  "resolved": 151,
+  "failedProducts": {
+    "/products/bitcoin-merch®-goldshell-mini-doge-iii-810mh-s-scrypt-miner": "source_feed_unavailable"
+  },
+  "listingPriceMismatches": [],
+  "variantIdConflicts": [],
+  "liveVariants": 570,
+  "purchaseEligibleListings": 144,
+  "reviewNeededListings": 8,
+  "note": "Data from the public source storefront; merchant must verify inventory, fulfillment, sourcing, and captured storefront price before production."
+}
